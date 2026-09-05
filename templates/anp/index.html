@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ANP · PlanEstrat{% endblock %}
+{% block topbar %}ANP · Dependencias en red{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:72ch}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
+    border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);
+    font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria .cont h4{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--star-ink);margin:16px 0 4px}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 12px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px}
+  label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
+  input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);min-width:min(520px,100%)}
+  .hint{font-size:.78rem;color:var(--muted);margin:2px 0 8px}
+  .mtx-wrap{overflow-x:auto}
+  table.mtx{border-collapse:collapse;margin-top:6px}
+  table.mtx th,table.mtx td{border:1px solid var(--line);padding:3px;text-align:center;min-width:78px}
+  table.mtx th{background:var(--surface-2);font-size:.76rem;font-family:var(--font-mono);color:var(--muted);max-width:130px}
+  table.mtx caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--muted);margin-bottom:4px}
+  table.mtx input{font:inherit;font-size:.82rem;width:62px;border:1px solid var(--line-strong);border-radius:6px;padding:4px;background:var(--surface);color:var(--ink);text-align:center}
+  table.sm{border-collapse:collapse;font-size:.82rem;margin-top:6px}
+  table.sm th,table.sm td{border:1px solid var(--line);padding:5px 9px;text-align:center;font-family:var(--font-mono)}
+  table.sm th{background:var(--surface-2);color:var(--muted);font-size:.72rem}
+  .stats{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 14px}
+  .stat b{font-family:var(--font-mono);font-size:1.05rem;color:var(--ink);display:block}
+  .stat span{font-size:.74rem;color:var(--muted)}
+  .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);
+    border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion strong{color:var(--ink)}
+  table.res{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  table.res td.num{font-family:var(--font-mono);text-align:right}
+  .bar{height:8px;border-radius:4px;background:var(--accent);display:inline-block;vertical-align:middle}
+  .chart-box{margin-top:16px;max-width:640px}
+  .sub{font-family:var(--font-head);font-weight:600;font-size:1.02rem;margin:20px 0 4px}
+  .warn{color:var(--warn);font-size:.85rem;margin-top:8px}
+  .err{color:var(--crit);font-weight:600}
+  :root{--crit:#b0483c}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">ANP · Analytic Network Process</h1>
+<p class="intro">Cuando los criterios u objetivos <strong>dependen entre sí</strong> (no forman una jerarquía limpia), ANP modela esas dependencias como una red y obtiene las prioridades globales a través de la supermatriz. Sirve para evaluar objetivos interdependientes y decidir qué relaciones del mapa estratégico conservar.</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p><strong>ANP</strong> generaliza a AHP: en lugar de una jerarquía de arriba hacia abajo, admite <em>retroalimentación</em> y dependencias en ambos sentidos entre elementos. Las relaciones se organizan en una <strong>supermatriz</strong>.</p>
+    <h4>1 · Supermatriz de influencias</h4>
+    <p>Cada columna <em>j</em> describe de qué depende el elemento <em>j</em> y con qué peso. La entrada <code>w<sub>ij</sub></code> es la prioridad del elemento <em>i</em> respecto de <em>j</em> (obtenida, en el caso completo, de comparaciones por pares).</p>
+    <h4>2 · Supermatriz ponderada (estocástica)</h4>
+    <p>Cada columna se normaliza para que sume 1. Así la supermatriz se vuelve <em>columna-estocástica</em>, condición para que el proceso converja. (En el ANP completo, aquí se aplican además los pesos de los clústeres; en esta herramienta se trabaja a nivel de supermatriz, asumiendo esa ponderación incorporada.)</p>
+    <h4>3 · Supermatriz límite</h4>
+    <p>Se eleva la supermatriz ponderada a potencias sucesivas <code>W<sup>k</sup></code> hasta que se estabiliza. En el límite todas las columnas se vuelven iguales: ese vector común son las <strong>prioridades globales</strong>, que ya incorporan todas las influencias directas e indirectas de la red.</p>
+    <h4>4 · Uso en la estrategia</h4>
+    <p>Las prioridades globales permiten ordenar objetivos interdependientes y, siguiendo el método de Quezada, decidir qué arcos (relaciones) del mapa estratégico son suficientemente importantes para conservarlos.</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>1 · Define los elementos</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label for="nombres">Elementos de la red (separados por coma, entre 2 y 8)</label>
+      <input type="text" id="nombres" value="Financiero, Clientes, Procesos, Aprendizaje">
+    </div>
+    <button class="btn btn-secondary" id="btnConstruir">Construir supermatriz</button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>2 · Supermatriz de influencias</h2>
+  <p class="hint">Columna j = de qué depende el elemento j (fila i = cuánto influye i sobre j). Las columnas se normalizan automáticamente al calcular.</p>
+  <div class="mtx-wrap"><div id="matriz"></div></div>
+  <div style="margin-top:14px"><button class="btn btn-primary" id="btnCalcular">Calcular prioridades globales</button></div>
+</div>
+
+<div class="panel" id="resultado" hidden>
+  <h2>3 · Resultados</h2>
+  <div class="stats" id="stats"></div>
+  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
+  <table class="res" id="tablaPri"></table>
+  <div class="chart-box"><canvas id="grafico" height="220"></canvas></div>
+  <div class="sub">Supermatriz ponderada (columna-estocástica)</div>
+  <div class="mtx-wrap"><div id="ponderada"></div></div>
+  <div id="avisoConv" class="warn"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'anp:solve_api' %}";
+  var chart = null;
+
+  // Ejemplo por defecto (perspectivas BSC interdependientes), columnas ya suman 1
+  var EJEMPLO = {'1-0':0.5,'2-0':0.3,'3-0':0.2,'2-1':0.6,'3-1':0.4,'1-2':0.3,'3-2':0.7,'1-3':0.5,'2-3':0.5};
+
+  function nombres(){ return document.getElementById('nombres').value.split(',').map(function(s){return s.trim();}).filter(Boolean); }
+
+  function construir(){
+    var nm = nombres();
+    if (nm.length < 2 || nm.length > 8){ alert('Ingresa entre 2 y 8 elementos.'); return; }
+    var n = nm.length;
+    var usarEjemplo = (n===4 && nm.join(',').toLowerCase()==='financiero,clientes,procesos,aprendizaje');
+    var h = '<table class="mtx"><caption>de i (fila) sobre j (columna)</caption><tr><th>i \\ j</th>';
+    nm.forEach(function(c){ h += '<th title="'+c+'">'+c+'</th>'; });
+    h += '</tr>';
+    for (var i=0;i<n;i++){
+      h += '<tr><th title="'+nm[i]+'">'+nm[i]+'</th>';
+      for (var j=0;j<n;j++){
+        var pre = usarEjemplo ? (EJEMPLO[i+'-'+j]||0) : 0;
+        h += '<td><input type="number" step="0.05" min="0" data-i="'+i+'" data-j="'+j+'" value="'+pre+'"></td>';
+      }
+      h += '</tr>';
+    }
+    h += '</table>';
+    document.getElementById('matriz').innerHTML = h;
+    document.getElementById('resultado').hidden = true;
+  }
+
+  function matrizCompleta(){
+    var nm = nombres(), n = nm.length, M = [];
+    for (var i=0;i<n;i++){ M.push(new Array(n).fill(0)); }
+    document.querySelectorAll('#matriz input').forEach(function(inp){
+      var v = parseFloat(inp.value); if (isNaN(v)) v = 0;
+      M[parseInt(inp.dataset.i,10)][parseInt(inp.dataset.j,10)] = v;
+    });
+    return { M: M, nombres: nm };
+  }
+
+  function calcular(){
+    var d = matrizCompleta();
+    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ matriz:d.M, nombres:d.nombres }) })
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+    .then(function(res){ if(!res.ok) throw new Error(res.j.error||'Error de cálculo'); pintar(res.j); })
+    .catch(function(e){
+      var box=document.getElementById('resultado'); box.hidden=false;
+      document.getElementById('stats').innerHTML='<span class="err">'+e.message+'</span>';
+      document.getElementById('interpretacion').hidden=true;
+      document.getElementById('tablaPri').innerHTML=''; document.getElementById('ponderada').innerHTML='';
+      document.getElementById('avisoConv').textContent='';
+    });
+  }
+
+  var pct = function(x){ return (x*100).toFixed(1)+'%'; };
+
+  function interpretar(r){
+    var rk = r.ranking, top = rk[0], last = rk[rk.length-1], s='';
+    s += 'Considerando todas las dependencias de la red, el elemento de mayor prioridad global es <strong>'+top.nombre+'</strong> ('+pct(top.peso)+')';
+    if (rk.length>2){ s += ', seguido de '+rk[1].nombre+' ('+pct(rk[1].peso)+') y '+rk[2].nombre+' ('+pct(rk[2].peso)+'). '; }
+    else if (rk.length===2){ s += ', frente a '+rk[1].nombre+' ('+pct(rk[1].peso)+'). '; }
+    else { s += '. '; }
+    if (rk.length>1){ s += 'El de menor prioridad es '+last.nombre+' ('+pct(last.peso)+'). '; }
+    s += 'A diferencia de AHP, estos pesos ya incorporan la retroalimentación entre elementos: un elemento gana prioridad no solo por su importancia directa, sino por cuánto lo sostienen los demás a través de la red. ';
+    if (r.convergio){ s += 'La supermatriz límite convergió en '+r.iteraciones+' iteraciones, por lo que las prioridades son estables.'; }
+    else { s += 'Atención: la supermatriz no convergió del todo; conviene revisar que cada elemento tenga alguna dependencia (columnas no nulas).'; }
+    return s;
+  }
+
+  function matrizHTML(M, nm){
+    var h = '<table class="sm"><tr><th></th>';
+    nm.forEach(function(c){ h += '<th>'+c+'</th>'; });
+    h += '</tr>';
+    M.forEach(function(row,i){
+      h += '<tr><th>'+nm[i]+'</th>';
+      row.forEach(function(v){ h += '<td>'+v.toFixed(3)+'</td>'; });
+      h += '</tr>';
+    });
+    return h + '</table>';
+  }
+
+  function pintar(r){
+    document.getElementById('resultado').hidden = false;
+    document.getElementById('stats').innerHTML =
+      stat(r.n,'elementos') + stat(r.convergio?'sí':'no','convergió') + stat(r.iteraciones,'iteraciones');
+
+    document.getElementById('interpTexto').innerHTML = interpretar(r);
+    document.getElementById('interpretacion').hidden = false;
+
+    var t = '<tr><th>#</th><th>Elemento</th><th>Prioridad global</th><th style="width:40%"></th></tr>';
+    r.ranking.forEach(function(row,k){
+      t += '<tr><td class="num">'+(k+1)+'</td><td>'+row.nombre+'</td>'
+        + '<td class="num">'+pct(row.peso)+'</td>'
+        + '<td><span class="bar" style="width:'+(row.peso*100)+'%"></span></td></tr>';
+    });
+    document.getElementById('tablaPri').innerHTML = t;
+
+    document.getElementById('ponderada').innerHTML = matrizHTML(r.ponderada, r.nombres);
+    document.getElementById('avisoConv').textContent = r.columnas_cero && r.columnas_cero.length
+      ? 'Nota: hay elementos sin dependencias (columnas nulas): ' + r.columnas_cero.map(function(i){return r.nombres[i];}).join(', ') + '.'
+      : '';
+
+    var labels = r.ranking.map(function(x){ return x.nombre; });
+    var data = r.ranking.map(function(x){ return +(x.peso*100).toFixed(2); });
+    if (chart) chart.destroy();
+    var css = getComputedStyle(document.body);
+    chart = new Chart(document.getElementById('grafico').getContext('2d'), {
+      type:'bar',
+      data:{ labels:labels, datasets:[{ label:'Prioridad global (%)', data:data,
+        backgroundColor: css.getPropertyValue('--accent').trim() || '#2c5c86' }] },
+      options:{ responsive:true, plugins:{ legend:{ display:false } },
+        scales:{ y:{ beginAtZero:true, ticks:{ callback:function(v){ return v+'%'; } } } } }
+    });
+  }
+  function stat(v,l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
+
+  document.getElementById('btnConstruir').addEventListener('click', construir);
+  document.getElementById('btnCalcular').addEventListener('click', calcular);
+  construir();
+})();
+</script>
+{% endblock %}
