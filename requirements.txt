@@ -1,0 +1,20 @@
+# PlanEstrat — dependencias
+# Restricciones por versión mínima (no pins exactos) para que pip use los wheels
+# YA COMPILADOS de tu versión de Python en lugar de compilar desde el código fuente.
+# Se mantiene el bundle liviano para el despliegue serverless en Vercel (free tier):
+# SIN statsmodels; la matemática se implementa a mano con numpy/scipy en su fase.
+
+# --- Fase 0 · esqueleto ---
+Django>=5.1,<6.1
+whitenoise>=6.6
+python-decouple>=3.8
+dj-database-url>=2.2
+
+# gunicorn solo aplica a despliegues Linux (no Windows, no Vercel):
+gunicorn>=22.0; sys_platform != "win32"
+
+# --- Fases siguientes (descomentar al llegar a cada una) ---
+# numpy>=2.1            # Fase 1+  · solvers (AHP, DEMATEL, ANP, difuso)
+# scipy>=1.14          # Fase 2   · optimización del mapa (scipy.optimize.linprog)
+# openpyxl>=3.1        # Fase 5   · exportación a Excel
+# psycopg[binary]>=3.2 # Fase 3   · Postgres para la app `decisiones` (colaboración)

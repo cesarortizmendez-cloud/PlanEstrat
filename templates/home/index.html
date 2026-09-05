@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PlanEstrat · Planificación estratégica colaborativa{% endblock %}
+{% block nav_home %}active{% endblock %}
+{% block topbar %}Inicio{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Dr. César Ortiz Méndez</p>
+  <h1>Planificación estratégica, decidida en equipo</h1>
+  <p class="lede">PlanEstrat acompaña el ciclo completo —del diagnóstico y el mapa estratégico a los planes de acción Lean— y permite que las decisiones multicriterio se construyan entre varios expertos: el facilitador crea una decisión con nombre y clave, y cada participante entrega su evaluación.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="num">{{ activos }}</span><span class="lbl">módulo activo</span></div>
+    <div class="stat"><span class="num">{{ total }}</span><span class="lbl">módulos en el plan</span></div>
+    <div class="stat"><span class="num">6</span><span class="lbl">fases de construcción</span></div>
+  </div>
+</section>
+
+<section class="catalogo">
+  {% regroup modulos by grupo as grupos %}
+  {% for g in grupos %}
+    <h2 class="grupo-tit">{{ g.grouper }}</h2>
+    <div class="mod-grid">
+      {% for m in g.list %}
+        <article class="mod-card {% if m.estado == 'activo' %}on{% else %}off{% endif %} {% if m.codigo == '★' %}star{% endif %}">
+          <div class="mod-top">
+            <span class="mod-cod">{{ m.codigo }}</span>
+            {% if m.estado == 'activo' %}
+              <span class="mod-badge ok">Activo</span>
+            {% else %}
+              <span class="mod-badge soon">{{ m.fase }}</span>
+            {% endif %}
+          </div>
+          <h3>{{ m.nombre }}</h3>
+          <p>{{ m.desc }}</p>
+          {% if m.estado == 'activo' %}
+            <a class="mod-link" href="{% url 'home:index' %}">Abrir</a>
+          {% else %}
+            <span class="mod-link disabled">Próximamente</span>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</section>
+
+<section class="nota-fase">
+  <h2>Estás viendo la Fase 0</h2>
+  <p>Este es el esqueleto desplegable del proyecto: la estructura de carpetas, el sistema de diseño, la navegación y la PWA instalable, listos para GitHub y Vercel. A partir de aquí se escala paso a paso, empezando por el módulo AHP como plantilla de cada método, y luego la capa de decisiones colaborativas que es el diferenciador del sistema.</p>
+</section>
+{% endblock %}

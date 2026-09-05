@@ -1,0 +1,40 @@
+# PlanEstrat · Archivos a excluir del repositorio
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+staticfiles_build/
+media/
+*.log
+
+# Variables de entorno (¡nunca subir secretos!)
+.env
+.env.local
+
+# Vercel
+.vercel/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Tests / coverage
+htmlcov/
+.coverage
+.pytest_cache/

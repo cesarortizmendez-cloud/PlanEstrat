@@ -1,0 +1,105 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}PlanEstrat{% endblock %}</title>
+  <meta name="description" content="PlanEstrat — plataforma de planificación estratégica con decisión multicriterio colaborativa. Dr. César Ortiz Méndez.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="{% url 'manifest' %}">
+  <meta name="theme-color" content="#2c5c86">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="PlanEstrat">
+  <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
+  <link rel="icon" href="{% static 'icons/icon-192.png' %}">
+
+  <!-- Tipografía -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="{% static 'css/planestrat.css' %}">
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{% url 'home:index' %}">PlanEstrat<span class="dot">.</span></a>
+      <div class="brand-sub">Planificación estratégica</div>
+
+      <nav class="side-nav" aria-label="Módulos">
+        <span class="grp">Base</span>
+        <a href="{% url 'home:index' %}" class="{% block nav_home %}{% endblock %}">Inicio</a>
+
+        <span class="grp">Laboratorio multicriterio</span>
+        <span class="soon">AHP <em>Fase 1</em></span>
+        <span class="soon">DEMATEL <em>Fase 2</em></span>
+        <span class="soon">ANP <em>Fase 2</em></span>
+        <span class="soon">Métodos difusos <em>Fase 2</em></span>
+
+        <span class="grp">Diferenciador</span>
+        <span class="soon star">Decisiones colaborativas <em>Fase 3</em></span>
+
+        <span class="grp">Estrategia y ejecución</span>
+        <span class="soon">Mapa BSC · Cartera <em>Fase 4</em></span>
+        <span class="soon">Planes de acción · Lean <em>Fase 4</em></span>
+      </nav>
+
+      <div class="side-foot">v0 · Esqueleto<br>Dr. César Ortiz Méndez</div>
+    </aside>
+
+    <div class="main-col">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Menú" aria-expanded="false">☰</button>
+        <div class="topbar-title">{% block topbar %}Planificación estratégica colaborativa{% endblock %}</div>
+      </header>
+
+      <main id="contenido" class="content">
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="foot">
+        <p>PlanEstrat · Dr. César Ortiz Méndez · <a href="https://cv-cesarortiz.vercel.app">cv-cesarortiz.vercel.app</a>.
+        Construido con Django, JavaScript vanilla y despliegue serverless en Vercel.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Botón flotante de instalación PWA (se muestra solo si el navegador lo permite) -->
+  <button id="pwaInstallBtn" class="pwa-btn" hidden>⬇ Instalar en mi equipo</button>
+  <div id="pwaIosHint" class="pwa-ios" hidden>
+    <button class="pwa-ios-close" id="pwaIosClose" aria-label="Cerrar">×</button>
+    Para instalar en iPhone/iPad: toca <strong>Compartir</strong> y luego <strong>Agregar a pantalla de inicio</strong>.
+  </div>
+
+  <script src="{% static 'js/estudio-store.js' %}"></script>
+  <script src="{% static 'js/pwa-install.js' %}"></script>
+  <script>
+    // Menú lateral en móvil
+    (function () {
+      var btn = document.getElementById('menuBtn');
+      var sb = document.getElementById('sidebar');
+      if (btn && sb) {
+        btn.addEventListener('click', function () {
+          var open = sb.classList.toggle('open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+    })();
+
+    // Registro del service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('{% url "service-worker" %}').catch(function (e) {
+          console.warn('SW no registrado:', e);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
