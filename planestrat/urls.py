@@ -9,6 +9,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('', include('apps.home.urls')),
     path('ahp/', include('apps.ahp.urls')),
+    path('dematel/', include('apps.dematel.urls')),
 
     # --- PWA (servidas en la raíz) ---
     path(

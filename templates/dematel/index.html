@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DEMATEL · PlanEstrat{% endblock %}
+{% block topbar %}DEMATEL · Mapa de influencia causa–efecto{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:72ch}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
+    border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);
+    font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria .cont h4{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--star-ink);margin:16px 0 4px}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 12px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px}
+  label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
+  input[type=text],input[type=number]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink)}
+  input[type=text]{min-width:min(520px,100%)}
+  input[type=number]{width:120px}
+  .hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+  .mtx-wrap{overflow-x:auto}
+  table.mtx{border-collapse:collapse;margin-top:6px}
+  table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:120px}
+  table.mtx th{background:var(--surface-2);font-size:.76rem;font-family:var(--font-mono);color:var(--muted);max-width:140px}
+  table.mtx td.diag{background:var(--surface-2);color:var(--faint);font-family:var(--font-mono)}
+  table.mtx select{font:inherit;font-size:.82rem;border:1px solid var(--line-strong);border-radius:6px;padding:4px;background:var(--surface);color:var(--ink);width:100%}
+  table.mtx caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--muted);margin-bottom:4px}
+  .stats{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 14px}
+  .stat b{font-family:var(--font-mono);font-size:1.05rem;color:var(--ink);display:block}
+  .stat span{font-size:.74rem;color:var(--muted)}
+  .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);
+    border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion strong{color:var(--ink)}
+  table.res{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  table.res td.num{font-family:var(--font-mono);text-align:right}
+  .pill{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 9px;border-radius:999px}
+  .pill.causa{background:var(--lean-soft);color:var(--lean-ink);border:1px solid var(--lean)}
+  .pill.efecto{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent)}
+  .chart-box{margin-top:16px;max-width:680px}
+  .rel-list{margin-top:12px;font-size:.88rem;color:var(--ink-soft)}
+  .rel-list code{background:var(--surface-2);border:1px solid var(--line)}
+  .err{color:var(--crit);font-weight:600}
+  :root{--crit:#b0483c}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">DEMATEL · Mapa de influencia causa–efecto</h1>
+<p class="intro">Evalúa cómo cada factor influye directamente sobre los demás y calcula las influencias totales (directas + indirectas) para separar los factores <strong>causa</strong> (impulsores) de los <strong>efecto</strong> (receptores). Es la base para construir relaciones del mapa estratégico y priorizar sobre qué actuar.</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p><strong>DEMATEL</strong> (Decision Making Trial and Evaluation Laboratory) convierte los juicios sobre influencias directas entre factores en una estructura causal completa, capturando también las influencias <em>indirectas</em> (A influye en B, y B en C, luego A influye en C).</p>
+    <h4>1 · Matriz de influencia directa</h4>
+    <p>Se responde, para cada par ordenado (i → j), cuánto influye directamente el factor <em>i</em> sobre el <em>j</em>, con una escala de 0 a 4 (0 = sin influencia … 4 = influencia muy alta). Es direccional: la influencia de i sobre j puede diferir de la de j sobre i. La diagonal es 0.</p>
+    <h4>2 · Normalización</h4>
+    <p>La matriz <code>A</code> se divide por el mayor total de fila o columna para obtener <code>D</code>, garantizando que las influencias converjan.</p>
+    <h4>3 · Influencia total</h4>
+    <p><code>T = D · (I − D)⁻¹</code>. Esta matriz suma las influencias directas e indirectas de todos los caminos posibles entre factores.</p>
+    <h4>4 · Prominencia y relación</h4>
+    <p>Con <code>r</code> = suma de filas de T (influencia ejercida) y <code>c</code> = suma de columnas (influencia recibida):</p>
+    <p><code>r + c</code> (prominencia) mide la <em>importancia total</em> del factor en el sistema. <code>r − c</code> (relación) define su rol: si es positivo el factor es <strong>causa</strong> (impulsa el sistema); si es negativo es <strong>efecto</strong> (es impulsado).</p>
+    <h4>5 · Diagrama y umbral</h4>
+    <p>El diagrama sitúa cada factor por (r+c, r−c): arriba las causas, abajo los efectos, a la derecha los más importantes. Un umbral sobre T filtra las relaciones significativas para dibujar un mapa legible.</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>1 · Define los factores</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label for="nombres">Factores (separados por coma, entre 2 y 8)</label>
+      <input type="text" id="nombres" value="Liderazgo, Procesos, Personas, Tecnología">
+    </div>
+    <button class="btn btn-secondary" id="btnConstruir">Construir matriz</button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>2 · Influencia directa (fila → columna)</h2>
+  <p class="hint">0 = sin influencia · 1 = baja · 2 = media · 3 = alta · 4 = muy alta</p>
+  <div class="mtx-wrap"><div id="matriz"></div></div>
+  <div class="row" style="margin-top:14px">
+    <div>
+      <label for="umbral">Umbral (opcional, vacío = automático)</label>
+      <input type="number" id="umbral" step="0.01" min="0" placeholder="auto">
+    </div>
+    <button class="btn btn-primary" id="btnCalcular">Calcular influencias</button>
+  </div>
+</div>
+
+<div class="panel" id="resultado" hidden>
+  <h2>3 · Resultados</h2>
+  <div class="stats" id="stats"></div>
+  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
+  <table class="res" id="tablaElem"></table>
+  <div class="chart-box"><canvas id="grafico" height="260"></canvas></div>
+  <div class="rel-list" id="relaciones"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'dematel:solve_api' %}";
+  var chart = null;
+  var ESCALA = [[0,'0 · sin'],[1,'1 · baja'],[2,'2 · media'],[3,'3 · alta'],[4,'4 · muy alta']];
+
+  // Ejemplo por defecto (4 factores)
+  var EJEMPLO = {'0-1':3,'0-2':3,'0-3':4,'1-0':1,'1-2':2,'1-3':1,'2-0':1,'2-1':2,'2-3':2,'3-0':1,'3-1':2,'3-2':1};
+
+  function nombres(){ return document.getElementById('nombres').value.split(',').map(function(s){return s.trim();}).filter(Boolean); }
+
+  function opciones(sel){
+    return ESCALA.map(function(o){ var s = o[0]===sel?' selected':''; return '<option value="'+o[0]+'"'+s+'>'+o[1]+'</option>'; }).join('');
+  }
+
+  function construir(){
+    var nm = nombres();
+    if (nm.length < 2 || nm.length > 8){ alert('Ingresa entre 2 y 8 factores.'); return; }
+    var n = nm.length;
+    var usarEjemplo = (n===4 && nm.join(',').toLowerCase()==='liderazgo,procesos,personas,tecnología');
+    var h = '<table class="mtx"><caption>Cuánto influye la fila sobre la columna</caption><tr><th>de \\ a</th>';
+    nm.forEach(function(c){ h += '<th title="'+c+'">'+c+'</th>'; });
+    h += '</tr>';
+    for (var i=0;i<n;i++){
+      h += '<tr><th title="'+nm[i]+'">'+nm[i]+'</th>';
+      for (var j=0;j<n;j++){
+        if (i===j){ h += '<td class="diag">—</td>'; }
+        else {
+          var pre = usarEjemplo ? (EJEMPLO[i+'-'+j]||0) : 0;
+          h += '<td><select data-i="'+i+'" data-j="'+j+'">'+opciones(pre)+'</select></td>';
+        }
+      }
+      h += '</tr>';
+    }
+    h += '</table>';
+    document.getElementById('matriz').innerHTML = h;
+    document.getElementById('resultado').hidden = true;
+  }
+
+  function matrizCompleta(){
+    var nm = nombres(), n = nm.length, M = [];
+    for (var i=0;i<n;i++){ M.push(new Array(n).fill(0)); }
+    document.querySelectorAll('#matriz select').forEach(function(s){
+      M[parseInt(s.dataset.i,10)][parseInt(s.dataset.j,10)] = parseFloat(s.value);
+    });
+    return { M: M, nombres: nm };
+  }
+
+  function calcular(){
+    var d = matrizCompleta();
+    var u = document.getElementById('umbral').value;
+    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ matriz:d.M, nombres:d.nombres, umbral:u }) })
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+    .then(function(res){ if(!res.ok) throw new Error(res.j.error||'Error de cálculo'); pintar(res.j); })
+    .catch(function(e){
+      var box=document.getElementById('resultado'); box.hidden=false;
+      document.getElementById('stats').innerHTML='<span class="err">'+e.message+'</span>';
+      document.getElementById('interpretacion').hidden=true;
+      document.getElementById('tablaElem').innerHTML=''; document.getElementById('relaciones').innerHTML='';
+    });
+  }
+
+  var f3 = function(x){ return x.toFixed(3); };
+
+  function interpretar(r){
+    var el = r.elementos.slice();
+    var causas = el.filter(function(e){return e.tipo==='causa';}).sort(function(a,b){return b.relacion-a.relacion;});
+    var efectos = el.filter(function(e){return e.tipo==='efecto';}).sort(function(a,b){return a.relacion-b.relacion;});
+    var central = el.slice().sort(function(a,b){return b.prominencia-a.prominencia;})[0];
+    var s = '';
+    s += 'El factor más central del sistema es <strong>'+central.nombre+'</strong> (r+c = '+f3(central.prominencia)+'), el de mayor importancia total. ';
+    if (causas.length){
+      s += 'Los factores <strong>causa</strong> —los que impulsan al resto y sobre los que conviene actuar primero— son '
+        + causas.map(function(e){return e.nombre+' (r−c = +'+f3(e.relacion)+')';}).join(', ') + '. ';
+    } else { s += 'No hay factores netamente causa en este sistema. '; }
+    if (efectos.length){
+      s += 'Los factores <strong>efecto</strong>, que reflejan el resultado de los demás, son '
+        + efectos.map(function(e){return e.nombre;}).join(', ') + '. ';
+    }
+    s += 'Actuar sobre las causas de mayor r−c es lo que más mueve al sistema; los efectos sirven para medir si la estrategia funciona.';
+    return s;
+  }
+
+  function pintar(r){
+    document.getElementById('resultado').hidden = false;
+    document.getElementById('stats').innerHTML =
+      stat(r.n,'factores') + stat(r.s.toFixed(2),'factor norm.') + stat(r.umbral.toFixed(3),'umbral') + stat(r.relaciones.length,'relaciones signif.');
+
+    document.getElementById('interpTexto').innerHTML = interpretar(r);
+    document.getElementById('interpretacion').hidden = false;
+
+    // Tabla por elemento (ordenada por prominencia)
+    var el = r.elementos.slice().sort(function(a,b){return b.prominencia-a.prominencia;});
+    var t = '<tr><th>Factor</th><th>r (ejerce)</th><th>c (recibe)</th><th>r+c</th><th>r−c</th><th>Rol</th></tr>';
+    el.forEach(function(e){
+      t += '<tr><td>'+e.nombre+'</td><td class="num">'+f3(e.r)+'</td><td class="num">'+f3(e.c)+'</td>'
+        + '<td class="num">'+f3(e.prominencia)+'</td><td class="num">'+(e.relacion>=0?'+':'')+f3(e.relacion)+'</td>'
+        + '<td><span class="pill '+e.tipo+'">'+(e.tipo==='causa'?'Causa':'Efecto')+'</span></td></tr>';
+    });
+    document.getElementById('tablaElem').innerHTML = t;
+
+    // Relaciones significativas
+    var rl = r.relaciones.slice().sort(function(a,b){return b.valor-a.valor;});
+    var html = '<strong>Relaciones significativas</strong> (T > umbral): ';
+    html += rl.length ? rl.map(function(x){ return '<code>'+x.nombre_de+' → '+x.nombre_a+' ('+f3(x.valor)+')</code>'; }).join(' ') : 'ninguna sobre el umbral.';
+    document.getElementById('relaciones').innerHTML = html;
+
+    // Diagrama (r+c, r-c) con causas y efectos
+    var css = getComputedStyle(document.body);
+    var cAmber = css.getPropertyValue('--lean').trim() || '#b26a26';
+    var cBlue = css.getPropertyValue('--accent').trim() || '#2c5c86';
+    var causas = r.elementos.filter(function(e){return e.tipo==='causa';}).map(function(e){return {x:e.prominencia,y:e.relacion,name:e.nombre};});
+    var efectos = r.elementos.filter(function(e){return e.tipo==='efecto';}).map(function(e){return {x:e.prominencia,y:e.relacion,name:e.nombre};});
+
+    var etiquetas = {
+      id:'etiquetas',
+      afterDatasetsDraw: function(c){
+        var ctx=c.ctx; ctx.save();
+        ctx.font='12px '+(css.getPropertyValue('--font-body')||'sans-serif');
+        ctx.fillStyle=css.getPropertyValue('--ink').trim()||'#222';
+        c.data.datasets.forEach(function(ds,di){
+          var meta=c.getDatasetMeta(di);
+          meta.data.forEach(function(pt,pi){ ctx.fillText(ds.data[pi].name, pt.x+7, pt.y+4); });
+        });
+        // línea r-c = 0
+        var y0=c.scales.y.getPixelForValue(0);
+        ctx.strokeStyle=css.getPropertyValue('--line-strong').trim()||'#ccc';
+        ctx.setLineDash([4,4]); ctx.beginPath();
+        ctx.moveTo(c.chartArea.left,y0); ctx.lineTo(c.chartArea.right,y0); ctx.stroke();
+        ctx.restore();
+      }
+    };
+
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById('grafico').getContext('2d'), {
+      type:'scatter',
+      data:{ datasets:[
+        {label:'Causa (r−c > 0)', data:causas, backgroundColor:cAmber, pointRadius:6},
+        {label:'Efecto (r−c < 0)', data:efectos, backgroundColor:cBlue, pointRadius:6}
+      ]},
+      options:{ responsive:true,
+        plugins:{ legend:{ position:'top' },
+          tooltip:{ callbacks:{ label:function(ctx){ var d=ctx.raw; return d.name+' (r+c='+d.x.toFixed(2)+', r−c='+d.y.toFixed(2)+')'; } } } },
+        scales:{ x:{ title:{display:true,text:'Prominencia (r + c)'} }, y:{ title:{display:true,text:'Relación (r − c)'} } } },
+      plugins:[etiquetas]
+    });
+  }
+  function stat(v,l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
+
+  document.getElementById('btnConstruir').addEventListener('click', construir);
+  document.getElementById('btnCalcular').addEventListener('click', calcular);
+  construir();
+})();
+</script>
+{% endblock %}

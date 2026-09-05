@@ -21,7 +21,7 @@ MODULOS = [
     },
     {
         'codigo': 'M3', 'slug': 'dematel', 'nombre': 'DEMATEL',
-        'grupo': 'Laboratorio multicriterio', 'estado': 'proximo', 'fase': 'Fase 2',
+        'grupo': 'Laboratorio multicriterio', 'estado': 'activo', 'fase': 'Fase 2', 'url': '/dematel/',
         'desc': 'Influencias directas e indirectas; prominencia y relación causa–efecto.',
     },
     {

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.home',
     'apps.ahp',
+    'apps.dematel',
 ]
 
 # --- Middleware ------------------------------------------------------------
