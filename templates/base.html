@@ -30,7 +30,7 @@
 
   <div class="app">
     <aside class="sidebar" id="sidebar">
-      <a class="brand" href="{% url 'home:index' %}">PlanEstrat<span class="dot">.</span></a>
+      <a class="brand" href="{% url 'home:index' %}"><img class="brand-ico" src="{% static 'icons/icon-192.png' %}" alt="">PlanEstrat<span class="dot">.</span></a>
       <div class="brand-sub">Planificación estratégica</div>
 
       <nav class="side-nav" aria-label="Módulos">
@@ -71,11 +71,22 @@
     </div>
   </div>
 
-  <!-- Botón flotante de instalación PWA (se muestra solo si el navegador lo permite) -->
-  <button id="pwaInstallBtn" class="pwa-btn" hidden>⬇ Instalar en mi equipo</button>
-  <div id="pwaIosHint" class="pwa-ios" hidden>
-    <button class="pwa-ios-close" id="pwaIosClose" aria-label="Cerrar">×</button>
-    Para instalar en iPhone/iPad: toca <strong>Compartir</strong> y luego <strong>Agregar a pantalla de inicio</strong>.
+  <!-- Instalación PWA (tarjeta, mismo formato que IO-Lab) -->
+  <div id="pwa-install-card" class="pwa-install-card" hidden aria-live="polite">
+    <div class="pwa-install-card__icon" aria-hidden="true"><img src="{% static 'icons/icon-192.png' %}" alt=""></div>
+    <div class="pwa-install-card__body">
+      <div class="pwa-install-card__title">Instala PlanEstrat en tu equipo</div>
+      <div class="pwa-install-card__text" id="pwa-install-text">
+        Usa esta plataforma como una app en Android, Windows o iPhone.
+      </div>
+      <div class="pwa-install-card__actions">
+        <button id="pwa-install-btn" class="btn btn-primary btn-sm" type="button">Instalar en mi equipo</button>
+        <button id="pwa-install-close" class="btn btn-secondary btn-sm" type="button" aria-label="Ocultar instalación">Después</button>
+      </div>
+      <div id="pwa-ios-help" class="pwa-install-card__help" hidden>
+        En iPhone/iPad: abre esta página en Safari, toca Compartir y selecciona “Agregar a pantalla de inicio”.
+      </div>
+    </div>
   </div>
 
   <script src="{% static 'js/estudio-store.js' %}"></script>
@@ -92,15 +103,6 @@
         });
       }
     })();
-
-    // Registro del service worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('{% url "service-worker" %}').catch(function (e) {
-          console.warn('SW no registrado:', e);
-        });
-      });
-    }
   </script>
   {% block extra_js %}{% endblock %}
 </body>

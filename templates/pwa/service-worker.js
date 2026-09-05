@@ -1,6 +1,6 @@
 {% load static %}/* PlanEstrat · Service Worker (Fase 0)
    Carcasa offline básica. Se versiona con CACHE para invalidar en cada release. */
-const CACHE = 'planestrat-v0';
+const CACHE = 'planestrat-v1';
 const PRECACHE = [
   '/',
   '{% static "css/planestrat.css" %}',
