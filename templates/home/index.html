@@ -35,7 +35,7 @@
           <h3>{{ m.nombre }}</h3>
           <p>{{ m.desc }}</p>
           {% if m.estado == 'activo' %}
-            <a class="mod-link" href="{% url 'home:index' %}">Abrir</a>
+            <a class="mod-link" href="{{ m.url }}">Abrir</a>
           {% else %}
             <span class="mod-link disabled">Próximamente</span>
           {% endif %}

@@ -54,6 +54,7 @@ if _vercel_url:
 INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.home',
+    'apps.ahp',
 ]
 
 # --- Middleware ------------------------------------------------------------

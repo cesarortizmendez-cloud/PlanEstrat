@@ -14,7 +14,7 @@ dj-database-url>=2.2
 gunicorn>=22.0; sys_platform != "win32"
 
 # --- Fases siguientes (descomentar al llegar a cada una) ---
-# numpy>=2.1            # Fase 1+  · solvers (AHP, DEMATEL, ANP, difuso)
+numpy>=2.1             # solvers (AHP, DEMATEL, ANP, difuso)
 # scipy>=1.14          # Fase 2   · optimización del mapa (scipy.optimize.linprog)
 # openpyxl>=3.1        # Fase 5   · exportación a Excel
 # psycopg[binary]>=3.2 # Fase 3   · Postgres para la app `decisiones` (colaboración)

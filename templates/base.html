@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 
   <link rel="stylesheet" href="{% static 'css/planestrat.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -37,7 +38,7 @@
         <a href="{% url 'home:index' %}" class="{% block nav_home %}{% endblock %}">Inicio</a>
 
         <span class="grp">Laboratorio multicriterio</span>
-        <span class="soon">AHP <em>Fase 1</em></span>
+        <a href="/ahp/">AHP</a>
         <span class="soon">DEMATEL <em>Fase 2</em></span>
         <span class="soon">ANP <em>Fase 2</em></span>
         <span class="soon">Métodos difusos <em>Fase 2</em></span>
@@ -101,5 +102,6 @@
       });
     }
   </script>
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

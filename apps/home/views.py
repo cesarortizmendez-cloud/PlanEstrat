@@ -11,12 +11,12 @@ from django.shortcuts import render
 MODULOS = [
     {
         'codigo': 'M0', 'slug': 'home', 'nombre': 'Inicio / Catálogo',
-        'grupo': 'Base', 'estado': 'activo', 'fase': 'Fase 0',
+        'grupo': 'Base', 'estado': 'activo', 'fase': 'Fase 0', 'url': '/',
         'desc': 'Portada, navegación y roadmap del sistema.',
     },
     {
         'codigo': 'M3', 'slug': 'ahp', 'nombre': 'AHP',
-        'grupo': 'Laboratorio multicriterio', 'estado': 'proximo', 'fase': 'Fase 1',
+        'grupo': 'Laboratorio multicriterio', 'estado': 'activo', 'fase': 'Fase 1', 'url': '/ahp/',
         'desc': 'Proceso Analítico Jerárquico: prioridades, λmáx y consistencia (CR).',
     },
     {
