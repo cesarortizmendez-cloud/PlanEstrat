@@ -34,6 +34,9 @@ if '.vercel.app' not in ALLOWED_HOSTS:
 _vercel_url = config('VERCEL_URL', default='')
 if _vercel_url:
     ALLOWED_HOSTS.append(_vercel_url)
+# Fallback definitivo: aceptar cualquier host (evita 400 por dominio en Vercel).
+if '*' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('*')
 
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
