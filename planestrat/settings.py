@@ -27,11 +27,23 @@ ALLOWED_HOSTS = config(
     default='127.0.0.1,localhost,.vercel.app',
     cast=Csv(),
 )
+# A prueba de deploy: cualquier dominio *.vercel.app funciona aunque ALLOWED_HOSTS
+# se haya dejado con un placeholder. Vercel expone el dominio real en VERCEL_URL.
+if '.vercel.app' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.vercel.app')
+_vercel_url = config('VERCEL_URL', default='')
+if _vercel_url:
+    ALLOWED_HOSTS.append(_vercel_url)
+
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
     default='https://*.vercel.app',
     cast=Csv(),
 )
+if 'https://*.vercel.app' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://*.vercel.app')
+if _vercel_url:
+    CSRF_TRUSTED_ORIGINS.append('https://' + _vercel_url)
 
 # --- Apps ------------------------------------------------------------------
 # Fase 0: solo staticfiles + la app de catálogo. Se irán sumando las apps de
@@ -89,18 +101,10 @@ USE_TZ = True
 
 # --- Estáticos (WhiteNoise) ------------------------------------------------
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# En Vercel los estáticos se sirven como assets del builder `static-build` (ver vercel.json),
+# recolectados por build_files.sh en staticfiles_build/static. Mismo patrón que IO-Lab / Pronostat.
+STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
-    # Comprime pero NO renombra con hash: las rutas /static/... quedan estables,
-    # lo que simplifica el cacheo del service worker y las rutas de los iconos PWA.
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
-    },
-}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

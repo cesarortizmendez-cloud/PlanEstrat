@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "python manage.py collectstatic --noinput --clear",
   "builds": [
-    { "src": "planestrat/wsgi.py", "use": "@vercel/python" }
+    { "src": "planestrat/wsgi.py", "use": "@vercel/python" },
+    { "src": "build_files.sh", "use": "@vercel/static-build", "config": { "distDir": "staticfiles_build" } }
   ],
   "routes": [
+    { "src": "/static/(.*)", "dest": "/staticfiles_build/static/$1" },
     { "src": "/(.*)", "dest": "planestrat/wsgi.py" }
   ]
 }
