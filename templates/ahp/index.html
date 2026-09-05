@@ -8,24 +8,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   .ahp-h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
-  .teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
-    border-radius:0 var(--radius) var(--radius) 0;padding:16px 20px;margin:16px 0 26px;color:var(--ink-soft)}
-  .teoria h3{font-family:var(--font-head);color:var(--star-ink);margin:0 0 8px;font-size:1.05rem}
-  .teoria code{background:var(--surface);border:1px solid var(--line)}
-  .teoria .esc{overflow-x:auto;margin-top:10px}
-  .teoria table{border-collapse:collapse;font-size:.82rem;min-width:520px}
-  .teoria th,.teoria td{border:1px solid var(--line);padding:4px 9px;text-align:left}
-  .teoria th{background:var(--surface)}
+  .ahp-intro{color:var(--ink-soft);max-width:72ch}
+
+  /* Lengüeta desplegable "Cómo funciona" */
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
+    border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);
+    font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria .cont h4{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--star-ink);margin:16px 0 4px}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
+  details.teoria .esc{overflow-x:auto;margin-top:8px}
+  details.teoria table{border-collapse:collapse;font-size:.82rem;min-width:520px}
+  details.teoria th,details.teoria td{border:1px solid var(--line);padding:4px 9px;text-align:left}
+  details.teoria th{background:var(--surface)}
+
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
   .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 12px}
   .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px}
   label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
   input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;
     background:var(--surface);color:var(--ink);min-width:min(520px,100%)}
-  .btn{font:inherit;font-weight:600;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;
-    background:var(--accent);color:#fff}
-  .btn:hover{filter:brightness(1.06)}
-  .btn.sec{background:var(--surface);color:var(--accent-ink);border:1px solid var(--line-strong)}
   .mtx-wrap{overflow-x:auto}
   table.mtx{border-collapse:collapse;margin-top:6px}
   table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:74px}
@@ -41,6 +48,11 @@
   .cr-badge{display:inline-block;font-weight:600;padding:6px 12px;border-radius:999px;font-size:.86rem}
   .cr-ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
   .cr-bad{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit);border:1px solid var(--crit)}
+  .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);
+    border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion strong{color:var(--ink)}
   table.res{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
   table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
   table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
@@ -55,25 +67,46 @@
 
 {% block content %}
 <h1 class="ahp-h1">AHP · Proceso Analítico Jerárquico</h1>
-<p style="color:var(--ink-soft);max-width:70ch">Compara criterios por pares con la escala de Saaty para obtener sus prioridades (pesos) y verificar la consistencia de los juicios. Es la base para ponderar objetivos, criterios y alternativas en el resto del sistema.</p>
+<p class="ahp-intro">Compara criterios por pares con la escala de Saaty para obtener sus prioridades (pesos) y verificar la consistencia de los juicios. Es la base para ponderar objetivos, criterios y alternativas en el resto del sistema.</p>
 
-<div class="teoria">
-  <h3>Cómo funciona</h3>
-  <p style="margin:.2rem 0">Se construye una matriz de comparación por pares donde cada celda <code>a<sub>ij</sub></code> indica cuántas veces el criterio <em>i</em> es más importante que el <em>j</em> (la celda inferior es su recíproco). Las prioridades se obtienen por la media geométrica de cada fila, normalizada. La consistencia se mide con:</p>
-  <p style="margin:.4rem 0"><code>CI = (λ<sub>máx</sub> − n) / (n − 1)</code> &nbsp;·&nbsp; <code>CR = CI / RI</code>. Se acepta si <code>CR ≤ 0,10</code>.</p>
-  <div class="esc">
-    <table>
-      <tr><th>Escala de Saaty</th><th>Significado</th></tr>
-      <tr><td>1</td><td>Igual importancia</td></tr>
-      <tr><td>3</td><td>Moderadamente más importante</td></tr>
-      <tr><td>5</td><td>Fuertemente más importante</td></tr>
-      <tr><td>7</td><td>Muy fuertemente más importante</td></tr>
-      <tr><td>9</td><td>Extremadamente más importante</td></tr>
-      <tr><td>2, 4, 6, 8</td><td>Valores intermedios</td></tr>
-      <tr><td>1/3, 1/5, …</td><td>Recíprocos (menos importante)</td></tr>
-    </table>
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p>El <strong>Proceso Analítico Jerárquico (AHP)</strong>, desarrollado por Thomas Saaty, convierte juicios subjetivos en prioridades numéricas. En lugar de asignar pesos directamente —algo difícil y poco confiable cuando hay muchos criterios— se compara de a dos, que es una tarea cognitivamente más simple y precisa.</p>
+
+    <h4>1 · Definir los criterios</h4>
+    <p>Se listan los criterios (o los objetivos/alternativas) que se quieren ponderar. Con <em>n</em> criterios habrá <em>n·(n−1)/2</em> comparaciones independientes (el triángulo superior de la matriz).</p>
+
+    <h4>2 · Comparar por pares con la escala de Saaty</h4>
+    <p>Para cada par (i, j) se responde <em>¿cuánto más importante es i que j?</em> usando una escala de 1 a 9. La celda inferior es siempre el recíproco de la superior, y la diagonal vale 1.</p>
+    <div class="esc">
+      <table>
+        <tr><th>Valor</th><th>Significado</th></tr>
+        <tr><td>1</td><td>Igual importancia</td></tr>
+        <tr><td>3</td><td>Moderadamente más importante</td></tr>
+        <tr><td>5</td><td>Fuertemente más importante</td></tr>
+        <tr><td>7</td><td>Muy fuertemente más importante</td></tr>
+        <tr><td>9</td><td>Extremadamente más importante</td></tr>
+        <tr><td>2, 4, 6, 8</td><td>Valores intermedios</td></tr>
+        <tr><td>1/3, 1/5, …</td><td>Recíprocos: i es menos importante que j</td></tr>
+      </table>
+    </div>
+
+    <h4>3 · Calcular las prioridades</h4>
+    <p>El peso de cada criterio se obtiene por la <strong>media geométrica de su fila</strong> en la matriz, normalizada para que los pesos sumen 1 (100%). Este método aproxima el vector propio principal de la matriz y es estable y fácil de reproducir.</p>
+
+    <h4>4 · Verificar la consistencia</h4>
+    <p>Como los juicios humanos pueden contradecirse (si A&gt;B y B&gt;C, debería cumplirse A&gt;C en la proporción correcta), AHP mide cuán coherentes son. Se calcula el mayor valor propio <code>λ<sub>máx</sub></code> y con él:</p>
+    <p><code>CI = (λ<sub>máx</sub> − n) / (n − 1)</code> &nbsp;·&nbsp; <code>CR = CI / RI</code></p>
+    <p>donde <code>RI</code> es el índice aleatorio de Saaty (depende de <em>n</em>). Se aceptan los juicios cuando <code>CR ≤ 0,10</code>; si es mayor, hay contradicciones y conviene revisar las comparaciones.</p>
+
+    <h4>5 · Grupo de expertos</h4>
+    <p>Cuando varias personas evalúan, sus matrices se combinan por media geométrica elemento a elemento antes de calcular las prioridades. Esta es la base de la decisión colaborativa que PlanEstrat incorporará como módulo aparte.</p>
+
+    <h4>Cómo leer el resultado</h4>
+    <p>Los pesos indican la importancia relativa de cada criterio: a mayor peso, mayor influencia en la decisión. El CR dice si esos pesos son confiables. El gráfico y la tabla ordenan los criterios de mayor a menor prioridad, y el párrafo de interpretación resume qué significan.</p>
   </div>
-</div>
+</details>
 
 <div class="panel">
   <h2>1 · Define los criterios</h2>
@@ -82,20 +115,21 @@
       <label for="nombres">Criterios (separados por coma, entre 2 y 9)</label>
       <input type="text" id="nombres" value="Costo, Calidad, Plazo, Riesgo">
     </div>
-    <button class="btn sec" id="btnConstruir">Construir matriz</button>
+    <button class="btn btn-secondary" id="btnConstruir">Construir matriz</button>
   </div>
 </div>
 
 <div class="panel">
   <h2>2 · Compara por pares</h2>
   <div class="mtx-wrap"><div id="matriz"></div></div>
-  <div style="margin-top:14px"><button class="btn" id="btnCalcular">Calcular prioridades</button></div>
+  <div style="margin-top:14px"><button class="btn btn-primary" id="btnCalcular">Calcular prioridades</button></div>
 </div>
 
 <div class="panel" id="resultado" hidden>
   <h2>3 · Resultados</h2>
   <div id="crBadge"></div>
   <div class="stats" id="stats"></div>
+  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
   <table class="res" id="tablaPesos"></table>
   <div class="chart-box"><canvas id="grafico" height="220"></canvas></div>
 </div>
@@ -108,155 +142,142 @@
   var API = "{% url 'ahp:solve_api' %}";
   var chart = null;
 
-  // Opciones de la escala de Saaty (9 .. 1 .. 1/9)
   function opciones(sel) {
-    var out = '';
-    var vals = [9,8,7,6,5,4,3,2];
-    vals.forEach(function (k) { out += opt(k, String(k), sel); });
+    var out = '', vals = [9,8,7,6,5,4,3,2];
+    vals.forEach(function (k){ out += opt(k, String(k), sel); });
     out += opt(1, '1 (igual)', sel);
-    vals.slice().reverse().forEach(function (k) { out += opt(1/k, '1/'+k, sel); });
+    vals.slice().reverse().forEach(function (k){ out += opt(1/k, '1/'+k, sel); });
     return out;
   }
-  function opt(v, label, sel) {
-    var s = Math.abs(v - sel) < 1e-9 ? ' selected' : '';
-    return '<option value="'+v+'"'+s+'>'+label+'</option>';
-  }
-  function fmtRecip(v) {
-    if (Math.abs(v - 1) < 1e-9) return '1';
-    if (v >= 1) return (Math.round(v*100)/100).toString();
-    return '1/' + Math.round(1/v);
-  }
+  function opt(v, label, sel){ var s = Math.abs(v-sel)<1e-9?' selected':''; return '<option value="'+v+'"'+s+'>'+label+'</option>'; }
+  function fmtRecip(v){ if (Math.abs(v-1)<1e-9) return '1'; if (v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
 
-  // Ejemplo por defecto (triángulo superior) para 4 criterios
   var EJEMPLO = { '0-1':2, '0-2':3, '0-3':5, '1-2':2, '1-3':3, '2-3':2 };
 
-  function nombres() {
-    return document.getElementById('nombres').value
-      .split(',').map(function (s){return s.trim();}).filter(Boolean);
+  function nombres(){
+    return document.getElementById('nombres').value.split(',').map(function (s){return s.trim();}).filter(Boolean);
   }
 
-  function construir() {
+  function construir(){
     var nm = nombres();
-    if (nm.length < 2 || nm.length > 9) {
-      alert('Ingresa entre 2 y 9 criterios.');
-      return;
-    }
+    if (nm.length < 2 || nm.length > 9){ alert('Ingresa entre 2 y 9 criterios.'); return; }
     var n = nm.length;
-    var usarEjemplo = (n === 4 &&
-      nm.join(',').toLowerCase() === 'costo,calidad,plazo,riesgo');
+    var usarEjemplo = (n === 4 && nm.join(',').toLowerCase() === 'costo,calidad,plazo,riesgo');
     var h = '<table class="mtx"><tr><th></th>';
     nm.forEach(function (c){ h += '<th title="'+c+'">'+c+'</th>'; });
     h += '</tr>';
-    for (var i = 0; i < n; i++) {
+    for (var i=0;i<n;i++){
       h += '<tr><th title="'+nm[i]+'">'+nm[i]+'</th>';
-      for (var j = 0; j < n; j++) {
-        if (i === j) {
-          h += '<td class="diag">1</td>';
-        } else if (i < j) {
-          var pre = usarEjemplo ? (EJEMPLO[i+'-'+j] || 1) : 1;
-          h += '<td><select data-i="'+i+'" data-j="'+j+'" onchange="__ahpSync('+i+','+j+')">'
-             + opciones(pre) + '</select></td>';
-        } else {
-          h += '<td class="low" id="low-'+i+'-'+j+'">'+ '—' +'</td>';
-        }
+      for (var j=0;j<n;j++){
+        if (i===j){ h += '<td class="diag">1</td>'; }
+        else if (i<j){
+          var pre = usarEjemplo ? (EJEMPLO[i+'-'+j]||1) : 1;
+          h += '<td><select data-i="'+i+'" data-j="'+j+'" onchange="__ahpSync('+i+','+j+')">'+opciones(pre)+'</select></td>';
+        } else { h += '<td class="low" id="low-'+i+'-'+j+'">—</td>'; }
       }
       h += '</tr>';
     }
     h += '</table>';
     document.getElementById('matriz').innerHTML = h;
-    // inicializa recíprocos
-    document.querySelectorAll('#matriz select').forEach(function (s) {
-      __ahpSync(parseInt(s.dataset.i,10), parseInt(s.dataset.j,10));
-    });
+    document.querySelectorAll('#matriz select').forEach(function (s){ __ahpSync(parseInt(s.dataset.i,10), parseInt(s.dataset.j,10)); });
     document.getElementById('resultado').hidden = true;
   }
 
-  // Actualiza la celda inferior (recíproca) al cambiar la superior
-  window.__ahpSync = function (i, j) {
+  window.__ahpSync = function (i,j){
     var sel = document.querySelector('#matriz select[data-i="'+i+'"][data-j="'+j+'"]');
     var low = document.getElementById('low-'+j+'-'+i);
-    if (sel && low) low.textContent = fmtRecip(1 / parseFloat(sel.value));
+    if (sel && low) low.textContent = fmtRecip(1/parseFloat(sel.value));
   };
 
-  function matrizCompleta() {
-    var nm = nombres();
-    var n = nm.length;
-    var M = [];
-    for (var i = 0; i < n; i++) { M.push(new Array(n).fill(1)); }
-    document.querySelectorAll('#matriz select').forEach(function (s) {
-      var i = parseInt(s.dataset.i,10), j = parseInt(s.dataset.j,10);
-      var v = parseFloat(s.value);
-      M[i][j] = v; M[j][i] = 1 / v;
+  function matrizCompleta(){
+    var nm = nombres(), n = nm.length, M = [];
+    for (var i=0;i<n;i++){ M.push(new Array(n).fill(1)); }
+    document.querySelectorAll('#matriz select').forEach(function (s){
+      var i = parseInt(s.dataset.i,10), j = parseInt(s.dataset.j,10), v = parseFloat(s.value);
+      M[i][j] = v; M[j][i] = 1/v;
     });
     return { M: M, nombres: nm };
   }
 
-  function calcular() {
+  function calcular(){
     var d = matrizCompleta();
-    fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ matriz: d.M, nombres: d.nombres })
-    })
+    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ matriz:d.M, nombres:d.nombres }) })
     .then(function (r){ return r.json().then(function (j){ return {ok:r.ok, j:j}; }); })
-    .then(function (res){
-      if (!res.ok) { throw new Error(res.j.error || 'Error de cálculo'); }
-      pintar(res.j);
-    })
+    .then(function (res){ if (!res.ok) throw new Error(res.j.error || 'Error de cálculo'); pintar(res.j); })
     .catch(function (e){
-      var box = document.getElementById('resultado');
-      box.hidden = false;
+      var box = document.getElementById('resultado'); box.hidden = false;
       document.getElementById('crBadge').innerHTML = '<span class="err">'+e.message+'</span>';
       document.getElementById('stats').innerHTML = '';
+      document.getElementById('interpretacion').hidden = true;
       document.getElementById('tablaPesos').innerHTML = '';
     });
   }
 
-  function pintar(r) {
-    document.getElementById('resultado').hidden = false;
-    var pct = function (x){ return (x*100).toFixed(1) + '%'; };
+  var pct = function (x){ return (x*100).toFixed(1)+'%'; };
 
-    // Badge de consistencia
-    var badge = r.consistente
+  // Genera un párrafo interpretando los resultados
+  function interpretar(r){
+    var rk = r.ranking, top = rk[0], last = rk[rk.length-1], s = '';
+    s += 'El criterio de mayor prioridad es <strong>'+top.nombre+'</strong>, con un peso de '+pct(top.peso)+'';
+    if (rk.length > 2){
+      s += ', seguido de '+rk[1].nombre+' ('+pct(rk[1].peso)+') y '+rk[2].nombre+' ('+pct(rk[2].peso)+'). ';
+    } else if (rk.length === 2){
+      s += ', frente a '+rk[1].nombre+' ('+pct(rk[1].peso)+'). ';
+    } else { s += '. '; }
+    if (rk.length > 1){ s += 'El criterio menos determinante es '+last.nombre+' ('+pct(last.peso)+'). '; }
+    if (top.peso >= 0.5){
+      s += 'Dado que '+top.nombre+' concentra más de la mitad del peso total, domina claramente la decisión. ';
+    } else if (rk.length > 1 && (top.peso - rk[1].peso) < 0.05){
+      s += 'Los criterios de cabeza tienen pesos muy parecidos, así que la decisión no depende de uno solo, sino de su equilibrio. ';
+    }
+    if (r.consistente){
+      s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') es menor o igual que 0,10: los juicios son coherentes y estas prioridades pueden usarse con confianza.';
+    } else {
+      s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') supera el umbral de 0,10, lo que revela contradicciones entre los juicios; conviene revisar las comparaciones por pares antes de usar estos pesos.';
+    }
+    return s;
+  }
+
+  function pintar(r){
+    document.getElementById('resultado').hidden = false;
+    document.getElementById('crBadge').innerHTML = r.consistente
       ? '<span class="cr-badge cr-ok">Consistente · CR = '+r.CR.toFixed(4)+'</span>'
       : '<span class="cr-badge cr-bad">Inconsistente · CR = '+r.CR.toFixed(4)+' (revisa los juicios)</span>';
-    document.getElementById('crBadge').innerHTML = badge;
 
-    // Estadísticos
     document.getElementById('stats').innerHTML =
-      stat(r.lambda_max.toFixed(4), 'λ máx') +
-      stat(r.CI.toFixed(4), 'CI') +
-      stat(r.RI.toFixed(2), 'RI (n='+r.n+')') +
-      stat(r.CR.toFixed(4), 'CR');
+      stat(r.lambda_max.toFixed(4),'λ máx') + stat(r.CI.toFixed(4),'CI') +
+      stat(r.RI.toFixed(2),'RI (n='+r.n+')') + stat(r.CR.toFixed(4),'CR');
 
-    // Tabla de prioridades (ranking)
+    // Párrafo de interpretación
+    document.getElementById('interpTexto').innerHTML = interpretar(r);
+    document.getElementById('interpretacion').hidden = false;
+
     var t = '<tr><th>#</th><th>Criterio</th><th>Peso</th><th style="width:40%">Prioridad</th></tr>';
-    r.ranking.forEach(function (row, k) {
+    r.ranking.forEach(function (row,k){
       t += '<tr><td class="num">'+(k+1)+'</td><td>'+row.nombre+'</td>'
-         + '<td class="num">'+pct(row.peso)+'</td>'
-         + '<td><span class="bar" style="width:'+(row.peso*100)+'%"></span></td></tr>';
+        + '<td class="num">'+pct(row.peso)+'</td>'
+        + '<td><span class="bar" style="width:'+(row.peso*100)+'%"></span></td></tr>';
     });
     document.getElementById('tablaPesos').innerHTML = t;
 
-    // Gráfico
     var labels = r.ranking.map(function (x){ return x.nombre; });
     var data = r.ranking.map(function (x){ return +(x.peso*100).toFixed(2); });
     if (chart) chart.destroy();
-    var ctx = document.getElementById('grafico').getContext('2d');
     var css = getComputedStyle(document.body);
-    chart = new Chart(ctx, {
-      type: 'bar',
-      data: { labels: labels, datasets: [{ label: 'Peso (%)', data: data,
+    chart = new Chart(document.getElementById('grafico').getContext('2d'), {
+      type:'bar',
+      data:{ labels:labels, datasets:[{ label:'Peso (%)', data:data,
         backgroundColor: css.getPropertyValue('--accent').trim() || '#2c5c86' }] },
-      options: { responsive: true, plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, ticks: { callback: function (v){ return v+'%'; } } } } }
+      options:{ responsive:true, plugins:{ legend:{ display:false } },
+        scales:{ y:{ beginAtZero:true, ticks:{ callback:function (v){ return v+'%'; } } } } }
     });
   }
-  function stat(v, l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
+  function stat(v,l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
 
   document.getElementById('btnConstruir').addEventListener('click', construir);
   document.getElementById('btnCalcular').addEventListener('click', calcular);
-  construir(); // arranca con el ejemplo por defecto
+  construir();
 })();
 </script>
 {% endblock %}
