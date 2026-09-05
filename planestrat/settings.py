@@ -104,10 +104,16 @@ USE_TZ = True
 
 # --- Estáticos (WhiteNoise) ------------------------------------------------
 STATIC_URL = '/static/'
-# En Vercel los estáticos se sirven como assets del builder `static-build` (ver vercel.json),
-# recolectados por build_files.sh en staticfiles_build/static. Mismo patrón que IO-Lab / Pronostat.
-STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
