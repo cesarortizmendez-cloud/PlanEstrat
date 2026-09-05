@@ -115,6 +115,12 @@ STORAGES = {
     },
 }
 
+# En Vercel (serverless) el collectstatic no queda incluido en la función, así que
+# WhiteNoise sirve los estáticos directamente desde los finders (carpeta static/),
+# que sí va en el bundle. Evita el 404 en /static/ sin depender de collectstatic.
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Seguridad adicional en producción
