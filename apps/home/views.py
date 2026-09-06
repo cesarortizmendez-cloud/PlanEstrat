@@ -15,9 +15,9 @@ MODULOS = [
         'desc': 'Proceso Analítico Jerárquico: prioridades, λmáx y consistencia (CR).',
     },
     {
-        'codigo': 'M3', 'slug': 'dematel', 'nombre': 'DEMATEL',
-        'grupo': 'Laboratorio multicriterio', 'estado': 'activo', 'fase': 'Fase 2', 'url': '/dematel/',
-        'desc': 'Influencias directas e indirectas; prominencia y relación causa–efecto.',
+        'codigo': 'M3', 'slug': 'dematel', 'nombre': 'Priorización de proyectos (DEMATEL)',
+        'grupo': 'Evaluación estratégica de proyectos', 'estado': 'activo', 'fase': 'Fase 2', 'url': '/dematel/',
+        'desc': 'Ordena los proyectos por su influencia total sobre la perspectiva Financiera del mapa (método Quezada et al., 2022).',
     },
     {
         'codigo': 'M3', 'slug': 'anp', 'nombre': 'ANP',
@@ -50,9 +50,9 @@ MODULOS = [
         'desc': 'Misión, visión, FODA y factores críticos de éxito.',
     },
     {
-        'codigo': 'M2', 'slug': 'bsc', 'nombre': 'BSC y mapa estratégico',
-        'grupo': 'Estrategia', 'estado': 'activo', 'fase': 'Fase 4', 'url': '/bsc/',
-        'desc': 'Perspectivas, objetivos y relaciones causa–efecto.',
+        'codigo': 'M2', 'slug': 'bsc', 'nombre': 'Mapa estratégico (BSC)',
+        'grupo': 'Evaluación estratégica de proyectos', 'estado': 'activo', 'fase': 'Fase 4', 'url': '/bsc/',
+        'desc': 'Fases, objetivos por perspectiva, planes de acción, KPIs y relaciones causa–efecto.',
     },
     {
         'codigo': 'M6', 'slug': 'situacional', 'nombre': 'Conciencia situacional',
