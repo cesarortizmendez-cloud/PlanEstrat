@@ -56,7 +56,7 @@ MODULOS = [
     },
     {
         'codigo': 'M2', 'slug': 'bsc', 'nombre': 'BSC y mapa estratégico',
-        'grupo': 'Estrategia', 'estado': 'proximo', 'fase': 'Fase 4',
+        'grupo': 'Estrategia', 'estado': 'activo', 'fase': 'Fase 4', 'url': '/bsc/',
         'desc': 'Perspectivas, objetivos y relaciones causa–efecto.',
     },
     {

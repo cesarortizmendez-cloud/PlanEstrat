@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'apps.ahp',
     'apps.dematel',
     'apps.anp',
+    'apps.bsc',
 ]
 
 # --- Middleware ------------------------------------------------------------
