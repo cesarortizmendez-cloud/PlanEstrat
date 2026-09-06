@@ -6,79 +6,113 @@
 
 {% block extra_head %}
 <style>
-  .h1{font-family:var(--font-head);font-weight:700;font-size:1.7rem;letter-spacing:-.01em;margin:0 0 4px}
-  .meta{color:var(--muted);font-size:.86rem;margin:0 0 16px}
-  .pill{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 10px;border-radius:999px;margin-left:6px}
-  .pill.abierta{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
-  .pill.cerrada{background:var(--surface-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.7rem;margin:0 0 4px}
+  .meta{color:var(--muted);font-size:.86rem;margin:0 0 14px}
+  .meta .codigo{font-family:var(--font-mono);font-weight:700;letter-spacing:.1em;color:var(--ink)}
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
-  .panel h2{font-family:var(--font-head);font-size:1.16rem;margin:0 0 10px}
-  table.res{border-collapse:collapse;width:100%;font-size:.9rem}
-  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
-  table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  .panel h2{font-family:var(--font-head);font-size:1.16rem;margin:0 0 8px}
+  .mini-lbl{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:.8rem;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--ink-soft)}
+  .chip.alt{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:8px}
+  th,td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
   td.num{font-family:var(--font-mono);text-align:right}
-  .cr.ok{color:var(--good);font-weight:600} .cr.no{color:var(--crit);font-weight:600}
-  .bar{height:8px;border-radius:4px;background:var(--accent);display:inline-block;vertical-align:middle}
-  .crit{margin-top:8px;font-size:.86rem;color:var(--ink-soft)}
-  .empty{color:var(--muted);font-size:.9rem}
-  .btn-cerrar{background:var(--crit);color:#fff;border:none;border-radius:8px;font:inherit;font-weight:600;padding:9px 16px;cursor:pointer}
+  tr.win td{background:var(--accent-soft);font-weight:600}
+  .bar{height:9px;border-radius:5px;background:var(--accent);display:inline-block;vertical-align:middle}
+  .winner{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border:1.5px solid var(--accent);border-radius:14px;padding:22px 24px;text-align:center;margin-bottom:8px}
+  .winner .cap{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+  .winner .name{font-family:var(--font-head);font-weight:700;font-size:2rem;color:var(--ink);margin:6px 0 2px}
+  .winner .obj{font-size:.86rem;color:var(--muted)}
+  .cr{display:inline-block;font-size:.74rem;font-weight:600;padding:3px 10px;border-radius:999px;margin-top:8px}
+  .cr.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
+  .cr.no{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit);border:1px solid var(--crit)}
+  .estado{display:inline-block;font-size:.74rem;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-soft)}
+  .empty{color:var(--muted);font-size:.9rem;padding:10px 0}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
   :root{--crit:#b0483c;--good:#3f7a52}
   @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 class="h1">{{ d.nombre }}
-  {% if d.estado == 'abierta' %}<span class="pill abierta">Abierta</span>{% else %}<span class="pill cerrada">Cerrada</span>{% endif %}
-</h1>
-<p class="meta">Método AHP · privacidad: {{ d.get_privacidad_display }} · {{ n_parts }} participación{{ n_parts|pluralize:"es" }} · criterios: {% for c in d.criterios %}{{ c }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+<h1 class="h1">{{ d.nombre }}</h1>
+<p class="meta">Código <span class="codigo">{{ d.codigo }}</span> · Método {{ d.metodo|upper }} · {{ n_parts }} participante{{ n_parts|pluralize }} ·
+  <span class="estado">{{ d.get_estado_display }}</span>{% if d.objetivo %} · Objetivo: {{ d.objetivo }}{% endif %}</p>
 
 <div class="panel">
-  <h2>Prioridades del grupo</h2>
+  <h2>Definición</h2>
+  <div class="mini-lbl">Criterios</div>
+  <div class="chips">{% for c in d.criterios %}<span class="chip">{{ c }}</span>{% endfor %}</div>
+  <div class="mini-lbl">Alternativas</div>
+  <div class="chips">{% for a in d.alternativas %}<span class="chip alt">{{ a }}</span>{% endfor %}</div>
+</div>
+
+<div class="panel">
+  <h2>Decisión del grupo</h2>
   {% if resultado %}
-    <table class="res">
-      <tr><th>#</th><th>Criterio</th><th>Peso</th><th style="width:40%"></th></tr>
-      {% for item in resultado.ranking %}
-      <tr>
-        <td class="num">{{ forloop.counter }}</td>
-        <td>{{ item.nombre }}</td>
-        <td class="num">{{ item.pct }}%</td>
-        <td><span class="bar" style="width:{{ item.pct }}%"></span></td>
-      </tr>
+    <div class="winner">
+      <div class="cap">La selección del grupo es</div>
+      <div class="name">{{ resultado.seleccionado }}</div>
+      {% if d.objetivo %}<div class="obj">{{ d.objetivo }}</div>{% endif %}
+    </div>
+    {% if resultado.CR is not None %}
+      <div class="cr {% if resultado.consistente %}ok{% else %}no{% endif %}">Criterios agregados · CR = {{ resultado.CR|floatformat:3 }}{% if not resultado.consistente %} · revisar juicios{% endif %}</div>
+    {% endif %}
+    <div class="mini-lbl" style="margin-top:14px">Ranking agregado de alternativas</div>
+    <table>
+      <tr><th>#</th><th>Alternativa</th><th>Puntaje</th><th style="width:40%"></th></tr>
+      {% for x in resultado.ranking %}
+        <tr class="{% if forloop.first %}win{% endif %}"><td class="num">{{ forloop.counter }}</td><td>{{ x.nombre }}{% if forloop.first %} ✔{% endif %}</td>
+          <td class="num">{{ x.pct }}%</td><td><span class="bar" style="width:{{ x.pct }}%;max-width:100%"></span></td></tr>
       {% endfor %}
     </table>
-    <p class="crit">Consistencia del agregado: <span class="cr {% if resultado.consistente %}ok{% else %}no{% endif %}">CR = {{ resultado.CR|floatformat:4 }}</span> {% if resultado.consistente %}(consistente){% else %}(revisar juicios){% endif %}</p>
-  {% else %}
-    <p class="empty">Aún no hay participaciones para agregar.</p>
-  {% endif %}
-</div>
-
-<div class="panel">
-  <h2>Participaciones</h2>
-  {% if parts %}
-    <table class="res">
-      <tr><th>Participante</th><th>Consistencia (CR)</th><th>Enviado</th></tr>
-      {% for p in parts %}
-      <tr>
-        <td>{{ p.nombre }}</td>
-        <td><span class="cr {% if p.consistente %}ok{% else %}no{% endif %}">{{ p.cr|floatformat:3 }}</span></td>
-        <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
-      </tr>
+    <div class="mini-lbl" style="margin-top:16px">Pesos de los criterios (grupo)</div>
+    <table>
+      <tr><th>Criterio</th><th>Peso</th><th style="width:40%"></th></tr>
+      {% for w in resultado.pesos %}
+        <tr><td>{{ w.nombre }}</td><td class="num">{{ w.pct }}%</td><td><span class="bar" style="width:{{ w.pct }}%;max-width:100%;background:var(--star)"></span></td></tr>
       {% endfor %}
     </table>
   {% else %}
-    <p class="empty">Nadie ha respondido todavía. Comparte el nombre y la clave con los participantes.</p>
+    <p class="empty">Aún no hay evaluaciones. Comparte el código <b>{{ d.codigo }}</b> y la clave para que el equipo evalúe.</p>
   {% endif %}
-  <p class="crit">Recarga esta página para actualizar a medida que llegan las evaluaciones.</p>
 </div>
 
-{% if d.estado == 'abierta' %}
+{% if votos %}
 <div class="panel">
-  <h2>Cerrar la decisión</h2>
-  <p class="empty" style="margin-bottom:10px">Al cerrar, deja de recibir evaluaciones. El resultado agregado queda fijado.</p>
-  <form method="post" action="{% url 'decisiones:cerrar' token %}">{% csrf_token %}
-    <button class="btn-cerrar" type="submit">Cerrar decisión</button>
-  </form>
+  <h2>Selección individual de cada participante</h2>
+  <table>
+    <tr><th>Alternativa</th><th>Personas que la eligieron</th></tr>
+    {% for v in votos %}<tr><td>{{ v.nombre }}</td><td class="num">{{ v.n }}</td></tr>{% endfor %}
+  </table>
 </div>
 {% endif %}
+
+<div class="panel">
+  <h2>Participantes</h2>
+  {% if parts %}
+    <table>
+      <tr><th>Participante</th><th>Su selección</th>{% if d.metodo == 'ahp' %}<th>Consistencia (CR)</th>{% endif %}<th>Enviado</th></tr>
+      {% for p in parts %}
+        <tr><td>{{ p.nombre }}</td><td>{{ p.seleccionado }}</td>
+          {% if d.metodo == 'ahp' %}<td>{% if p.cr is not None %}{{ p.cr|floatformat:3 }} {% if p.consistente %}✓{% else %}⚠{% endif %}{% else %}—{% endif %}</td>{% endif %}
+          <td>{{ p.fecha|date:"d/m H:i" }}</td></tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p class="empty">Nadie ha enviado su evaluación todavía.</p>
+  {% endif %}
+
+  <div class="actions">
+    <a class="btn btn-secondary" href="">Actualizar</a>
+    {% if d.estado == 'abierta' %}
+      <form method="post" action="{% url 'decisiones:cerrar' token %}" style="display:inline">
+        <button class="btn btn-secondary" type="submit">Cerrar la sala</button>
+      </form>
+    {% endif %}
+    <a class="btn btn-secondary" href="{% url 'decisiones:index' %}">Volver</a>
+  </div>
+</div>
 {% endblock %}

@@ -59,6 +59,26 @@ def agregar_geometrica(matrices):
     return G.tolist()
 
 
+def media_geometrica(matrices):
+    """Media geométrica elemento a elemento de K matrices del mismo tamaño.
+
+    Sirve para agregar en grupo tanto las matrices de criterios (AHP) como las de
+    desempeño (alternativas x criterios). Requiere valores positivos.
+    """
+    A = np.asarray(matrices, dtype=float)
+    if A.ndim < 3:
+        return A.tolist() if A.ndim == 2 else A.tolist()
+    return np.exp(np.mean(np.log(A), axis=0)).tolist()
+
+
+def media_aritmetica(matrices):
+    """Media aritmética elemento a elemento (admite ceros; para influencias ANP)."""
+    A = np.asarray(matrices, dtype=float)
+    if A.ndim < 3:
+        return A.tolist()
+    return np.mean(A, axis=0).tolist()
+
+
 def ranking(nombres, pesos):
     """Empareja nombres con pesos y los ordena de mayor a menor prioridad."""
     pares = list(zip(nombres, pesos))

@@ -2,38 +2,53 @@
 {% load static %}
 
 {% block title %}Decisiones colaborativas · PlanEstrat{% endblock %}
-{% block topbar %}Decisiones colaborativas{% endblock %}
+{% block topbar %}Decisiones colaborativas · individual y en grupo{% endblock %}
 
 {% block extra_head %}
 <style>
   .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
   .intro{color:var(--ink-soft);max-width:74ch}
-  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 22px;overflow:hidden}
   details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
   details.teoria>summary::-webkit-details-marker{display:none}
   details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
   details.teoria[open]>summary::before{transform:rotate(90deg)}
   details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria .cont b{color:var(--ink)}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:760px){.cols{grid-template-columns:1fr}}
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
   .panel.star{border-color:var(--star);box-shadow:0 0 0 1px var(--star-soft) inset}
   .panel h2{font-family:var(--font-head);font-size:1.16rem;margin:0 0 4px}
-  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 12px}
-  label{font-size:.82rem;color:var(--muted);display:block;margin:10px 0 4px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
+  label{font-size:.8rem;color:var(--muted);display:block;margin:10px 0 4px}
   input[type=text],input[type=password],select,textarea{font:inherit;font-size:.9rem;width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink)}
-  textarea{font-family:var(--font-mono);font-size:.82rem;min-height:110px;line-height:1.5;resize:vertical}
+  textarea{font-family:var(--font-mono);font-size:.82rem;min-height:96px;line-height:1.5;resize:vertical}
   .msg{font-size:.84rem;margin-top:10px;font-weight:600}
   .msg.err{color:var(--crit)} .msg.ok{color:var(--good)}
   .share{margin-top:12px;padding:12px 14px;border:1px dashed var(--star);border-radius:8px;background:var(--star-soft);font-size:.86rem;color:var(--star-ink)}
   .share a{word-break:break-all}
-  table.mtx{border-collapse:collapse;margin-top:8px}
-  table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:70px}
-  table.mtx th{background:var(--surface-2);font-size:.74rem;font-family:var(--font-mono);color:var(--muted);max-width:120px}
+  .share .codigo{font-family:var(--font-mono);font-size:1.3rem;font-weight:700;letter-spacing:.12em;color:var(--ink);display:inline-block;margin:2px 0}
+  .mini-lbl{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:.8rem;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--ink-soft)}
+  .chip.alt{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .mtx-wrap{overflow-x:auto}
+  table.mtx{border-collapse:collapse;margin-top:6px}
+  table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:72px}
+  table.mtx th{background:var(--surface-2);font-size:.74rem;font-family:var(--font-mono);color:var(--muted);max-width:120px;white-space:nowrap}
   table.mtx td.diag{background:var(--surface-2);color:var(--muted)}
   table.mtx td.low{background:var(--ground);color:var(--faint);font-family:var(--font-mono);font-size:.8rem}
-  table.mtx select{padding:3px;font-size:.82rem}
-  .mtx-wrap{overflow-x:auto}
+  table.mtx select{padding:3px;font-size:.82rem;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink)}
+  table.ev{border-collapse:collapse;margin-top:6px;min-width:460px}
+  table.ev th,table.ev td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+  table.ev th{background:var(--surface-2);font-size:.74rem;font-family:var(--font-mono);color:var(--muted);white-space:nowrap}
+  table.ev td.alt{text-align:left;font-weight:600;white-space:nowrap;background:var(--accent-soft);color:var(--accent-ink)}
+  table.ev select{padding:3px;font-size:.84rem;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink)}
+  .escala-nota{font-size:.75rem;color:var(--muted);margin-top:8px}
+  .winner{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border:1.5px solid var(--accent);border-radius:14px;padding:18px 20px;text-align:center;margin-top:14px}
+  .winner .cap{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+  .winner .name{font-family:var(--font-head);font-weight:700;font-size:1.6rem;color:var(--ink);margin:5px 0 2px}
   .cr{display:inline-block;font-size:.74rem;font-weight:600;padding:3px 10px;border-radius:999px;margin-top:8px}
   .cr.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
   .cr.no{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit);border:1px solid var(--crit)}
@@ -44,63 +59,80 @@
 
 {% block content %}
 <h1 class="h1">Decisiones colaborativas</h1>
-<p class="intro">Toma una decisión multicriterio entre varios expertos. El facilitador crea la decisión con un nombre y una clave; comparte ambos; y cada participante entrega su evaluación por pares. El sistema agrega los juicios (media geométrica) y calcula las prioridades del grupo.</p>
+<p class="intro">Toma una decisión multicriterio en equipo. El facilitador crea una sala con <b>nombre, código y clave</b> y define el objetivo, los criterios y las alternativas. En una reunión, cada persona entra y hace su <b>decisión individual</b> (pondera los criterios y evalúa las alternativas). El sistema calcula la selección de cada uno y luego la <b>decisión agregada del grupo</b>.</p>
 
 <details class="teoria">
   <summary>Cómo funciona</summary>
   <div class="cont">
-    <p><strong>1.</strong> El facilitador define la decisión: nombre, los criterios a comparar, una clave para los participantes y la privacidad. Recibe un <em>enlace de administración</em> privado.</p>
-    <p><strong>2.</strong> Comparte el <em>nombre + clave</em>. Cada participante entra, completa su matriz de comparación por pares (con chequeo de consistencia) y la envía.</p>
-    <p><strong>3.</strong> El facilitador abre su enlace de administración, ve quién respondió y obtiene las prioridades agregadas del grupo. Puede cerrar la decisión cuando termine.</p>
-    <p>Privacidad: <em>privada</em> (solo el facilitador ve el detalle), <em>grupal</em> o <em>anónima</em>.</p>
+    <p><b>1 · Crear la sala.</b> El facilitador define el objetivo, los criterios y las alternativas, y una clave. Recibe un <em>código</em> corto para compartir y un enlace de administración privado.</p>
+    <p><b>2 · Evaluación individual.</b> Cada participante entra con el código + la clave, pondera los criterios (escala de Saaty) y valora del 1 al 9 cuán bien cada alternativa satisface cada criterio. Al enviar, ve <em>su</em> selección.</p>
+    <p><b>3 · Decisión del grupo.</b> El facilitador abre su enlace de administración y ve todas las evaluaciones y la decisión agregada (media geométrica de criterios y desempeños): <em>la selección del grupo</em>. Puede cerrar la sala al terminar.</p>
+    <p>Así la plataforma sirve para trabajar en forma <b>individual</b> y <b>grupal</b>. Privacidad: grupal (visible), privada (Delphi) o anónima.</p>
   </div>
 </details>
 
 <div class="cols">
   <!-- CREAR -->
   <div class="panel star">
-    <h2>Crear una decisión</h2>
+    <h2>Crear una sala de decisión</h2>
     <p class="sub">Para el facilitador.</p>
     <label>Nombre de la decisión</label>
-    <input type="text" id="c-nombre" placeholder="Ej: Priorización de criterios del proyecto">
-    <label>Criterios a comparar (uno por línea)</label>
-    <textarea id="c-criterios">Impacto territorial
-Factibilidad técnica
-Costo
-Riesgo</textarea>
-    <label>Clave para participantes</label>
-    <input type="text" id="c-clave" placeholder="una clave que compartirás">
-    <label>Privacidad</label>
-    <select id="c-priv">
-      <option value="privada">Privada (solo el facilitador ve el detalle)</option>
-      <option value="grupal">Grupal (visible al grupo)</option>
-      <option value="anonima">Anónima</option>
-    </select>
-    <div style="margin-top:12px"><button class="btn btn-primary" id="c-btn">Crear decisión</button></div>
+    <input type="text" id="c-nombre" placeholder="Ej: Selección de proveedor 2026">
+    <label>Objetivo</label>
+    <input type="text" id="c-obj" placeholder="Ej: Elegir el mejor proveedor">
+    <label>Criterios (uno por línea)</label>
+    <textarea id="c-crit">Precio competitivo
+Calidad
+Entrega
+Servicio</textarea>
+    <label>Alternativas (una por línea)</label>
+    <textarea id="c-alt">Proveedor Andes
+Proveedor Boreal
+Proveedor Cumbre</textarea>
+    <div class="cols" style="gap:10px">
+      <div><label>Clave para participantes</label><input type="text" id="c-clave" placeholder="una clave a compartir"></div>
+      <div><label>Privacidad</label><select id="c-priv">
+        <option value="grupal">Grupal (visible)</option>
+        <option value="privada">Privada (Delphi)</option>
+        <option value="anonima">Anónima</option>
+      </select></div>
+    </div>
+    <div style="margin-top:14px"><button class="btn btn-primary" id="c-btn">Crear sala</button></div>
     <div class="msg" id="c-msg"></div>
     <div class="share" id="c-share" hidden></div>
   </div>
 
   <!-- UNIRSE -->
   <div class="panel">
-    <h2>Unirse a una decisión</h2>
+    <h2>Entrar a evaluar</h2>
     <p class="sub">Para los participantes.</p>
-    <label>Nombre de la decisión</label>
-    <input type="text" id="u-nombre">
+    <label>Código de la sala</label>
+    <input type="text" id="u-cod" placeholder="Ej: ABC123" style="text-transform:uppercase;font-family:var(--font-mono);letter-spacing:.1em">
     <label>Clave</label>
     <input type="text" id="u-clave">
-    <div style="margin-top:12px"><button class="btn btn-secondary" id="u-btn">Entrar</button></div>
+    <label>Tu nombre</label>
+    <input type="text" id="u-part" placeholder="Cómo aparecerás en el grupo">
+    <div style="margin-top:14px"><button class="btn btn-primary" id="u-btn">Entrar</button></div>
     <div class="msg" id="u-msg"></div>
-
-    <div id="u-eval" hidden>
-      <label>Tu nombre</label>
-      <input type="text" id="u-part">
-      <p class="sub" style="margin-top:12px">Compara cada par de criterios (escala de Saaty).</p>
-      <div class="mtx-wrap"><div id="u-mtx"></div></div>
-      <div style="margin-top:12px"><button class="btn btn-primary" id="u-send">Enviar evaluación</button></div>
-      <div id="u-cr"></div>
-    </div>
   </div>
+</div>
+
+<!-- EVALUACIÓN INDIVIDUAL -->
+<div class="panel" id="eval-panel" hidden>
+  <h2 id="ev-titulo">Tu evaluación</h2>
+  <p class="sub" id="ev-obj"></p>
+  <div class="mini-lbl">Criterios</div><div class="chips" id="ev-crit"></div>
+  <div class="mini-lbl">Alternativas</div><div class="chips" id="ev-alt"></div>
+
+  <div class="mini-lbl" style="margin-top:16px">1 · Pondera los criterios (escala de Saaty)</div>
+  <div class="mtx-wrap"><div id="ev-matriz"></div></div>
+
+  <div class="mini-lbl" style="margin-top:16px">2 · Evalúa las alternativas (1 muy deficiente · 9 excelente)</div>
+  <div class="mtx-wrap"><div id="ev-eval"></div></div>
+
+  <div style="margin-top:16px"><button class="btn btn-primary" id="ev-enviar">Enviar mi evaluación</button></div>
+  <div class="msg" id="ev-msg"></div>
+  <div id="ev-resultado" hidden></div>
 </div>
 {% endblock %}
 
@@ -109,69 +141,112 @@ Riesgo</textarea>
 (function () {
   'use strict';
   var URL_CREAR="{% url 'decisiones:crear' %}", URL_UNIRSE="{% url 'decisiones:unirse' %}", URL_ENVIAR="{% url 'decisiones:enviar' %}";
-  var estado={nombre:'',clave:'',criterios:[]};
+  var sala=null;  // definición de la sala tras unirse
 
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escA(s){ return esc(s).replace(/"/g,'&quot;'); }
+  function lineas(id){ return document.getElementById(id).value.split('\n').map(function(s){return s.trim();}).filter(Boolean); }
   function post(url,body){ return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}); }
+  function pct(x){ return (x*100).toFixed(1)+'%'; }
 
-  // ---- Crear ----
+  function opciones(sel){ var out='',vals=[9,8,7,6,5,4,3,2];
+    vals.forEach(function(k){ out+=opt(k,String(k),sel); }); out+=opt(1,'1 (igual)',sel);
+    vals.slice().reverse().forEach(function(k){ out+=opt(1/k,'1/'+k,sel); }); return out; }
+  function opt(v,label,sel){ var s=Math.abs(v-sel)<1e-9?' selected':''; return '<option value="'+v+'"'+s+'>'+label+'</option>'; }
+  function fmtRecip(v){ if(Math.abs(v-1)<1e-9) return '1'; if(v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
+  function evalOpts(sel){ var o=''; for(var v=9;v>=1;v--){ o+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>'; } return o; }
+
+  // ---------- Crear ----------
   document.getElementById('c-btn').addEventListener('click', function(){
-    var msg=document.getElementById('c-msg'); msg.className='msg'; msg.textContent='Creando…';
-    var criterios=document.getElementById('c-criterios').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-    post(URL_CREAR,{nombre:document.getElementById('c-nombre').value, clave:document.getElementById('c-clave').value, criterios:criterios, privacidad:document.getElementById('c-priv').value})
-    .then(function(res){
-      if(!res.ok){ msg.className='msg err'; msg.textContent=res.j.error||'Error'; return; }
-      msg.textContent='';
+    var body={ nombre:document.getElementById('c-nombre').value.trim(),
+      objetivo:document.getElementById('c-obj').value.trim(),
+      clave:document.getElementById('c-clave').value.trim(),
+      criterios:lineas('c-crit'), alternativas:lineas('c-alt'),
+      privacidad:document.getElementById('c-priv').value, metodo:'ahp' };
+    var m=document.getElementById('c-msg'); m.className='msg'; m.textContent='Creando…';
+    post(URL_CREAR, body).then(function(res){
+      if(!res.ok){ m.className='msg err'; m.textContent=res.j.error||'Error'; return; }
+      m.textContent='';
       var sh=document.getElementById('c-share'); sh.hidden=false;
-      sh.innerHTML='<b>Decisión creada.</b><br>Comparte con los participantes:<br>• Nombre: <b>'+res.j.nombre+'</b><br>• Clave: <b>'+document.getElementById('c-clave').value+'</b><br><br>Tu enlace de administración (guárdalo, es privado):<br><a href="'+res.j.admin_url+'">'+res.j.admin_url+'</a>';
+      sh.innerHTML='<b>Sala creada.</b> Comparte con tu equipo:<br>Código <span class="codigo">'+esc(res.j.codigo)+'</span> + la clave.'
+        +'<br>Tu enlace de administración (privado, para ver el resultado del grupo):<br><a href="'+res.j.admin_url+'">'+res.j.admin_url+'</a>';
     });
   });
 
-  // ---- Unirse ----
+  // ---------- Unirse ----------
   document.getElementById('u-btn').addEventListener('click', function(){
-    var msg=document.getElementById('u-msg'); msg.className='msg'; msg.textContent='Entrando…';
-    estado.nombre=document.getElementById('u-nombre').value; estado.clave=document.getElementById('u-clave').value;
-    post(URL_UNIRSE,{nombre:estado.nombre, clave:estado.clave}).then(function(res){
-      if(!res.ok){ msg.className='msg err'; msg.textContent=res.j.error||'Error'; document.getElementById('u-eval').hidden=true; return; }
-      msg.textContent=''; estado.criterios=res.j.decision.criterios;
-      construirMatriz(estado.criterios);
-      document.getElementById('u-eval').hidden=false;
+    var codigo=document.getElementById('u-cod').value.trim().toUpperCase();
+    var clave=document.getElementById('u-clave').value.trim();
+    var part=document.getElementById('u-part').value.trim();
+    var m=document.getElementById('u-msg'); m.className='msg'; m.textContent='Entrando…';
+    post(URL_UNIRSE, {codigo:codigo, clave:clave}).then(function(res){
+      if(!res.ok){ m.className='msg err'; m.textContent=res.j.error||'Error'; return; }
+      m.className='msg ok'; m.textContent='¡Bienvenido/a! Completa tu evaluación abajo.';
+      sala=res.j.decision; sala._codigo=codigo; sala._clave=clave; sala._part=part;
+      abrirEvaluacion();
     });
   });
 
-  function opciones(){
-    var out='', vals=[9,8,7,6,5,4,3,2];
-    vals.forEach(function(k){ out+='<option value="'+k+'">'+k+'</option>'; });
-    out+='<option value="1" selected>1 (igual)</option>';
-    vals.slice().reverse().forEach(function(k){ out+='<option value="'+(1/k)+'">1/'+k+'</option>'; });
-    return out;
+  function abrirEvaluacion(){
+    document.getElementById('eval-panel').hidden=false;
+    document.getElementById('ev-titulo').textContent='Tu evaluación · '+sala.nombre;
+    document.getElementById('ev-obj').textContent=sala.objetivo?('Objetivo: '+sala.objetivo):'';
+    document.getElementById('ev-crit').innerHTML=sala.criterios.map(function(c){return '<span class="chip">'+esc(c)+'</span>';}).join('');
+    document.getElementById('ev-alt').innerHTML=sala.alternativas.map(function(a){return '<span class="chip alt">'+esc(a)+'</span>';}).join('');
+    construirMatriz(); construirEval();
+    document.getElementById('ev-resultado').hidden=true;
+    document.getElementById('eval-panel').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  function fmt(v){ if(Math.abs(v-1)<1e-9) return '1'; if(v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
-  function construirMatriz(nm){
-    var n=nm.length, h='<table class="mtx"><tr><th></th>';
-    nm.forEach(function(c){ h+='<th title="'+c+'">'+c+'</th>'; });
-    h+='</tr>';
-    for(var i=0;i<n;i++){
-      h+='<tr><th title="'+nm[i]+'">'+nm[i]+'</th>';
-      for(var j=0;j<n;j++){
-        if(i===j) h+='<td class="diag">1</td>';
-        else if(i<j) h+='<td><select data-i="'+i+'" data-j="'+j+'" onchange="__sync('+i+','+j+')">'+opciones()+'</select></td>';
-        else h+='<td class="low" id="lw-'+i+'-'+j+'">1</td>';
-      }
-      h+='</tr>';
-    }
-    h+='</table>';
-    document.getElementById('u-mtx').innerHTML=h;
-  }
-  window.__sync=function(i,j){ var s=document.querySelector('#u-mtx select[data-i="'+i+'"][data-j="'+j+'"]'); var l=document.getElementById('lw-'+j+'-'+i); if(s&&l) l.textContent=fmt(1/parseFloat(s.value)); };
 
-  document.getElementById('u-send').addEventListener('click', function(){
-    var n=estado.criterios.length, M=[];
-    for(var i=0;i<n;i++){ M.push(new Array(n).fill(1)); }
-    document.querySelectorAll('#u-mtx select').forEach(function(s){ var i=+s.dataset.i,j=+s.dataset.j,v=parseFloat(s.value); M[i][j]=v; M[j][i]=1/v; });
-    var cr=document.getElementById('u-cr'); cr.innerHTML='Enviando…';
-    post(URL_ENVIAR,{nombre:estado.nombre, clave:estado.clave, participante:document.getElementById('u-part').value, matriz:M}).then(function(res){
-      if(!res.ok){ cr.innerHTML='<span class="msg err">'+(res.j.error||'Error')+'</span>'; return; }
-      cr.innerHTML='<div class="cr '+(res.j.consistente?'ok':'no')+'">Evaluación enviada · tu consistencia CR = '+res.j.consistencia.toFixed(3)+(res.j.consistente?' (consistente)':' (revisa tus juicios)')+'</div>';
+  function construirMatriz(){
+    var nm=sala.criterios, n=nm.length;
+    var h='<table class="mtx"><tr><th></th>';
+    nm.forEach(function(c){ h+='<th title="'+escA(c)+'">'+esc(c)+'</th>'; }); h+='</tr>';
+    for(var i=0;i<n;i++){ h+='<tr><th title="'+escA(nm[i])+'">'+esc(nm[i])+'</th>';
+      for(var j=0;j<n;j++){
+        if(i===j){ h+='<td class="diag">1</td>'; }
+        else if(i<j){ h+='<td><select data-i="'+i+'" data-j="'+j+'" onchange="__decSync('+i+','+j+')">'+opciones(1)+'</select></td>'; }
+        else { h+='<td class="low" id="dlow-'+i+'-'+j+'">—</td>'; }
+      }
+      h+='</tr>'; }
+    h+='</table>';
+    document.getElementById('ev-matriz').innerHTML=h;
+    document.querySelectorAll('#ev-matriz select').forEach(function(s){ __decSync(+s.dataset.i,+s.dataset.j); });
+  }
+  window.__decSync=function(i,j){ var sel=document.querySelector('#ev-matriz select[data-i="'+i+'"][data-j="'+j+'"]');
+    var low=document.getElementById('dlow-'+j+'-'+i); if(sel&&low) low.textContent=fmtRecip(1/parseFloat(sel.value)); };
+
+  function construirEval(){
+    var cr=sala.criterios, alt=sala.alternativas;
+    var h='<table class="ev"><tr><th>Alternativa \\ Criterio</th>';
+    cr.forEach(function(c){ h+='<th title="'+escA(c)+'">'+esc(c)+'</th>'; }); h+='</tr>';
+    alt.forEach(function(a,ai){ h+='<tr><td class="alt">'+esc(a)+'</td>';
+      cr.forEach(function(c,ci){ h+='<td><select data-a="'+ai+'" data-c="'+ci+'">'+evalOpts(5)+'</select></td>'; });
+      h+='</tr>'; });
+    h+='</table>';
+    document.getElementById('ev-eval').innerHTML=h;
+  }
+  function leerMatriz(){ var n=sala.criterios.length,M=[]; for(var i=0;i<n;i++){ M.push(new Array(n).fill(1)); }
+    document.querySelectorAll('#ev-matriz select').forEach(function(s){ var i=+s.dataset.i,j=+s.dataset.j,v=parseFloat(s.value); M[i][j]=v; M[j][i]=1/v; }); return M; }
+  function leerEval(){ var m=sala.alternativas.length,n=sala.criterios.length,D=[]; for(var a=0;a<m;a++){ D.push(new Array(n).fill(5)); }
+    document.querySelectorAll('#ev-eval select').forEach(function(s){ D[+s.dataset.a][+s.dataset.c]=parseInt(s.value,10); }); return D; }
+
+  document.getElementById('ev-enviar').addEventListener('click', function(){
+    var m=document.getElementById('ev-msg'); m.className='msg'; m.textContent='Enviando…';
+    var body={ codigo:sala._codigo, clave:sala._clave, participante:sala._part,
+      juicios:leerMatriz(), desempeno:leerEval() };
+    post(URL_ENVIAR, body).then(function(res){
+      if(!res.ok){ m.className='msg err'; m.textContent=res.j.error||'Error'; return; }
+      m.textContent='';
+      var crBadge = (res.j.consistencia==null) ? '' :
+        '<div class="cr '+(res.j.consistente?'ok':'no')+'">Consistencia CR = '+res.j.consistencia.toFixed(3)+(res.j.consistente?' · consistente':' · revisa tus juicios')+'</div>';
+      var rk='<table class="ev" style="min-width:auto;margin-top:10px"><tr><th>#</th><th>Alternativa</th><th>Puntaje</th></tr>'
+        + res.j.ranking.map(function(x,k){ return '<tr><td>'+(k+1)+'</td><td style="text-align:left">'+esc(x.nombre)+(k===0?' ✔':'')+'</td><td>'+pct(x.score)+'</td></tr>'; }).join('') + '</table>';
+      var box=document.getElementById('ev-resultado'); box.hidden=false;
+      box.innerHTML='<div class="winner"><div class="cap">Tu selección individual</div><div class="name">'+esc(res.j.seleccionado)+'</div></div>'
+        + crBadge + rk
+        + '<p class="sub" style="margin-top:12px">Tu evaluación quedó registrada. El facilitador verá la decisión agregada del grupo en su panel de administración.</p>';
+      box.scrollIntoView({behavior:'smooth',block:'start'});
     });
   });
 })();
