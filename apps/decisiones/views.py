@@ -40,8 +40,8 @@ def crear(request):
             'ok': True, 'nombre': d.nombre,
             'admin_url': request.build_absolute_uri('/decisiones/admin/%s/' % d.admin_token),
         })
-    except Exception:
-        return JsonResponse({'error': 'No se pudo crear la decisión.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': 'No se pudo crear la decisión.', 'detalle': str(e)}, status=400)
 
 
 def _buscar(nombre, clave):
@@ -65,8 +65,8 @@ def unirse(request):
         return JsonResponse({'ok': True, 'decision': {
             'id': d.id, 'nombre': d.nombre, 'criterios': d.criterios, 'privacidad': d.privacidad,
         }})
-    except Exception:
-        return JsonResponse({'error': 'No se pudo acceder a la decisión.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': 'No se pudo acceder a la decisión.', 'detalle': str(e)}, status=400)
 
 
 @csrf_exempt
@@ -94,8 +94,8 @@ def enviar(request):
         return JsonResponse({'ok': True, 'consistencia': cr, 'consistente': cr <= 0.10})
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)
-    except Exception:
-        return JsonResponse({'error': 'No se pudo registrar la evaluación.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': 'No se pudo registrar la evaluación.', 'detalle': str(e)}, status=400)
 
 
 def admin(request, token):
