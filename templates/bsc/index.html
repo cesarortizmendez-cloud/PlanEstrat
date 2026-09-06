@@ -20,7 +20,15 @@
   .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
   .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 12px}
 
-  /* Editor */
+  .save-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;margin-bottom:12px}
+  .sb-status{font-size:.86rem;color:var(--accent-ink);font-weight:600}
+  .sb-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .mini{font:inherit;font-size:.82rem;font-weight:600;border-radius:8px;padding:8px 14px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff}
+  .mini.sec{background:var(--surface);color:var(--accent-ink)}
+  .inline-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin:8px 0;padding:12px;border:1px dashed var(--line-strong);border-radius:8px}
+  .inline-form .g{display:flex;flex-direction:column}
+  .sb-link{margin:8px 0;padding:10px 12px;border:1px dashed var(--star);border-radius:8px;background:var(--star-soft);font-size:.84rem;color:var(--star-ink);word-break:break-all}
+
   details.sec{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
   details.sec>summary{cursor:pointer;list-style:none;padding:12px 16px;background:var(--surface-2);font-family:var(--font-head);font-weight:600;font-size:1rem;display:flex;align-items:center;gap:10px;user-select:none}
   details.sec>summary::-webkit-details-marker{display:none}
@@ -29,14 +37,14 @@
   details.sec>summary .count{margin-left:auto;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);font-weight:400}
   .sec-body{padding:12px 16px}
   label{font-size:.76rem;color:var(--muted);display:block;margin:0 0 3px}
-  input[type=text]{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink);width:100%}
+  input[type=text],input[type=password]{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink);width:100%}
   select{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink)}
   .fila{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px}
   .fila .g{display:flex;flex-direction:column;flex:1;min-width:0}
   .fila .g.sm{flex:0 0 110px}
   .del{flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:34px;height:34px;cursor:pointer;font-size:1rem;line-height:1}
   .del:hover{background:color-mix(in srgb,var(--crit) 12%,transparent)}
-  .add{border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;font-size:.82rem;cursor:pointer;margin-top:4px}
+  .add{border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:7px 13px;font:inherit;font-weight:600;font-size:.8rem;cursor:pointer;margin-top:2px}
   .add:hover{background:var(--accent-soft)}
   details.obj{border:1px solid var(--line);border-radius:9px;margin-bottom:8px;overflow:hidden}
   details.obj>summary{cursor:pointer;list-style:none;padding:9px 12px;display:flex;align-items:center;gap:8px;user-select:none;font-size:.9rem}
@@ -48,12 +56,18 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   @media(max-width:560px){.grid2{grid-template-columns:1fr}}
   .subttl{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  .plan-block{border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;background:var(--surface-2)}
+  .plan-head{display:flex;gap:6px;align-items:center}
+  .plan-head input{flex:1;font-weight:500}
+  .kpis{margin-top:7px;padding-left:10px;border-left:2px solid var(--accent)}
+  .kpi-lbl{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
   .sub-row{display:flex;gap:6px;margin-bottom:5px}
   .sub-row input{flex:1}
   .sub-row .del{width:30px;height:30px;font-size:.9rem}
   .delobj{margin-top:12px;border:1px solid var(--crit);background:transparent;color:var(--crit);border-radius:7px;padding:6px 12px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
 
-  .msg{font-size:.84rem;color:var(--crit);margin-top:8px;font-weight:600}
+  .msg{font-size:.84rem;margin-top:8px;font-weight:600}
+  .msg.err{color:var(--crit)} .msg.ok{color:var(--good)}
   .map-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
   svg.mapa{display:block;width:100%;min-width:760px;height:auto}
   .leyenda{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.78rem;color:var(--muted)}
@@ -72,28 +86,51 @@
   table.det{border-collapse:collapse;width:100%;font-size:.86rem;margin-top:6px}
   table.det th,table.det td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
   table.det th{background:var(--surface-2);font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted)}
-  table.det td.obj{white-space:nowrap;font-weight:600}
+  table.det td.obj{white-space:normal;font-weight:600}
   table.det ul{margin:0;padding-left:16px}
-  :root{--crit:#b0483c}
-  @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
+  :root{--crit:#b0483c;--good:#3f7a52}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
 </style>
 {% endblock %}
 
 {% block content %}
 <h1 class="h1">Mapa estratégico y hoja de ruta (BSC)</h1>
-<p class="intro">Construye tu estrategia con formularios: define las fases con su horizonte temporal, los objetivos por perspectiva —cada uno con sus planes de acción y KPIs— y las relaciones causa–efecto. Con eso se generan el mapa, la hoja de ruta y el detalle. Soporta mapas de cualquier tamaño.</p>
+<p class="intro">Construye tu estrategia con formularios: fases con horizonte temporal, objetivos por perspectiva —cada uno con sus planes de acción y, dentro de cada plan, sus KPIs— y relaciones causa–efecto. El mapa se guarda en la base de datos para que la construcción sea un proceso colaborativo y retomable.</p>
 <p class="ref"><b>Ejemplo cargado:</b> Proyecto FIC 23-12 · “Bioenergía circular Los Ríos”. <b>Método:</b> Quezada, L.E. et al. (2018), <em>Identifying causal relationships in strategy maps using ANP and DEMATEL.</em> Computers &amp; Industrial Engineering 118, 170–179. DOI: 10.1016/j.cie.2018.02.020</p>
 
 <details class="teoria">
   <summary>Cómo funciona</summary>
   <div class="cont">
     <p>Perspectivas de abajo hacia arriba: <strong>Aprendizaje → Tecnología → Procesos → Clientes → Financiera</strong>. Cada nivel habilita al siguiente.</p>
-    <p>En <b>Fases</b> defines las etapas con su rango de años. En <b>Objetivos</b> agregas cada objetivo (perspectiva, código, nombre, las fases que abarca, y sus planes y KPIs). En <b>Relaciones</b> conectas un objetivo con otro superior (causa → efecto). Presiona “Construir” para generar el mapa, la hoja de ruta y el detalle.</p>
+    <p>En <b>Objetivos</b>, cada uno tiene sus <b>planes de acción</b>, y dentro de cada plan se listan sus <b>KPIs</b> (así el indicador queda ligado a la acción que lo genera). En <b>Relaciones</b> conectas un objetivo con otro superior (causa → efecto).</p>
+    <p><b>Guardar</b> almacena el mapa en la base de datos con un nombre y una clave; con el enlace de edición o el nombre+clave puedes retomarlo después o compartirlo con tu equipo.</p>
   </div>
 </details>
 
 <div class="panel">
   <h2>1 · Modelo estratégico</h2>
+
+  <div class="save-bar">
+    <div class="sb-status" id="sb-status">Mapa nuevo (sin guardar)</div>
+    <div class="sb-actions">
+      <button class="mini" id="btn-guardar">Guardar</button>
+      <button class="mini sec" id="btn-abrir">Abrir guardado</button>
+      <button class="mini sec" id="btn-nuevo">Nuevo</button>
+    </div>
+  </div>
+  <div class="inline-form" id="form-guardar" hidden>
+    <div class="g" style="flex:1;min-width:180px"><label>Nombre del mapa</label><input type="text" id="g-nombre"></div>
+    <div class="g" style="flex:0 0 160px"><label>Clave</label><input type="text" id="g-clave"></div>
+    <button class="mini" id="g-ok">Guardar mapa</button>
+  </div>
+  <div class="inline-form" id="form-abrir" hidden>
+    <div class="g" style="flex:1;min-width:180px"><label>Nombre del mapa</label><input type="text" id="a-nombre"></div>
+    <div class="g" style="flex:0 0 160px"><label>Clave</label><input type="text" id="a-clave"></div>
+    <button class="mini" id="a-ok">Abrir</button>
+  </div>
+  <div class="sb-link" id="sb-link" hidden></div>
+  <div class="msg" id="msg-save"></div>
+
   <p class="sub">Edita con los formularios desplegables. Puedes agregar o quitar fases, objetivos, planes, KPIs y relaciones.</p>
   <div id="editor">
     <details class="sec" open>
@@ -132,6 +169,7 @@
 <script>
 (function () {
   'use strict';
+  var URL_GUARDAR="{% url 'bsc:guardar' %}", URL_ABRIR="{% url 'bsc:abrir' %}";
   var PORDER=['F','C','P','T','A'];
   var PMETA={
     F:{n:'Financiera / Impacto',fill:'#f3e2c8',stroke:'#b26a26'},
@@ -145,33 +183,44 @@
   function escA(s){ return esc(s).replace(/"/g,'&quot;'); }
   function corta(s,n){ s=String(s); return s.length>n?s.slice(0,n-1)+'…':s; }
 
-  // ---------- Modelo inicial (Los Ríos) ----------
-  var modelo = {
-    fases:[
-      {nombre:'Diseño validado',rango:'2024–2027'},
-      {nombre:'Operación piloto',rango:'2028–2029'},
-      {nombre:'Escalamiento',rango:'2030–2032'},
-      {nombre:'Régimen y réplica',rango:'2033–2036'}
-    ],
-    objetivos:[
-      {persp:'F',id:'F1',nombre:'Incorporar biomasa alternativa',ini:1,fin:2,planes:['Evaluar factibilidad financiera','Caracterizar oferta y demanda','Definir costos'],kpis:['Costos definidos','Oferta y demanda caracterizadas']},
-      {persp:'F',id:'F2',nombre:'Generar valor económico territorial',ini:2,fin:4,planes:['Valorizar el incremento de utilidad en la cadena','Promover inversión pública y privada'],kpis:['Aumento de utilidad ($)','Inversión movilizada ($)']},
-      {persp:'F',id:'F3',nombre:'Fortalecer la sostenibilidad energética regional',ini:3,fin:4,planes:['Desarrollar plan estratégico de sostenibilidad','Socializar y publicar el plan'],kpis:['Plan publicado','Actores adheridos']},
-      {persp:'C',id:'C1',nombre:'Articular la red de abastecimiento',ini:1,fin:4,planes:['Formalizar acuerdos bosque–aserraderos–operador–pelletizadoras','Proponer precios de venta'],kpis:['Volumen de flujo','Tabla de precios construida']},
-      {persp:'C',id:'C2',nombre:'Consolidar la oferta regional de pellet',ini:2,fin:4,planes:['Acompañar de forma continua la cadena productiva'],kpis:['Volumen producido de pellet (ton)']},
-      {persp:'C',id:'C3',nombre:'Desarrollar mercado para la astilla seca y calibrada',ini:2,fin:4,planes:['Validar uso en calderas 60–120 kW','Validar otros usos de la astilla','Comunicar precio por energía útil'],kpis:['Calderas piloto instaladas','Ton de astilla vendida','Satisfacción de clientes']},
-      {persp:'P',id:'P1',nombre:'Estandarizar los procesos de secado y pelletizado',ini:1,fin:3,planes:['Definir POE de acopio y homogeneización','Aplicar listas de chequeo operativas','Controlar ingreso y salida de biomasa'],kpis:['Documento técnico publicado']},
-      {persp:'P',id:'P2',nombre:'Asegurar el cumplimiento de estándares de calidad',ini:2,fin:4,planes:['Muestreo y control de humedad','Controlar granulometría, cenizas y pureza'],kpis:['Nº mediciones según protocolo']},
-      {persp:'P',id:'P3',nombre:'Optimizar la logística de recolección, acopio y transporte',ini:1,fin:4,planes:['Desarrollar instructivos y procedimiento de gestión de materias primas'],kpis:['Instructivos publicados']},
-      {persp:'T',id:'T1',nombre:'Validar tecnología de secado de biomasa',ini:1,fin:2,planes:['Ensayar mezclas de distintos tamaños de biomasa','Medir humedad, rendimiento, energía y mantención','Ajustar diseño y operación del secador móvil'],kpis:['Modelo de humedad y consumo de energía','Productividad kg/h estandarizada','Tiempos de ciclo definidos']},
-      {persp:'T',id:'T2',nombre:'Optimizar la mezcla de materias primas para pelletización',ini:1,fin:3,planes:['Ensayar mezclas de biomasa','Ajustar molienda, prensado y humedad','Validar calidad física y energética del pellet'],kpis:['Nº de ensayos de mezclas','Estándar de consumo kWh/ton','% de defectos y propiedades físicas']},
-      {persp:'T',id:'T3',nombre:'Mejorar la transformación energética',ini:2,fin:3,planes:['Transformar biomasa en astillas secas y calibradas','Evaluar fuente de calor móvil','Medir eficiencia térmica y costos'],kpis:['% de astilla conforme','Costos operacionales respaldados','Eficiencia térmica medida']},
-      {persp:'T',id:'T4',nombre:'Escalar soluciones tecnológicas replicables',ini:3,fin:4,planes:['Especificar segundo secador y equipos anexos','Diseñar paquete tecnológico replicable','Transferir tecnología al territorio'],kpis:['Nº de soluciones replicadas','CAPEX validado','Nº de capacitaciones con PYMES']},
-      {persp:'A',id:'A1',nombre:'Fortalecer capacidades técnicas',ini:1,fin:4,planes:['Transferir protocolos de secado y astillas calibradas','Generar manuales y rutinas de mejora','Realizar capacitaciones'],kpis:['Nº de informes técnicos','Nº de capacitaciones']},
-      {persp:'A',id:'A2',nombre:'Consolidar coordinación institucional estatal-industria-academia',ini:1,fin:4,planes:['Crear comité directivo y mesas técnicas','Definir roles, actas y responsables','Gestionar convenios y acuerdos de continuidad'],kpis:['Sesiones realizadas','Acuerdos cumplidos','Actores activos','Convenios vigentes']}
-    ],
+  // ---------- Datos iniciales (Los Ríos): planes con sus KPIs anidados ----------
+  var SEED=[
+    {persp:'F',id:'F1',nombre:'Incorporar biomasa alternativa',ini:1,fin:2,planes:['Evaluar factibilidad financiera','Caracterizar oferta y demanda','Definir costos'],kpis:['Costos definidos','Oferta y demanda caracterizadas']},
+    {persp:'F',id:'F2',nombre:'Generar valor económico territorial',ini:2,fin:4,planes:['Valorizar el incremento de utilidad en la cadena','Promover inversión pública y privada'],kpis:['Aumento de utilidad ($)','Inversión movilizada ($)']},
+    {persp:'F',id:'F3',nombre:'Fortalecer la sostenibilidad energética regional',ini:3,fin:4,planes:['Desarrollar plan estratégico de sostenibilidad','Socializar y publicar el plan'],kpis:['Plan publicado','Actores adheridos']},
+    {persp:'C',id:'C1',nombre:'Articular la red de abastecimiento',ini:1,fin:4,planes:['Formalizar acuerdos bosque–aserraderos–operador–pelletizadoras','Proponer precios de venta'],kpis:['Volumen de flujo','Tabla de precios construida']},
+    {persp:'C',id:'C2',nombre:'Consolidar la oferta regional de pellet',ini:2,fin:4,planes:['Acompañar de forma continua la cadena productiva'],kpis:['Volumen producido de pellet (ton)']},
+    {persp:'C',id:'C3',nombre:'Desarrollar mercado para la astilla seca y calibrada',ini:2,fin:4,planes:['Validar uso en calderas 60–120 kW','Validar otros usos de la astilla','Comunicar precio por energía útil'],kpis:['Calderas piloto instaladas','Ton de astilla vendida','Satisfacción de clientes']},
+    {persp:'P',id:'P1',nombre:'Estandarizar los procesos de secado y pelletizado',ini:1,fin:3,planes:['Definir POE de acopio y homogeneización','Aplicar listas de chequeo operativas','Controlar ingreso y salida de biomasa'],kpis:['Documento técnico publicado']},
+    {persp:'P',id:'P2',nombre:'Asegurar el cumplimiento de estándares de calidad',ini:2,fin:4,planes:['Muestreo y control de humedad','Controlar granulometría, cenizas y pureza'],kpis:['Nº mediciones según protocolo']},
+    {persp:'P',id:'P3',nombre:'Optimizar la logística de recolección, acopio y transporte',ini:1,fin:4,planes:['Desarrollar instructivos y procedimiento de gestión de materias primas'],kpis:['Instructivos publicados']},
+    {persp:'T',id:'T1',nombre:'Validar tecnología de secado de biomasa',ini:1,fin:2,planes:['Ensayar mezclas de distintos tamaños de biomasa','Medir humedad, rendimiento, energía y mantención','Ajustar diseño y operación del secador móvil'],kpis:['Modelo de humedad y consumo de energía','Productividad kg/h estandarizada','Tiempos de ciclo definidos']},
+    {persp:'T',id:'T2',nombre:'Optimizar la mezcla de materias primas para pelletización',ini:1,fin:3,planes:['Ensayar mezclas de biomasa','Ajustar molienda, prensado y humedad','Validar calidad física y energética del pellet'],kpis:['Nº de ensayos de mezclas','Estándar de consumo kWh/ton','% de defectos y propiedades físicas']},
+    {persp:'T',id:'T3',nombre:'Mejorar la transformación energética',ini:2,fin:3,planes:['Transformar biomasa en astillas secas y calibradas','Evaluar fuente de calor móvil','Medir eficiencia térmica y costos'],kpis:['% de astilla conforme','Costos operacionales respaldados','Eficiencia térmica medida']},
+    {persp:'T',id:'T4',nombre:'Escalar soluciones tecnológicas replicables',ini:3,fin:4,planes:['Especificar segundo secador y equipos anexos','Diseñar paquete tecnológico replicable','Transferir tecnología al territorio'],kpis:['Nº de soluciones replicadas','CAPEX validado','Nº de capacitaciones con PYMES']},
+    {persp:'A',id:'A1',nombre:'Fortalecer capacidades técnicas',ini:1,fin:4,planes:['Transferir protocolos de secado y astillas calibradas','Generar manuales y rutinas de mejora','Realizar capacitaciones'],kpis:['Nº de informes técnicos','Nº de capacitaciones']},
+    {persp:'A',id:'A2',nombre:'Consolidar coordinación institucional estatal-industria-academia',ini:1,fin:4,planes:['Crear comité directivo y mesas técnicas','Definir roles, actas y responsables','Gestionar convenios y acuerdos de continuidad'],kpis:['Sesiones realizadas','Acuerdos cumplidos','Actores activos','Convenios vigentes']}
+  ];
+  function nest(o){
+    var planes=o.planes.map(function(t){ return {t:t,kpis:[]}; });
+    var np=planes.length||1;
+    (o.kpis||[]).forEach(function(k,idx){ planes[idx%np].kpis.push(k); });
+    return {persp:o.persp,id:o.id,nombre:o.nombre,ini:o.ini,fin:o.fin,planes:planes};
+  }
+  var modelo={
+    fases:[{nombre:'Diseño validado',rango:'2024–2027'},{nombre:'Operación piloto',rango:'2028–2029'},{nombre:'Escalamiento',rango:'2030–2032'},{nombre:'Régimen y réplica',rango:'2033–2036'}],
+    objetivos:SEED.map(nest),
     relaciones:[['A1','T1'],['A1','T2'],['A1','T3'],['A2','P3'],['A2','C1'],['T1','P1'],['T2','P1'],['T3','P2'],['T4','C3'],['P1','C1'],['P2','C3'],['P3','C1'],['C1','F1'],['C2','F2'],['C3','F2'],['C1','F3']]
   };
+  var estado={token:'', nombre:''};
+
+  function normaliza(d){
+    d=d||{}; d.fases=d.fases||[]; d.relaciones=d.relaciones||[]; d.objetivos=(d.objetivos||[]).map(function(o){
+      var planes=(o.planes||[]).map(function(p){ return (typeof p==='string')?{t:p,kpis:[]}:{t:p.t||'',kpis:p.kpis||[]}; });
+      return {persp:o.persp||'A',id:o.id||'',nombre:o.nombre||'',ini:o.ini||1,fin:o.fin||1,planes:planes};
+    });
+    return d;
+  }
 
   // ---------- Editor ----------
   function perspOpts(sel){ return PORDER.map(function(p){ return '<option value="'+p+'"'+(p===sel?' selected':'')+'>'+p+' · '+PMETA[p].n+'</option>'; }).join(''); }
@@ -179,39 +228,41 @@
   function objOpts(sel){ return modelo.objetivos.map(function(o){ return '<option value="'+escA(o.id)+'"'+(o.id===sel?' selected':'')+'>'+esc(o.id+' · '+corta(o.nombre,30))+'</option>'; }).join(''); }
 
   function renderFases(){
-    var h=modelo.fases.map(function(f,i){
+    document.getElementById('ed-fases').innerHTML=modelo.fases.map(function(f,i){
       return '<div class="fila"><div class="g"><label>Nombre de la fase</label><input type="text" data-k="fnombre" data-i="'+i+'" value="'+escA(f.nombre)+'"></div>'
         +'<div class="g sm"><label>Rango</label><input type="text" data-k="frango" data-i="'+i+'" value="'+escA(f.rango||'')+'"></div>'
         +'<button class="del" data-act="delfase" data-i="'+i+'" title="Quitar">✕</button></div>';
     }).join('');
-    document.getElementById('ed-fases').innerHTML=h;
     document.getElementById('cnt-fases').textContent=modelo.fases.length+' fase'+(modelo.fases.length===1?'':'s');
   }
 
-  function subRows(i, campo){
-    return modelo.objetivos[i][campo].map(function(v,j){
-      return '<div class="sub-row"><input type="text" data-k="'+(campo==='planes'?'plan':'kpi')+'" data-i="'+i+'" data-j="'+j+'" value="'+escA(v)+'"><button class="del" data-act="del'+(campo==='planes'?'plan':'kpi')+'" data-i="'+i+'" data-j="'+j+'" title="Quitar">✕</button></div>';
+  function kpiRows(i,j){
+    return modelo.objetivos[i].planes[j].kpis.map(function(v,k){
+      return '<div class="sub-row"><input type="text" data-k="kpi" data-i="'+i+'" data-j="'+j+'" data-kk="'+k+'" value="'+escA(v)+'"><button class="del" data-act="delkpi" data-i="'+i+'" data-j="'+j+'" data-kk="'+k+'" title="Quitar">✕</button></div>';
     }).join('');
   }
-  function renderPlanes(i){ document.getElementById('pl-'+i).innerHTML=subRows(i,'planes'); }
-  function renderKpis(i){ document.getElementById('kp-'+i).innerHTML=subRows(i,'kpis'); }
+  function planBlocks(i){
+    return modelo.objetivos[i].planes.map(function(p,j){
+      return '<div class="plan-block">'
+        +'<div class="plan-head"><input type="text" data-k="plan" data-i="'+i+'" data-j="'+j+'" value="'+escA(p.t)+'" placeholder="Plan de acción"><button class="del" data-act="delplan" data-i="'+i+'" data-j="'+j+'" title="Quitar plan">✕</button></div>'
+        +'<div class="kpis"><div class="kpi-lbl">KPIs de este plan</div><div id="kp-'+i+'-'+j+'">'+kpiRows(i,j)+'</div><button class="add" data-act="addkpi" data-i="'+i+'" data-j="'+j+'">+ KPI</button></div>'
+        +'</div>';
+    }).join('');
+  }
+  function renderPlanes(i){ document.getElementById('pl-'+i).innerHTML=planBlocks(i); }
+  function renderKpis(i,j){ document.getElementById('kp-'+i+'-'+j).innerHTML=kpiRows(i,j); }
 
   function objCard(o,i,open){
     var m=PMETA[o.persp]||PMETA.A;
     return '<details class="obj" data-oi="'+i+'"'+(open?' open':'')+'>'
       +'<summary><span class="tag" style="background:'+m.fill+';color:'+m.stroke+'">'+esc(o.id||'—')+'</span><span id="sum-'+i+'">'+esc(corta(o.nombre,44))+'</span></summary>'
       +'<div class="obj-body">'
-        +'<div class="grid2">'
-          +'<div class="g"><label>Perspectiva</label><select data-k="persp" data-i="'+i+'">'+perspOpts(o.persp)+'</select></div>'
-          +'<div class="g"><label>Código</label><input type="text" data-k="id" data-i="'+i+'" value="'+escA(o.id)+'"></div>'
-        +'</div>'
+        +'<div class="grid2"><div class="g"><label>Perspectiva</label><select data-k="persp" data-i="'+i+'">'+perspOpts(o.persp)+'</select></div>'
+          +'<div class="g"><label>Código</label><input type="text" data-k="id" data-i="'+i+'" value="'+escA(o.id)+'"></div></div>'
         +'<div class="g" style="margin-top:8px"><label>Nombre del objetivo</label><input type="text" data-k="nombre" data-i="'+i+'" value="'+escA(o.nombre)+'"></div>'
-        +'<div class="grid2" style="margin-top:8px">'
-          +'<div class="g"><label>Fase inicio</label><select data-k="ini" data-i="'+i+'">'+faseOpts(o.ini)+'</select></div>'
-          +'<div class="g"><label>Fase fin</label><select data-k="fin" data-i="'+i+'">'+faseOpts(o.fin)+'</select></div>'
-        +'</div>'
-        +'<div class="subttl">Planes de acción</div><div id="pl-'+i+'">'+subRows(i,'planes')+'</div><button class="add" data-act="addplan" data-i="'+i+'">+ plan</button>'
-        +'<div class="subttl">KPIs</div><div id="kp-'+i+'">'+subRows(i,'kpis')+'</div><button class="add" data-act="addkpi" data-i="'+i+'">+ KPI</button>'
+        +'<div class="grid2" style="margin-top:8px"><div class="g"><label>Fase inicio</label><select data-k="ini" data-i="'+i+'">'+faseOpts(o.ini)+'</select></div>'
+          +'<div class="g"><label>Fase fin</label><select data-k="fin" data-i="'+i+'">'+faseOpts(o.fin)+'</select></div></div>'
+        +'<div class="subttl">Planes de acción (cada uno con sus KPIs)</div><div id="pl-'+i+'">'+planBlocks(i)+'</div><button class="add" data-act="addplan" data-i="'+i+'">+ plan de acción</button>'
         +'<div><button class="delobj" data-act="delobj" data-i="'+i+'">Eliminar objetivo</button></div>'
       +'</div></details>';
   }
@@ -222,23 +273,20 @@
     document.getElementById('ed-objs').innerHTML=modelo.objetivos.map(function(o,i){ return objCard(o,i,!!abiertos[i]); }).join('');
     document.getElementById('cnt-objs').textContent=modelo.objetivos.length+' objetivo'+(modelo.objetivos.length===1?'':'s');
   }
-
   function renderRels(){
     var h;
     if(!modelo.objetivos.length){ h='<p class="sub">Agrega objetivos primero.</p>'; }
     else h=modelo.relaciones.map(function(r,i){
       return '<div class="fila"><div class="g"><label>Origen (causa)</label><select data-k="rde" data-i="'+i+'">'+objOpts(r[0])+'</select></div>'
-        +'<div class="g" style="flex:0 0 30px;align-items:center"><label>&nbsp;</label><div style="text-align:center;color:var(--muted)">→</div></div>'
+        +'<div class="g" style="flex:0 0 26px;align-items:center"><label>&nbsp;</label><div style="color:var(--muted)">→</div></div>'
         +'<div class="g"><label>Destino (efecto)</label><select data-k="ra" data-i="'+i+'">'+objOpts(r[1])+'</select></div>'
         +'<button class="del" data-act="delrel" data-i="'+i+'" title="Quitar">✕</button></div>';
     }).join('');
     document.getElementById('ed-rels').innerHTML=h;
     document.getElementById('cnt-rels').textContent=modelo.relaciones.length+' relación'+(modelo.relaciones.length===1?'':'es');
   }
-
   function renderEditor(){ renderFases(); renderObjs(); renderRels(); }
 
-  // Actualización de valores (sin re-render, para no perder foco)
   var ed=document.getElementById('editor');
   function upd(e){
     var el=e.target, k=el.dataset?el.dataset.k:null; if(!k) return;
@@ -250,31 +298,76 @@
     else if(k==='nombre'){ modelo.objetivos[i].nombre=el.value; var sm=document.getElementById('sum-'+i); if(sm) sm.textContent=corta(el.value,44); }
     else if(k==='ini') modelo.objetivos[i].ini=+el.value;
     else if(k==='fin') modelo.objetivos[i].fin=+el.value;
-    else if(k==='plan') modelo.objetivos[i].planes[+el.dataset.j]=el.value;
-    else if(k==='kpi') modelo.objetivos[i].kpis[+el.dataset.j]=el.value;
+    else if(k==='plan') modelo.objetivos[i].planes[+el.dataset.j].t=el.value;
+    else if(k==='kpi') modelo.objetivos[i].planes[+el.dataset.j].kpis[+el.dataset.kk]=el.value;
     else if(k==='rde') modelo.relaciones[i][0]=el.value;
     else if(k==='ra') modelo.relaciones[i][1]=el.value;
   }
   ed.addEventListener('input', upd);
   ed.addEventListener('change', function(e){ upd(e); if(e.target.dataset && e.target.dataset.k==='id') renderRels(); });
-
   ed.addEventListener('click', function(e){
     var b=e.target.closest('button'); if(!b||!b.dataset.act) return;
-    var act=b.dataset.act, i=b.dataset.i!=null?+b.dataset.i:null, j=b.dataset.j!=null?+b.dataset.j:null;
+    var act=b.dataset.act, i=b.dataset.i!=null?+b.dataset.i:null, j=b.dataset.j!=null?+b.dataset.j:null, kk=b.dataset.kk!=null?+b.dataset.kk:null;
     if(act==='addfase'){ modelo.fases.push({nombre:'Nueva fase',rango:''}); renderFases(); renderObjs(); }
-    else if(act==='delfase'){ if(modelo.fases.length<=1) return; modelo.fases.splice(i,1);
-      modelo.objetivos.forEach(function(o){ o.ini=Math.min(o.ini,modelo.fases.length); o.fin=Math.min(o.fin,modelo.fases.length); }); renderFases(); renderObjs(); }
-    else if(act==='addobj'){ modelo.objetivos.push({persp:'A',id:'N'+(modelo.objetivos.length+1),nombre:'Nuevo objetivo',ini:1,fin:modelo.fases.length,planes:[''],kpis:['']}); renderObjs(modelo.objetivos.length-1); renderRels(); }
+    else if(act==='delfase'){ if(modelo.fases.length<=1) return; modelo.fases.splice(i,1); modelo.objetivos.forEach(function(o){ o.ini=Math.min(o.ini,modelo.fases.length); o.fin=Math.min(o.fin,modelo.fases.length); }); renderFases(); renderObjs(); }
+    else if(act==='addobj'){ modelo.objetivos.push({persp:'A',id:'N'+(modelo.objetivos.length+1),nombre:'Nuevo objetivo',ini:1,fin:modelo.fases.length,planes:[{t:'',kpis:['']}]}); renderObjs(modelo.objetivos.length-1); renderRels(); }
     else if(act==='delobj'){ modelo.objetivos.splice(i,1); renderObjs(); renderRels(); }
-    else if(act==='addplan'){ modelo.objetivos[i].planes.push(''); renderPlanes(i); }
+    else if(act==='addplan'){ modelo.objetivos[i].planes.push({t:'',kpis:['']}); renderPlanes(i); }
     else if(act==='delplan'){ modelo.objetivos[i].planes.splice(j,1); renderPlanes(i); }
-    else if(act==='addkpi'){ modelo.objetivos[i].kpis.push(''); renderKpis(i); }
-    else if(act==='delkpi'){ modelo.objetivos[i].kpis.splice(j,1); renderKpis(i); }
-    else if(act==='addrel'){ if(!modelo.objetivos.length) return; var d=modelo.objetivos[0].id; modelo.relaciones.push([d,modelo.objetivos[Math.min(1,modelo.objetivos.length-1)].id]); renderRels(); }
+    else if(act==='addkpi'){ modelo.objetivos[i].planes[j].kpis.push(''); renderKpis(i,j); }
+    else if(act==='delkpi'){ modelo.objetivos[i].planes[j].kpis.splice(kk,1); renderKpis(i,j); }
+    else if(act==='addrel'){ if(!modelo.objetivos.length) return; modelo.relaciones.push([modelo.objetivos[0].id, modelo.objetivos[Math.min(1,modelo.objetivos.length-1)].id]); renderRels(); }
     else if(act==='delrel'){ modelo.relaciones.splice(i,1); renderRels(); }
   });
 
-  // ---------- Salidas (mapa / hoja de ruta / detalle) ----------
+  // ---------- Guardar / Abrir ----------
+  function post(url,body){ return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}); }
+  function setStatus(t,cls){ var m=document.getElementById('msg-save'); m.className='msg '+(cls||''); m.textContent=t; }
+  function statusBar(){ document.getElementById('sb-status').textContent = estado.token ? ('Mapa: '+estado.nombre+' · guardado en la base de datos') : 'Mapa nuevo (sin guardar)'; }
+
+  document.getElementById('btn-guardar').addEventListener('click', function(){
+    document.getElementById('form-abrir').hidden=true;
+    if(estado.token){
+      post(URL_GUARDAR,{token:estado.token, datos:modelo}).then(function(res){
+        if(!res.ok){ setStatus(res.j.error||'Error', 'err'); return; }
+        setStatus('Cambios guardados ✓','ok');
+      });
+    } else {
+      var f=document.getElementById('form-guardar'); f.hidden=!f.hidden;
+    }
+  });
+  document.getElementById('g-ok').addEventListener('click', function(){
+    var nombre=document.getElementById('g-nombre').value.trim(), clave=document.getElementById('g-clave').value.trim();
+    if(!nombre||!clave){ setStatus('Indica nombre y clave.','err'); return; }
+    post(URL_GUARDAR,{nombre:nombre, clave:clave, datos:modelo}).then(function(res){
+      if(!res.ok){ setStatus(res.j.error||'Error','err'); return; }
+      estado.token=res.j.token; estado.nombre=res.j.nombre;
+      document.getElementById('form-guardar').hidden=true;
+      var lk=document.getElementById('sb-link'); lk.hidden=false;
+      lk.innerHTML='<b>Mapa guardado.</b> Compártelo con tu equipo: nombre <b>'+esc(res.j.nombre)+'</b> + la clave. O usa tu enlace de edición:<br><a href="'+res.j.edit_url+'">'+res.j.edit_url+'</a>';
+      statusBar(); setStatus('Guardado ✓','ok');
+    });
+  });
+  document.getElementById('btn-abrir').addEventListener('click', function(){ document.getElementById('form-guardar').hidden=true; var f=document.getElementById('form-abrir'); f.hidden=!f.hidden; });
+  document.getElementById('a-ok').addEventListener('click', function(){
+    var nombre=document.getElementById('a-nombre').value.trim(), clave=document.getElementById('a-clave').value.trim();
+    post(URL_ABRIR,{nombre:nombre, clave:clave}).then(function(res){
+      if(!res.ok){ setStatus(res.j.error||'Error','err'); return; }
+      modelo=normaliza(res.j.datos); estado.token=res.j.token; estado.nombre=res.j.nombre;
+      document.getElementById('form-abrir').hidden=true; document.getElementById('sb-link').hidden=true;
+      renderEditor(); construir(); statusBar(); setStatus('Mapa abierto ✓','ok');
+    });
+  });
+  document.getElementById('btn-nuevo').addEventListener('click', function(){
+    if(!confirm('¿Empezar un mapa nuevo en blanco? Se perderá lo no guardado.')) return;
+    modelo={fases:[{nombre:'Fase 1',rango:''}],objetivos:[],relaciones:[]};
+    estado={token:'',nombre:''};
+    document.getElementById('sb-link').hidden=true; renderEditor();
+    document.getElementById('s-mapa').hidden=true; document.getElementById('s-roadmap').hidden=true; document.getElementById('s-detalle').hidden=true;
+    statusBar(); setStatus('Mapa nuevo','');
+  });
+
+  // ---------- Salidas ----------
   function grupos(obj){ var by={}; PORDER.forEach(function(p){by[p]=[];}); obj.forEach(function(o){ if(by[o.persp]) by[o.persp].push(o); }); return by; }
 
   function renderMapa(objetivos, relaciones){
@@ -303,50 +396,60 @@
     var leq=''; bands.forEach(function(b){ leq+='<span><i style="background:'+PMETA[b.p].fill+';border:1px solid '+PMETA[b.p].stroke+'"></i>'+esc(PMETA[b.p].n)+'</span>'; });
     document.getElementById('leyenda').innerHTML=leq;
   }
-
   function renderRoadmap(fases, objetivos){
     var nF=fases.length, cols='220px repeat('+nF+', 1fr)', h='';
     h+='<div class="rm-head" style="grid-template-columns:'+cols+'"><div class="cell lab"></div>';
     fases.forEach(function(f){ h+='<div class="cell"><b>'+esc(f.nombre)+'</b><br>'+esc(f.rango||'')+'</div>'; });
     h+='</div>';
     var by=grupos(objetivos);
-    PORDER.forEach(function(p){ if(!by[p].length) return;
-      h+='<div class="rm-persp" style="color:'+PMETA[p].stroke+'">'+esc(PMETA[p].n)+'</div>';
+    PORDER.forEach(function(p){ if(!by[p].length) return; h+='<div class="rm-persp" style="color:'+PMETA[p].stroke+'">'+esc(PMETA[p].n)+'</div>';
       by[p].forEach(function(o){ var ini=Math.max(1,o.ini||1),fin=Math.min(nF,o.fin||o.ini||nF); if(fin<ini) fin=ini;
         h+='<div class="rm-row" style="grid-template-columns:'+cols+'"><div class="rm-lab"><b>'+esc(o.id)+'</b>'+esc(corta(o.nombre,42))+'</div>';
         h+='<div style="grid-column:'+(1+ini)+' / '+(1+fin+1)+';"><div class="rm-bar" style="background:'+PMETA[p].fill+';border:1px solid '+PMETA[p].stroke+'">F'+ini+(fin>ini?('–F'+fin):'')+'</div></div></div>'; }); });
     document.getElementById('roadmap').innerHTML=h;
   }
-
   function renderDetalle(objetivos){
-    var by=grupos(objetivos),h='<table class="det"><tr><th style="width:210px">Objetivo</th><th>Planes de acción</th><th style="width:32%">KPIs</th></tr>';
+    var by=grupos(objetivos),h='<table class="det"><tr><th style="width:190px">Objetivo</th><th>Plan de acción</th><th style="width:34%">KPIs del plan</th></tr>';
     PORDER.forEach(function(p){ if(!by[p].length) return;
       h+='<tr><td colspan="3" style="background:'+PMETA[p].fill+';color:'+PMETA[p].stroke+';font-weight:700">'+esc(PMETA[p].n)+'</td></tr>';
-      by[p].forEach(function(o){ h+='<tr><td class="obj"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td>'
-        +'<td><ul>'+(o.planes||[]).filter(Boolean).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></td>'
-        +'<td><ul>'+(o.kpis||[]).filter(Boolean).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></td></tr>'; }); });
+      by[p].forEach(function(o){
+        var planes=(o.planes||[]).filter(function(pl){return pl.t && pl.t.trim();});
+        if(!planes.length){ h+='<tr><td class="obj"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td><td colspan="2" style="color:var(--muted)">Sin planes</td></tr>'; return; }
+        planes.forEach(function(pl,idx){
+          h+='<tr>';
+          if(idx===0) h+='<td class="obj" rowspan="'+planes.length+'"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td>';
+          h+='<td>'+esc(pl.t)+'</td><td><ul>'+(pl.kpis||[]).filter(Boolean).map(function(k){return '<li>'+esc(k)+'</li>';}).join('')+'</ul></td></tr>';
+        });
+      });
+    });
     h+='</table>'; document.getElementById('detalle').innerHTML=h;
   }
 
   function construir(){
-    var msg=document.getElementById('msg'); msg.textContent='';
+    var msg=document.getElementById('msg'); msg.className='msg'; msg.textContent='';
     var obj=modelo.objetivos.filter(function(o){ return o.id && o.id.trim(); });
-    if(!obj.length){ msg.textContent='Agrega al menos un objetivo con código.'; return; }
-    // objetivos para los renderers: convertir a {fases:[ini,fin]}
-    var objR=obj.map(function(o){ return {persp:o.persp,id:o.id.trim(),nombre:o.nombre,fases:[o.ini,o.fin],planes:o.planes,kpis:o.kpis}; });
+    if(!obj.length){ msg.className='msg err'; msg.textContent='Agrega al menos un objetivo con código.'; return; }
+    var objR=obj.map(function(o){ return {persp:o.persp,id:o.id.trim(),nombre:o.nombre,fases:[o.ini,o.fin],planes:o.planes}; });
     var ids={}; objR.forEach(function(o){ ids[o.id]=true; });
     var rel=modelo.relaciones.filter(function(r){ return ids[r[0]]&&ids[r[1]]&&r[0]!==r[1]; });
     renderMapa(objR, rel);
     renderRoadmap(modelo.fases.length?modelo.fases:[{nombre:'Fase 1'}], objR);
     renderDetalle(objR);
-    document.getElementById('s-mapa').hidden=false;
-    document.getElementById('s-roadmap').hidden=false;
-    document.getElementById('s-detalle').hidden=false;
+    document.getElementById('s-mapa').hidden=false; document.getElementById('s-roadmap').hidden=false; document.getElementById('s-detalle').hidden=false;
   }
-
   document.getElementById('btnBuild').addEventListener('click', construir);
-  renderEditor();
-  construir();
+
+  // ---------- Carga inicial (enlace ?t=token) ----------
+  function init(){
+    var params=new URLSearchParams(window.location.search); var t=params.get('t');
+    renderEditor(); construir();
+    if(t){
+      fetch("{% url 'bsc:index' %}".replace(/\/$/,'') + '/cargar/'+encodeURIComponent(t)+'/').then(function(r){return r.json();}).then(function(j){
+        if(j && j.ok){ modelo=normaliza(j.datos); estado.token=j.token; estado.nombre=j.nombre; renderEditor(); construir(); statusBar(); setStatus('Mapa cargado desde el enlace ✓','ok'); }
+      }).catch(function(){});
+    }
+  }
+  init();
 })();
 </script>
 {% endblock %}
