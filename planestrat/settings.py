@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'apps.dematel',
     'apps.anp',
     'apps.bsc',
+    'apps.optimizacion',
+    'apps.cartera',
 ]
 
 # --- Middleware ------------------------------------------------------------

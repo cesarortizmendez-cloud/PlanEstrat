@@ -36,12 +36,12 @@ MODULOS = [
     },
     {
         'codigo': 'M4', 'slug': 'optimizacion', 'nombre': 'Optimización del mapa',
-        'grupo': 'Estrategia', 'estado': 'proximo', 'fase': 'Fase 2',
+        'grupo': 'Estrategia', 'estado': 'activo', 'fase': 'Fase 2', 'url': '/optimizacion/',
         'desc': 'Programación lineal para depurar relaciones (scipy.linprog).',
     },
     {
         'codigo': 'M5', 'slug': 'cartera', 'nombre': 'Cartera de proyectos',
-        'grupo': 'Estrategia', 'estado': 'proximo', 'fase': 'Fase 2',
+        'grupo': 'Estrategia', 'estado': 'activo', 'fase': 'Fase 2', 'url': '/cartera/',
         'desc': 'Priorización de proyectos por índice estratégico.',
     },
     {

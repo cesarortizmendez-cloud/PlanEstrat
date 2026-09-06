@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cartera de proyectos · PlanEstrat{% endblock %}
+{% block topbar %}Cartera de proyectos · Índice estratégico{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
+  textarea{font-family:var(--font-mono);font-size:.82rem;width:100%;min-height:180px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  .stats{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 14px}
+  .stat b{font-family:var(--font-mono);font-size:1.05rem;color:var(--ink);display:block}
+  .stat span{font-size:.74rem;color:var(--muted)}
+  .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion strong{color:var(--ink)}
+  table.res{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  table.res td.num{font-family:var(--font-mono);text-align:right}
+  .bar{height:8px;border-radius:4px;background:var(--lean);display:inline-block;vertical-align:middle}
+  .chart-box{margin-top:16px;max-width:640px}
+  .err{color:var(--crit);font-weight:600}
+  .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line)}
+  .ref b{color:var(--ink-soft);font-weight:600}
+  :root{--crit:#b0483c}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Cartera de proyectos · Índice estratégico</h1>
+<p class="intro">Ordena los proyectos (planes de acción) según su <strong>contribución a la estrategia</strong>, no solo por costo o rentabilidad. El índice estratégico pondera el impacto de cada proyecto sobre los objetivos por la importancia de esos objetivos.</p>
+<p class="ref"><b>Método basado en:</b> Quezada, L.E., et al. (2022). <em>A DEMATEL-based method for prioritizing strategic projects using the perspectives of the Balanced Scorecard.</em> Int. J. Production Economics (ScienceDirect: S0925527322001116).</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p>Cada proyecto se evalúa por cuánto aporta a cada objetivo estratégico. El <strong>índice estratégico</strong> del proyecto <em>i</em> es:</p>
+    <p><code>IE<sub>i</sub> = Σ<sub>j</sub> w<sub>j</sub> · t<sub>ij</sub></code></p>
+    <p>donde <code>t<sub>ij</sub></code> es el impacto del proyecto <em>i</em> sobre el objetivo <em>j</em> (por ejemplo en escala 0–5) y <code>w<sub>j</sub></code> es la importancia del objetivo <em>j</em> (obtenida de AHP, ANP o DEMATEL). Los pesos se normalizan para sumar 1.</p>
+    <p>Así un proyecto sube en la cartera no por ser barato, sino por mover los objetivos que la organización decidió que importan. En la versión completa, el impacto incluye efectos indirectos vía DEMATEL sobre la red de objetivos.</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>1 · Objetivos y proyectos</h2>
+  <p class="sub">Objetivos: <code>Código | Nombre | peso</code>. Proyectos: <code>Nombre : impacto1, impacto2, …</code> (en el mismo orden de los objetivos, escala 0–5).</p>
+  <div class="cols">
+    <div>
+      <label for="objetivos">Objetivos (con peso)</label>
+      <textarea id="objetivos">F2 | Generar valor económico territorial | 0.28
+C1 | Articular la red de abastecimiento | 0.22
+T1 | Validar tecnología de secado | 0.20
+P1 | Estandarizar procesos | 0.18
+A1 | Fortalecer capacidades técnicas | 0.12</textarea>
+    </div>
+    <div>
+      <label for="proyectos">Proyectos (impacto por objetivo)</label>
+      <textarea id="proyectos">Secador móvil : 2, 1, 5, 3, 1
+Sistema de calidad : 2, 2, 1, 5, 1
+Red de abastecimiento : 3, 5, 0, 1, 1
+Programa de capacitación : 1, 1, 2, 2, 5
+Plan de sostenibilidad : 4, 2, 1, 1, 2</textarea>
+    </div>
+  </div>
+  <div style="margin-top:14px"><button class="btn btn-primary" id="btnCalc">Calcular índice estratégico</button></div>
+  <div class="err" id="msg"></div>
+</div>
+
+<div class="panel" id="resultado" hidden>
+  <h2>2 · Cartera priorizada</h2>
+  <div class="stats" id="stats"></div>
+  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
+  <table class="res" id="tabla"></table>
+  <div class="chart-box"><canvas id="grafico" height="240"></canvas></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'cartera:solve_api' %}";
+  var chart = null;
+
+  function parseObjetivos(txt){
+    var cods=[], pesos=[];
+    txt.split('\n').forEach(function(l){ l=l.trim(); if(!l) return;
+      var p=l.split('|').map(function(x){return x.trim();});
+      if(p.length<3) return;
+      cods.push(p[1]); pesos.push(parseFloat(p[2])||0);
+    });
+    return {cods:cods, pesos:pesos};
+  }
+  function parseProyectos(txt){
+    var nombres=[], filas=[];
+    txt.split('\n').forEach(function(l){ l=l.trim(); if(!l) return;
+      var i=l.indexOf(':'); if(i<0) return;
+      nombres.push(l.slice(0,i).trim());
+      filas.push(l.slice(i+1).split(',').map(function(x){return parseFloat(x.trim())||0;}));
+    });
+    return {nombres:nombres, filas:filas};
+  }
+
+  function calcular(){
+    var o=parseObjetivos(document.getElementById('objetivos').value);
+    var p=parseProyectos(document.getElementById('proyectos').value);
+    var msg=document.getElementById('msg'); msg.textContent='';
+    if(!o.cods.length){ msg.textContent='Define al menos un objetivo.'; return; }
+    var mal=p.filas.filter(function(f){return f.length!==o.cods.length;});
+    if(mal.length){ msg.textContent='Cada proyecto debe tener '+o.cods.length+' impactos (uno por objetivo).'; return; }
+    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ pesos:o.pesos, impactos:p.filas, proyectos:p.nombres, objetivos:o.cods }) })
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+    .then(function(res){ if(!res.ok) throw new Error(res.j.error||'Error'); pintar(res.j); })
+    .catch(function(e){ msg.textContent=e.message; });
+  }
+
+  function interpretar(r){
+    var rk=r.ranking, top=rk[0], last=rk[rk.length-1], s='';
+    s += 'El proyecto de mayor alineamiento estratégico es <strong>'+top.nombre+'</strong> (IE = '+top.IE.toFixed(3)+', '+(top.IE_rel*100).toFixed(1)+'% del total de la cartera)';
+    if(rk.length>2){ s+=', seguido de '+rk[1].nombre+' y '+rk[2].nombre+'. '; } else { s+='. '; }
+    s += 'El de menor contribución es '+last.nombre+' (IE = '+last.IE.toFixed(3)+'). ';
+    s += 'La prioridad no refleja costo ni rentabilidad, sino cuánto mueve cada proyecto los objetivos ponderados por su importancia: conviene financiar primero los de mayor IE para maximizar el avance de la estrategia.';
+    return s;
+  }
+
+  function pintar(r){
+    document.getElementById('resultado').hidden=false;
+    document.getElementById('stats').innerHTML =
+      stat(r.ranking.length,'proyectos') + stat(r.objetivos.length,'objetivos') +
+      stat(r.ranking[0].nombre,'líder');
+    document.getElementById('interpTexto').innerHTML=interpretar(r);
+    document.getElementById('interpretacion').hidden=false;
+
+    var t='<tr><th>#</th><th>Proyecto</th><th>IE</th><th>% cartera</th><th style="width:36%"></th></tr>';
+    r.ranking.forEach(function(x,k){
+      t += '<tr><td class="num">'+(k+1)+'</td><td>'+x.nombre+'</td>'
+        + '<td class="num">'+x.IE.toFixed(3)+'</td><td class="num">'+(x.IE_rel*100).toFixed(1)+'%</td>'
+        + '<td><span class="bar" style="width:'+(x.IE_rel*100)+'%"></span></td></tr>';
+    });
+    document.getElementById('tabla').innerHTML=t;
+
+    var labels=r.ranking.map(function(x){return x.nombre;});
+    var data=r.ranking.map(function(x){return +x.IE.toFixed(3);});
+    if(chart) chart.destroy();
+    var css=getComputedStyle(document.body);
+    chart=new Chart(document.getElementById('grafico').getContext('2d'), {
+      type:'bar',
+      data:{ labels:labels, datasets:[{ label:'Índice estratégico', data:data,
+        backgroundColor: css.getPropertyValue('--lean').trim()||'#b26a26' }] },
+      options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ beginAtZero:true } } }
+    });
+  }
+  function stat(v,l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
+
+  document.getElementById('btnCalc').addEventListener('click', calcular);
+  calcular();
+})();
+</script>
+{% endblock %}

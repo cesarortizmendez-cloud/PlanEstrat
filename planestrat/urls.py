@@ -12,6 +12,8 @@ urlpatterns = [
     path('dematel/', include('apps.dematel.urls')),
     path('anp/', include('apps.anp.urls')),
     path('bsc/', include('apps.bsc.urls')),
+    path('optimizacion/', include('apps.optimizacion.urls')),
+    path('cartera/', include('apps.cartera.urls')),
 
     # --- PWA (servidas en la raíz) ---
     path(
