@@ -165,7 +165,7 @@ Proveedor Cumbre</textarea>
       privacidad:document.getElementById('c-priv').value, metodo:'ahp' };
     var m=document.getElementById('c-msg'); m.className='msg'; m.textContent='Creando…';
     post(URL_CREAR, body).then(function(res){
-      if(!res.ok){ m.className='msg err'; m.textContent=res.j.error||'Error'; return; }
+      if(!res.ok){ m.className='msg err'; m.textContent=(res.j.error||'Error')+(res.j.detalle?(' — '+res.j.detalle):''); return; }
       m.textContent='';
       var sh=document.getElementById('c-share'); sh.hidden=false;
       sh.innerHTML='<b>Sala creada.</b> Comparte con tu equipo:<br>Código <span class="codigo">'+esc(res.j.codigo)+'</span> + la clave.'
@@ -180,7 +180,7 @@ Proveedor Cumbre</textarea>
     var part=document.getElementById('u-part').value.trim();
     var m=document.getElementById('u-msg'); m.className='msg'; m.textContent='Entrando…';
     post(URL_UNIRSE, {codigo:codigo, clave:clave}).then(function(res){
-      if(!res.ok){ m.className='msg err'; m.textContent=res.j.error||'Error'; return; }
+      if(!res.ok){ m.className='msg err'; m.textContent=(res.j.error||'Error')+(res.j.detalle?(' — '+res.j.detalle):''); return; }
       m.className='msg ok'; m.textContent='¡Bienvenido/a! Completa tu evaluación abajo.';
       sala=res.j.decision; sala._codigo=codigo; sala._clave=clave; sala._part=part;
       abrirEvaluacion();
@@ -231,12 +231,28 @@ Proveedor Cumbre</textarea>
   function leerEval(){ var m=sala.alternativas.length,n=sala.criterios.length,D=[]; for(var a=0;a<m;a++){ D.push(new Array(n).fill(5)); }
     document.querySelectorAll('#ev-eval select').forEach(function(s){ D[+s.dataset.a][+s.dataset.c]=parseInt(s.value,10); }); return D; }
 
+  // Prefill desde AHP/ANP ("Decidir en equipo")
+  (function prefill(){
+    try{
+      var raw=sessionStorage.getItem('planestrat_prefill'); if(!raw) return;
+      sessionStorage.removeItem('planestrat_prefill');
+      var p=JSON.parse(raw);
+      if(p.objetivo){ document.getElementById('c-obj').value=p.objetivo;
+        if(!document.getElementById('c-nombre').value) document.getElementById('c-nombre').value=p.nombre||('Decisión: '+p.objetivo); }
+      if(p.criterios&&p.criterios.length) document.getElementById('c-crit').value=p.criterios.join('\n');
+      if(p.alternativas&&p.alternativas.length) document.getElementById('c-alt').value=p.alternativas.join('\n');
+      var m=document.getElementById('c-msg'); m.className='msg ok';
+      m.textContent='Se cargaron los criterios y alternativas desde tu decisión individual. Pon una clave y crea la sala.';
+      document.getElementById('c-clave').focus();
+    }catch(e){}
+  })();
+
   document.getElementById('ev-enviar').addEventListener('click', function(){
     var m=document.getElementById('ev-msg'); m.className='msg'; m.textContent='Enviando…';
     var body={ codigo:sala._codigo, clave:sala._clave, participante:sala._part,
       juicios:leerMatriz(), desempeno:leerEval() };
     post(URL_ENVIAR, body).then(function(res){
-      if(!res.ok){ m.className='msg err'; m.textContent=res.j.error||'Error'; return; }
+      if(!res.ok){ m.className='msg err'; m.textContent=(res.j.error||'Error')+(res.j.detalle?(' — '+res.j.detalle):''); return; }
       m.textContent='';
       var crBadge = (res.j.consistencia==null) ? '' :
         '<div class="cr '+(res.j.consistente?'ok':'no')+'">Consistencia CR = '+res.j.consistencia.toFixed(3)+(res.j.consistente?' · consistente':' · revisa tus juicios')+'</div>';

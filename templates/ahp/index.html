@@ -158,7 +158,9 @@
   <div class="tool-row">
     <button class="chip-btn" id="btnEjemplos">📚 Cargar un ejemplo</button>
     <button class="chip-btn sec" id="btnDefinir">✎ Definir la decisión (ventana)</button>
+    <button class="chip-btn sec" id="btnEquipo">🤝 Decidir en equipo</button>
   </div>
+  <p class="sub" style="margin:-4px 0 0">¿Es una decisión de varias personas? Pulsa <b>Decidir en equipo</b> para crear una sala multiparticipante con estos mismos criterios y alternativas.</p>
   <div class="obj-box">
     <span class="obj-lbl">Objetivo de la decisión</span>
     <input type="text" id="objetivo" value="Elegir un proveedor">
@@ -481,6 +483,12 @@
   document.getElementById('btnEjemplos').addEventListener('click', openEjemplos);
   document.getElementById('btnDefinir').addEventListener('click', openDefinir);
   document.getElementById('btnGuiada').addEventListener('click', openGuiada);
+  document.getElementById('btnEquipo').addEventListener('click', function(){
+    decision.objetivo=document.getElementById('objetivo').value.trim()||'Elegir la mejor alternativa';
+    try{ sessionStorage.setItem('planestrat_prefill', JSON.stringify({
+      nombre:decision.objetivo, objetivo:decision.objetivo, criterios:decision.criterios, alternativas:decision.alternativas, metodo:'ahp'})); }catch(e){}
+    window.location.href="{% url 'decisiones:index' %}";
+  });
 
   // Carga inicial: ejemplo 1 completo, ya calculado
   renderResumen(); construirCriterios(); construirEval(); decidir();
