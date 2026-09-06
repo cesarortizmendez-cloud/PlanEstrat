@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planes de acción · Lean · PlanEstrat{% endblock %}
+{% block topbar %}Planes de acción · Herramientas Lean{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line)}
+  .ref b{color:var(--ink-soft);font-weight:600}
+  .toolnav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+  .toolnav button{font:inherit;font-weight:600;font-size:.86rem;padding:9px 15px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);cursor:pointer}
+  .toolnav button.on{background:var(--lean);color:#fff;border-color:var(--lean)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.24rem;margin:0 0 4px}
+  .panel .sub{color:var(--muted);font-size:.84rem;margin:0 0 12px}
+  label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
+  textarea{font-family:var(--font-mono);font-size:.82rem;width:100%;min-height:130px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  input[type=number]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);width:130px}
+  input[type=range]{width:100%}
+  .grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:720px){.grid6{grid-template-columns:1fr}}
+  .cat h4{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--lean-ink);margin:0 0 4px}
+  .row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-top:12px}
+  .fld{display:flex;flex-direction:column}
+  table.res{border-collapse:collapse;width:100%;font-size:.88rem;margin-top:12px}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  table.res th{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted)}
+  table.res td.num{font-family:var(--font-mono);text-align:right}
+  .pill{display:inline-block;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:999px}
+  .pill.v{background:var(--lean-soft);color:var(--lean-ink);border:1px solid var(--lean)}
+  .pill.t{background:var(--surface-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .kpi{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0}
+  .kpi .b{font-family:var(--font-head);font-size:1.9rem;font-weight:700;line-height:1;color:var(--lean-ink)}
+  .kpi .l{font-size:.74rem;color:var(--muted)}
+  .oee-big{font-family:var(--font-head);font-size:3rem;font-weight:700;color:var(--lean-ink);line-height:1}
+  .interpretacion{margin:14px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.55}
+  .chart-box{margin-top:14px;max-width:640px}
+  .fishbone{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px;margin-top:10px}
+  svg.fb{display:block;width:100%;min-width:640px;height:auto}
+  .err{color:var(--crit);font-weight:600}
+  :root{--crit:#b0483c}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
+  [hidden]{display:none!important}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Planes de acción · Mejora continua (Lean)</h1>
+<p class="intro">El módulo que traduce la estrategia en resultados. Cada iniciativa se aborda con el instrumental Lean dentro de un ciclo PDCA/A3: se diagnostica la causa (Ishikawa, Pareto), se priorizan las contramedidas y se estandariza (5S, SMED, TPM). Se conecta con los proyectos priorizados en la cartera y con los objetivos del mapa estratégico.</p>
+<p class="ref"><b>Herramientas:</b> Ishikawa (diagrama causa–efecto), Pareto (80/20), 5S, SMED (Shingo) y TPM/OEE (Nakajima), dentro del ciclo de mejora PDCA.</p>
+
+<div class="toolnav" id="toolnav">
+  <button data-t="ishikawa" class="on">Ishikawa</button>
+  <button data-t="pareto">Pareto</button>
+  <button data-t="cinco">5S</button>
+  <button data-t="smed">SMED</button>
+  <button data-t="oee">TPM · OEE</button>
+</div>
+
+<!-- ISHIKAWA -->
+<div class="panel tool" id="t-ishikawa">
+  <h2>Ishikawa · diagrama causa–efecto (6M)</h2>
+  <p class="sub">Escribe las causas por categoría (una por línea). El problema es el efecto a analizar.</p>
+  <div class="row"><div class="fld" style="flex:1;min-width:260px"><label>Problema (efecto)</label><input type="number" style="display:none"><textarea id="fb-problema" style="min-height:auto;height:42px">Alta variabilidad en la humedad de la biomasa seca</textarea></div></div>
+  <div class="grid6" style="margin-top:12px">
+    <div class="cat"><h4>Máquina</h4><textarea id="c-maquina">Secador móvil sin control fino
+Falta de mantención</textarea></div>
+    <div class="cat"><h4>Método</h4><textarea id="c-metodo">Sin POE de secado
+Tiempos de ciclo no definidos</textarea></div>
+    <div class="cat"><h4>Mano de obra</h4><textarea id="c-mano">Operadores sin capacitación
+Turnos sin estándar</textarea></div>
+    <div class="cat"><h4>Material</h4><textarea id="c-material">Biomasa de humedad variable
+Mezcla de especies</textarea></div>
+    <div class="cat"><h4>Medición</h4><textarea id="c-medicion">Medidores de humedad no calibrados
+Muestreo insuficiente</textarea></div>
+    <div class="cat"><h4>Medio ambiente</h4><textarea id="c-medio">Acopio a la intemperie
+Estacionalidad de lluvias</textarea></div>
+  </div>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="fb-btn">Ver espina de pescado</button></div>
+  <div class="fishbone" id="fb-out" hidden></div>
+  <div class="interpretacion" style="margin-top:12px">Las causas identificadas pueden llevarse a <strong>Pareto</strong> (para priorizar por frecuencia) o a <strong>DEMATEL</strong> (para estimar su influencia). Actúa primero sobre las causas raíz de mayor peso.</div>
+</div>
+
+<!-- PARETO -->
+<div class="panel tool" id="t-pareto" hidden>
+  <h2>Pareto · los pocos vitales</h2>
+  <p class="sub">Causas o defectos con su frecuencia: <code>Nombre | frecuencia</code>.</p>
+  <textarea id="pa-in">Ajuste manual de máquina | 142
+Material fuera de tolerancia | 98
+Otras causas | 54
+Método sin estándar | 51
+Falla de medición | 22</textarea>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="pa-btn">Analizar Pareto</button></div>
+  <div id="pa-out" hidden>
+    <div class="interpretacion" id="pa-int"></div>
+    <table class="res" id="pa-tab"></table>
+    <div class="chart-box"><canvas id="pa-chart" height="240"></canvas></div>
+  </div>
+</div>
+
+<!-- 5S -->
+<div class="panel tool" id="t-cinco" hidden>
+  <h2>5S · organización del puesto</h2>
+  <p class="sub">Puntúa cada fase de 0 a 100.</p>
+  <div id="cinco-sliders"></div>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="cinco-btn">Evaluar 5S</button></div>
+  <div id="cinco-out" hidden>
+    <div class="kpi"><div><div class="b" id="cinco-prom"></div><div class="l">promedio 5S</div></div></div>
+    <div class="interpretacion" id="cinco-int"></div>
+    <div class="chart-box" style="max-width:460px"><canvas id="cinco-chart" height="300"></canvas></div>
+  </div>
+</div>
+
+<!-- SMED -->
+<div class="panel tool" id="t-smed" hidden>
+  <h2>SMED · reducción del tiempo de cambio</h2>
+  <p class="sub">Actividades del cambio de formato: <code>Nombre | interno/externo | convertible si/no | minutos</code>. El tiempo de cambio es la suma de las actividades internas (máquina detenida).</p>
+  <textarea id="sm-in">Preparar herramientas | interno | si | 12
+Cambiar molde | interno | no | 20
+Ajuste fino | interno | si | 8
+Traer materiales | externo | no | 10
+Limpieza previa | externo | no | 6</textarea>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="sm-btn">Calcular SMED</button></div>
+  <div id="sm-out" hidden>
+    <div class="kpi">
+      <div><div class="b" id="sm-antes"></div><div class="l">tiempo de cambio antes (min)</div></div>
+      <div><div class="b" id="sm-desp"></div><div class="l">después (min)</div></div>
+      <div><div class="b" id="sm-red"></div><div class="l">reducción</div></div>
+    </div>
+    <div class="interpretacion" id="sm-int"></div>
+    <div class="chart-box" style="max-width:420px"><canvas id="sm-chart" height="200"></canvas></div>
+  </div>
+</div>
+
+<!-- OEE -->
+<div class="panel tool" id="t-oee" hidden>
+  <h2>TPM · OEE (eficiencia global del equipo)</h2>
+  <p class="sub">OEE = Disponibilidad × Rendimiento × Calidad.</p>
+  <div class="row">
+    <div class="fld"><label>Tiempo planificado (min)</label><input type="number" id="oee-tp" value="480"></div>
+    <div class="fld"><label>Paradas (min)</label><input type="number" id="oee-par" value="60"></div>
+    <div class="fld"><label>Tiempo de ciclo ideal (min/pieza)</label><input type="number" id="oee-ci" value="1" step="0.01"></div>
+    <div class="fld"><label>Piezas producidas</label><input type="number" id="oee-pp" value="380"></div>
+    <div class="fld"><label>Piezas buenas</label><input type="number" id="oee-pb" value="360"></div>
+  </div>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="oee-btn">Calcular OEE</button></div>
+  <div id="oee-out" hidden>
+    <div class="kpi" style="align-items:center">
+      <div><div class="oee-big" id="oee-val"></div><div class="l">OEE</div></div>
+      <div><div class="b" id="oee-d"></div><div class="l">Disponibilidad</div></div>
+      <div><div class="b" id="oee-r"></div><div class="l">Rendimiento</div></div>
+      <div><div class="b" id="oee-c"></div><div class="l">Calidad</div></div>
+    </div>
+    <div class="interpretacion" id="oee-int"></div>
+    <div class="chart-box" style="max-width:520px"><canvas id="oee-chart" height="200"></canvas></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'planes:solve_api' %}";
+  var charts = {};
+  function destroy(k){ if(charts[k]){ charts[k].destroy(); charts[k]=null; } }
+  function accent(v){ var c=getComputedStyle(document.body); return c.getPropertyValue(v).trim(); }
+  function post(body){ return fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}); }
+
+  // ---- Tool nav ----
+  var nav=document.getElementById('toolnav');
+  nav.addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    nav.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    document.querySelectorAll('.tool').forEach(function(p){ p.hidden=true; });
+    document.getElementById('t-'+b.dataset.t).hidden=false;
+  });
+
+  // ---- Ishikawa ----
+  function lineas(id){ return document.getElementById(id).value.split('\n').map(function(s){return s.trim();}).filter(Boolean); }
+  function fishbone(){
+    var cats=[['Máquina','c-maquina'],['Método','c-metodo'],['Mano de obra','c-mano'],['Material','c-material'],['Medición','c-medicion'],['Medio ambiente','c-medio']];
+    var problema=document.getElementById('fb-problema').value.trim();
+    var W=900, H=380, cy=H/2, x0=30, x1=W-210;
+    var s='<svg class="fb" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" font-family="\'IBM Plex Sans\',sans-serif">';
+    s+='<defs><marker id="fa" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#8b94a1"/></marker></defs>';
+    s+='<line x1="'+x0+'" y1="'+cy+'" x2="'+x1+'" y2="'+cy+'" stroke="#8b94a1" stroke-width="2.5" marker-end="url(#fa)"/>';
+    s+='<rect x="'+(x1+6)+'" y="'+(cy-34)+'" width="196" height="68" rx="9" fill="'+accent('--lean-soft')+'" stroke="'+accent('--lean')+'"/>';
+    var pl=problema.length>46?problema.slice(0,45)+'…':problema;
+    s+='<text x="'+(x1+104)+'" y="'+(cy-6)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+accent('--lean-ink')+'">Problema</text>';
+    s+='<text x="'+(x1+104)+'" y="'+(cy+12)+'" text-anchor="middle" font-size="10" fill="#1e2a38">'+(pl.length>30?pl.slice(0,29)+'…':pl)+'</text>';
+    var slots=[[0,'up'],[1,'up'],[2,'up'],[0,'dn'],[1,'dn'],[2,'dn']];
+    for(var i=0;i<6;i++){
+      var k=slots[i][0], up=slots[i][1]==='up';
+      var bx=x0+120+k*((x1-x0-140)/3);
+      var by=up?cy-140:cy+140;
+      var jx=bx+70, jy=cy;
+      s+='<line x1="'+bx+'" y1="'+by+'" x2="'+jx+'" y2="'+jy+'" stroke="'+accent('--lean')+'" stroke-width="1.6"/>';
+      s+='<rect x="'+(bx-58)+'" y="'+(up?by-22:by+2)+'" width="116" height="20" rx="6" fill="'+accent('--lean-soft')+'" stroke="'+accent('--lean')+'"/>';
+      s+='<text x="'+bx+'" y="'+(up?by-8:by+16)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+accent('--lean-ink')+'">'+cats[i][0]+'</text>';
+      var cs=lineas(cats[i][1]);
+      for(var j=0;j<cs.length && j<3;j++){
+        var ty=up? by+16+j*15 : by-8-j*15;
+        var tx=bx+8;
+        var t=cs[j].length>30?cs[j].slice(0,29)+'…':cs[j];
+        s+='<text x="'+tx+'" y="'+ty+'" font-size="9.5" fill="#1e2a38">• '+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</text>';
+      }
+    }
+    s+='</svg>';
+    var out=document.getElementById('fb-out'); out.innerHTML=s; out.hidden=false;
+  }
+  document.getElementById('fb-btn').addEventListener('click', fishbone);
+
+  // ---- Pareto ----
+  function pareto(){
+    var causas=document.getElementById('pa-in').value.split('\n').map(function(l){return l.trim();}).filter(Boolean).map(function(l){var p=l.split('|');return {nombre:(p[0]||'').trim(),frecuencia:parseFloat(p[1])||0};});
+    post({tool:'pareto',causas:causas}).then(function(res){
+      if(!res.ok){ document.getElementById('pa-out').hidden=false; document.getElementById('pa-int').innerHTML='<span class="err">'+(res.j.error||'Error')+'</span>'; return; }
+      var r=res.j; document.getElementById('pa-out').hidden=false;
+      var vitals=r.items.filter(function(x){return x.vital;}).map(function(x){return x.nombre;});
+      document.getElementById('pa-int').innerHTML='Los <strong>pocos vitales</strong> ('+r.n_vitales+') concentran el grueso del problema: <strong>'+vitals.join(', ')+'</strong>. Concentra las contramedidas en ellos antes que en los muchos triviales.';
+      var t='<tr><th>Causa</th><th>Frec.</th><th>%</th><th>% acum.</th><th>Clase</th></tr>';
+      r.items.forEach(function(x){ t+='<tr><td>'+x.nombre+'</td><td class="num">'+x.frecuencia+'</td><td class="num">'+(x.porcentaje*100).toFixed(1)+'</td><td class="num">'+(x.acumulado*100).toFixed(1)+'</td><td><span class="pill '+(x.vital?'v':'t')+'">'+(x.vital?'Vital':'Trivial')+'</span></td></tr>'; });
+      document.getElementById('pa-tab').innerHTML=t;
+      destroy('pa');
+      charts.pa=new Chart(document.getElementById('pa-chart').getContext('2d'),{
+        data:{ labels:r.items.map(function(x){return x.nombre;}),
+          datasets:[
+            {type:'bar',label:'Frecuencia',data:r.items.map(function(x){return x.frecuencia;}),backgroundColor:accent('--lean'),yAxisID:'y'},
+            {type:'line',label:'% acumulado',data:r.items.map(function(x){return +(x.acumulado*100).toFixed(1);}),borderColor:accent('--accent'),backgroundColor:'transparent',yAxisID:'y2',tension:.2,pointRadius:3}
+          ]},
+        options:{responsive:true,scales:{y:{beginAtZero:true,position:'left'},y2:{beginAtZero:true,max:100,position:'right',grid:{drawOnChartArea:false},ticks:{callback:function(v){return v+'%';}}}}}
+      });
+    });
+  }
+  document.getElementById('pa-btn').addEventListener('click', pareto);
+
+  // ---- 5S ----
+  var FASES=['Seiri (clasificar)','Seiton (ordenar)','Seiso (limpiar)','Seiketsu (estandarizar)','Shitsuke (disciplina)'];
+  var def5=[70,55,80,60,45];
+  (function(){ var h=''; FASES.forEach(function(f,i){ h+='<div style="margin-bottom:8px"><label>'+f+': <span id="v5-'+i+'">'+def5[i]+'</span></label><input type="range" min="0" max="100" value="'+def5[i]+'" data-i="'+i+'" class="s5"></div>'; }); document.getElementById('cinco-sliders').innerHTML=h;
+    document.querySelectorAll('.s5').forEach(function(sl){ sl.addEventListener('input',function(){ document.getElementById('v5-'+sl.dataset.i).textContent=sl.value; }); }); })();
+  function cinco(){
+    var sc=[]; document.querySelectorAll('.s5').forEach(function(sl){ sc[+sl.dataset.i]=parseFloat(sl.value); });
+    post({tool:'5s',scores:sc}).then(function(res){
+      var r=res.j; document.getElementById('cinco-out').hidden=false;
+      document.getElementById('cinco-prom').textContent=r.promedio.toFixed(0)+'%';
+      var bajos=r.detalle.filter(function(d){return d.bajo;}).map(function(d){return d.fase.split(' ')[0];});
+      document.getElementById('cinco-int').innerHTML= bajos.length? 'Fases por debajo de 60 que requieren plan de acción: <strong>'+bajos.join(', ')+'</strong>. La disciplina (Shitsuke) sostiene las demás; prioriza su estandarización.' : 'Todas las fases superan el umbral. Mantén las auditorías periódicas para no perder el estándar.';
+      destroy('c5');
+      charts.c5=new Chart(document.getElementById('cinco-chart').getContext('2d'),{
+        type:'radar', data:{ labels:FASES.map(function(f){return f.split(' ')[0];}), datasets:[{label:'5S',data:r.detalle.map(function(d){return d.score;}),borderColor:accent('--lean'),backgroundColor:'rgba(178,106,38,.15)',pointBackgroundColor:accent('--lean')}]},
+        options:{responsive:true,scales:{r:{min:0,max:100}},plugins:{legend:{display:false}}}
+      });
+    });
+  }
+  document.getElementById('cinco-btn').addEventListener('click', cinco);
+
+  // ---- SMED ----
+  function smed(){
+    var acts=document.getElementById('sm-in').value.split('\n').map(function(l){return l.trim();}).filter(Boolean).map(function(l){var p=l.split('|').map(function(x){return x.trim();});return {nombre:p[0],tipo:(/ext/i.test(p[1])?'externo':'interno'),convertible:/si|sí|yes/i.test(p[2]||''),tiempo:parseFloat(p[3])||0};});
+    post({tool:'smed',actividades:acts}).then(function(res){
+      var r=res.j; document.getElementById('sm-out').hidden=false;
+      document.getElementById('sm-antes').textContent=r.tiempo_cambio_antes;
+      document.getElementById('sm-desp').textContent=r.tiempo_cambio_despues;
+      document.getElementById('sm-red').textContent=(r.reduccion*100).toFixed(0)+'%';
+      document.getElementById('sm-int').innerHTML='Convertir las actividades internas a externas reduce el tiempo de máquina detenida de <strong>'+r.tiempo_cambio_antes+'</strong> a <strong>'+r.tiempo_cambio_despues+'</strong> minutos ('+(r.reduccion*100).toFixed(0)+'% menos). El siguiente paso es reducir las internas restantes.';
+      destroy('sm');
+      charts.sm=new Chart(document.getElementById('sm-chart').getContext('2d'),{
+        type:'bar', data:{ labels:['Antes','Después'], datasets:[{label:'Tiempo de cambio (min)',data:[r.tiempo_cambio_antes,r.tiempo_cambio_despues],backgroundColor:[accent('--accent'),accent('--lean')]}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+      });
+    });
+  }
+  document.getElementById('sm-btn').addEventListener('click', smed);
+
+  // ---- OEE ----
+  function oee(){
+    var body={tool:'oee',tiempo_planificado:+document.getElementById('oee-tp').value,paradas:+document.getElementById('oee-par').value,tiempo_ciclo_ideal:+document.getElementById('oee-ci').value,piezas_producidas:+document.getElementById('oee-pp').value,piezas_buenas:+document.getElementById('oee-pb').value};
+    post(body).then(function(res){
+      var r=res.j; document.getElementById('oee-out').hidden=false;
+      document.getElementById('oee-val').textContent=(r.oee*100).toFixed(1)+'%';
+      document.getElementById('oee-d').textContent=(r.disponibilidad*100).toFixed(1)+'%';
+      document.getElementById('oee-r').textContent=(r.rendimiento*100).toFixed(1)+'%';
+      document.getElementById('oee-c').textContent=(r.calidad*100).toFixed(1)+'%';
+      var nivel=r.oee>=0.85?'de clase mundial':(r.oee>=0.60?'aceptable, con oportunidades':'bajo, con pérdidas relevantes');
+      document.getElementById('oee-int').innerHTML='El OEE de <strong>'+(r.oee*100).toFixed(1)+'%</strong> es '+nivel+'. El factor más limitante es <strong>'+peor(r)+'</strong>; ataca esa pérdida primero (paradas, velocidad o defectos).';
+      destroy('oee');
+      charts.oee=new Chart(document.getElementById('oee-chart').getContext('2d'),{
+        type:'bar', data:{ labels:['Disponibilidad','Rendimiento','Calidad','OEE'], datasets:[{data:[r.disponibilidad*100,r.rendimiento*100,r.calidad*100,r.oee*100].map(function(x){return +x.toFixed(1);}),backgroundColor:[accent('--accent'),accent('--accent'),accent('--accent'),accent('--lean')]}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+'%';}}}}}
+      });
+    });
+  }
+  function peor(r){ var m=[['la disponibilidad',r.disponibilidad],['el rendimiento',r.rendimiento],['la calidad',r.calidad]]; m.sort(function(a,b){return a[1]-b[1];}); return m[0][0]; }
+  document.getElementById('oee-btn').addEventListener('click', oee);
+
+  // arranque
+  fishbone(); pareto(); cinco(); smed(); oee();
+})();
+</script>
+{% endblock %}

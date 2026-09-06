@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fuzzy VIKOR · PlanEstrat{% endblock %}
+{% block topbar %}Métodos difusos · Fuzzy VIKOR{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line)}
+  .ref b{color:var(--ink-soft);font-weight:600}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
+  textarea{font-family:var(--font-mono);font-size:.82rem;width:100%;min-height:120px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  .mtx-wrap{overflow-x:auto}
+  table.mtx{border-collapse:collapse;margin-top:6px}
+  table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:120px}
+  table.mtx th{background:var(--surface-2);font-size:.74rem;font-family:var(--font-mono);color:var(--muted)}
+  table.mtx th small{display:block;color:var(--faint);font-weight:400}
+  table.mtx select{font:inherit;font-size:.82rem;border:1px solid var(--line-strong);border-radius:6px;padding:4px;background:var(--surface);color:var(--ink);width:100%}
+  .row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  input[type=range]{width:200px}
+  .vval{font-family:var(--font-mono);color:var(--ink)}
+  .stats{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 14px}
+  .stat b{font-family:var(--font-mono);font-size:1.05rem;color:var(--ink);display:block}
+  .stat span{font-size:.74rem;color:var(--muted)}
+  .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion strong{color:var(--ink)}
+  table.res{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  table.res td.num{font-family:var(--font-mono);text-align:right}
+  .chart-box{margin-top:16px;max-width:620px}
+  .cond{display:inline-block;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:999px;margin-right:8px}
+  .cond.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
+  .cond.no{background:var(--surface-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .err{color:var(--crit);font-weight:600}
+  :root{--crit:#b0483c;--good:#3f7a52}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Fuzzy VIKOR · solución de compromiso</h1>
+<p class="intro">Prioriza alternativas de estrategia evaluadas con términos lingüísticos (cuando los expertos no pueden dar valores exactos). Las evaluaciones se representan como números difusos triangulares, se defuzzifican y VIKOR busca la solución de compromiso entre la utilidad del grupo y el arrepentimiento máximo.</p>
+<p class="ref"><b>Método basado en:</b> Quezada, L.E., et al. (2022). <em>A revisited fuzzy DEMATEL and optimization method for strategy map design under the BSC framework.</em> Soft Computing. DOI: 10.1007/s00500-022-07042-7</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p><strong>VIKOR</strong> ordena alternativas por su cercanía a la solución ideal, buscando un compromiso. La versión <strong>difusa</strong> admite juicios lingüísticos.</p>
+    <h4>1 · Términos lingüísticos → TFN</h4>
+    <p>Cada evaluación (Muy pobre … Muy bueno) se traduce en un número difuso triangular <code>(l, m, u)</code> y se defuzzifica por centroide <code>(l+m+u)/3</code>.</p>
+    <h4>2 · Ideal y anti-ideal</h4>
+    <p>Para cada criterio se toma el mejor <code>f*</code> y el peor <code>f⁻</code> (según sea de beneficio o de costo) y se calcula la distancia normalizada de cada alternativa al ideal.</p>
+    <h4>3 · S, R y Q</h4>
+    <p><code>S</code> = utilidad del grupo (suma ponderada de distancias); <code>R</code> = arrepentimiento máximo (peor criterio). <code>Q</code> combina ambas con el parámetro <code>v</code> (peso de la mayoría). Menor <code>Q</code> es mejor.</p>
+    <h4>4 · Compromiso</h4>
+    <p>La mejor alternativa es solución de compromiso si cumple <em>ventaja aceptable</em> (C1) y <em>estabilidad aceptable</em> (C2).</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>1 · Criterios y alternativas</h2>
+  <p class="sub">Criterios: <code>Nombre | peso | ben/cost</code>. Alternativas: una por línea.</p>
+  <div class="cols">
+    <div>
+      <label for="criterios">Criterios</label>
+      <textarea id="criterios">Impacto estratégico | 0.40 | ben
+Factibilidad | 0.25 | ben
+Costo | 0.20 | cost
+Riesgo | 0.15 | cost</textarea>
+    </div>
+    <div>
+      <label for="alternativas">Alternativas</label>
+      <textarea id="alternativas">Escalar secado móvil
+Priorizar producción de pellet
+Priorizar astilla calibrada</textarea>
+    </div>
+  </div>
+  <div style="margin-top:12px"><button class="btn btn-secondary" id="btnBuild">Construir matriz</button></div>
+</div>
+
+<div class="panel">
+  <h2>2 · Evaluación lingüística</h2>
+  <div class="mtx-wrap"><div id="matriz"></div></div>
+  <div class="row">
+    <div><label for="v">Parámetro v (mayoría): <span class="vval" id="vval">0.50</span></label><input type="range" id="v" min="0" max="1" step="0.05" value="0.5"></div>
+    <button class="btn btn-primary" id="btnCalc">Calcular ranking</button>
+  </div>
+</div>
+
+<div class="panel" id="resultado" hidden>
+  <h2>3 · Resultados</h2>
+  <div id="cond"></div>
+  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
+  <table class="res" id="tabla"></table>
+  <div class="chart-box"><canvas id="grafico" height="220"></canvas></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'difuso:solve_api' %}";
+  var chart=null;
+  var TERM=[['MP','Muy pobre',[0,0,2.5]],['P','Pobre',[0,2.5,5]],['M','Medio',[2.5,5,7.5]],['B','Bueno',[5,7.5,10]],['MB','Muy bueno',[7.5,10,10]]];
+  var TFN={}; TERM.forEach(function(t){TFN[t[0]]=t[2];});
+
+  var vsl=document.getElementById('v'), vval=document.getElementById('vval');
+  vsl.addEventListener('input', function(){ vval.textContent=parseFloat(vsl.value).toFixed(2); });
+
+  function criterios(){
+    var out=[];
+    document.getElementById('criterios').value.split('\n').forEach(function(l){ l=l.trim(); if(!l) return;
+      var p=l.split('|').map(function(x){return x.trim();});
+      if(p.length<3) return;
+      out.push({nombre:p[0], peso:parseFloat(p[1])||0, ben:/ben/i.test(p[2])});
+    });
+    return out;
+  }
+  function alternativas(){ return document.getElementById('alternativas').value.split('\n').map(function(s){return s.trim();}).filter(Boolean); }
+
+  function opciones(sel){ return TERM.map(function(t){ var s=t[0]===sel?' selected':''; return '<option value="'+t[0]+'"'+s+'>'+t[1]+'</option>'; }).join(''); }
+
+  // ejemplo por defecto (labels)
+  var EJ=[['MB','B','M','M'],['B','MB','B','M'],['M','B','P','P']];
+
+  function construir(){
+    var cr=criterios(), al=alternativas();
+    if(cr.length<2||al.length<2){ alert('Define al menos 2 criterios y 2 alternativas.'); return; }
+    var usarEj=(al.length===3 && cr.length===4);
+    var h='<table class="mtx"><tr><th>Alternativa \\ Criterio</th>';
+    cr.forEach(function(c){ h+='<th>'+c.nombre+'<small>'+(c.ben?'beneficio':'costo')+' · w='+c.peso+'</small></th>'; });
+    h+='</tr>';
+    al.forEach(function(a,i){
+      h+='<tr><th style="text-align:left">'+a+'</th>';
+      cr.forEach(function(c,j){ var pre=usarEj?EJ[i][j]:'M'; h+='<td><select data-i="'+i+'" data-j="'+j+'">'+opciones(pre)+'</select></td>'; });
+      h+='</tr>';
+    });
+    h+='</table>';
+    document.getElementById('matriz').innerHTML=h;
+    document.getElementById('resultado').hidden=true;
+  }
+
+  function calcular(){
+    var cr=criterios(), al=alternativas();
+    var A=al.length, C=cr.length;
+    var tfn=[]; for(var i=0;i<A;i++){ tfn.push(new Array(C)); }
+    document.querySelectorAll('#matriz select').forEach(function(s){
+      tfn[+s.dataset.i][+s.dataset.j]=TFN[s.value];
+    });
+    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ tfn:tfn, pesos:cr.map(function(c){return c.peso;}), beneficio:cr.map(function(c){return c.ben;}), v:parseFloat(vsl.value), alternativas:al }) })
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
+    .then(function(res){ if(!res.ok) throw new Error(res.j.error||'Error'); pintar(res.j); })
+    .catch(function(e){ var b=document.getElementById('resultado'); b.hidden=false; document.getElementById('cond').innerHTML='<span class="err">'+e.message+'</span>'; document.getElementById('tabla').innerHTML=''; document.getElementById('interpretacion').hidden=true; });
+  }
+
+  function interpretar(r){
+    var rk=r.ranking, best=rk[0], s='';
+    s+='La alternativa de compromiso es <strong>'+best.nombre+'</strong> (Q = '+best.Q.toFixed(3)+', el menor). ';
+    if(r.C1_ventaja && r.C2_estabilidad){ s+='Cumple ventaja aceptable y estabilidad, por lo que es una solución de compromiso robusta. '; }
+    else if(!r.C1_ventaja){ s+='La ventaja sobre la segunda alternativa no es amplia: podrían considerarse ambas como conjunto de compromiso. '; }
+    else { s+='La solución no es del todo estable ante el peso v: conviene analizar la sensibilidad. '; }
+    s+='S mide la utilidad conjunta (menor es mejor) y R el peor desempeño en un criterio; Q los combina con v = '+r.v.toFixed(2)+'.';
+    return s;
+  }
+
+  function pintar(r){
+    document.getElementById('resultado').hidden=false;
+    document.getElementById('cond').innerHTML =
+      '<span class="cond '+(r.C1_ventaja?'ok':'no')+'">C1 ventaja aceptable: '+(r.C1_ventaja?'sí':'no')+'</span>'+
+      '<span class="cond '+(r.C2_estabilidad?'ok':'no')+'">C2 estabilidad: '+(r.C2_estabilidad?'sí':'no')+'</span>';
+    document.getElementById('interpTexto').innerHTML=interpretar(r);
+    document.getElementById('interpretacion').hidden=false;
+
+    var t='<tr><th>#</th><th>Alternativa</th><th>Q</th><th>S</th><th>R</th></tr>';
+    r.ranking.forEach(function(x){ t+='<tr><td class="num">'+x.pos+'</td><td>'+x.nombre+'</td><td class="num">'+x.Q.toFixed(3)+'</td><td class="num">'+x.S.toFixed(3)+'</td><td class="num">'+x.R.toFixed(3)+'</td></tr>'; });
+    document.getElementById('tabla').innerHTML=t;
+
+    var labels=r.ranking.map(function(x){return x.nombre;});
+    var data=r.ranking.map(function(x){return +x.Q.toFixed(3);});
+    if(chart) chart.destroy();
+    var css=getComputedStyle(document.body);
+    chart=new Chart(document.getElementById('grafico').getContext('2d'), {
+      type:'bar', data:{ labels:labels, datasets:[{label:'Q (menor = mejor)', data:data, backgroundColor: css.getPropertyValue('--accent').trim()||'#2c5c86'}] },
+      options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true}} }
+    });
+  }
+
+  document.getElementById('btnBuild').addEventListener('click', construir);
+  document.getElementById('btnCalc').addEventListener('click', calcular);
+  construir(); calcular();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conciencia situacional · PlanEstrat{% endblock %}
+{% block topbar %}Conciencia situacional · Indicadores{% endblock %}
+
+{% block extra_head %}
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line)}
+  .ref b{color:var(--ink-soft);font-weight:600}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
+  textarea{font-family:var(--font-mono);font-size:.82rem;width:100%;min-height:150px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:6px 0 14px}
+  .tile{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:var(--surface)}
+  .tile b{font-family:var(--font-head);font-size:1.7rem;display:block;line-height:1}
+  .tile span{font-size:.76rem;color:var(--muted)}
+  .tile.v b{color:var(--good)} .tile.a b{color:var(--warn)} .tile.r b{color:var(--crit)}
+  table.res{border-collapse:collapse;width:100%;font-size:.88rem;margin-top:6px}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:middle}
+  table.res th{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted)}
+  table.res th.lvl{color:var(--star-ink)}
+  .dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .dot.verde{background:var(--good)} .dot.amarillo{background:var(--warn)} .dot.rojo{background:var(--crit)}
+  .num{font-family:var(--font-mono);text-align:right}
+  .trend.up{color:var(--good)} .trend.down{color:var(--crit)} .trend.flat{color:var(--muted)}
+  .risk{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px}
+  .risk.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
+  .risk.no{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit);border:1px solid var(--crit)}
+  .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion strong{color:var(--ink)}
+  .err{color:var(--crit);font-weight:600}
+  :root{--crit:#b0483c;--good:#3f7a52;--warn:#b0862a}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86;--warn:#d3ad5f}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Conciencia situacional</h1>
+<p class="intro">La capa de gestión continua: conecta los indicadores operativos con la estrategia en tres niveles —<strong>percepción</strong> (¿qué ocurre?), <strong>comprensión</strong> (¿por qué?) y <strong>proyección</strong> (¿qué puede ocurrir?)— para anticipar y decidir sobre la marcha.</p>
+<p class="ref"><b>Método basado en:</b> Quezada, L.E., et al. (2024). Modelo de conciencia situacional en la gestión estratégica. <em>Sustainability</em> 16(4), 1606. DOI: 10.3390/su16041606</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p>Para cada indicador se define su <em>valor</em> actual, su <em>meta</em> y su dirección deseada (más es mejor <code>+</code> o menos es mejor <code>-</code>), y opcionalmente su serie histórica.</p>
+    <h4>Percepción</h4>
+    <p>Estado semáforo según el cumplimiento (valor vs meta): verde ≥ 90%, amarillo ≥ 70%, rojo por debajo.</p>
+    <h4>Comprensión</h4>
+    <p>Tendencia a partir de la serie histórica (pendiente): mejora, empeora o estable, según la dirección deseada.</p>
+    <h4>Proyección</h4>
+    <p>Extrapolación lineal al siguiente período y verificación de si, de mantenerse la tendencia, el indicador alcanzará la meta (riesgo temprano).</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>1 · Indicadores</h2>
+  <p class="sub">Uno por línea: <code>Nombre | valor | meta | + o - | serie (opcional, valores separados por coma)</code>. <code>+</code> = más es mejor, <code>-</code> = menos es mejor.</p>
+  <textarea id="inds">Producción de pellet (ton) | 1700 | 2500 | + | 900, 1200, 1450, 1700
+Humedad de materia prima (%) | 38 | 15 | - | 48, 45, 42, 38
+Nº de capacitaciones | 3 | 8 | + | 1, 2, 3
+Convenios vigentes | 5 | 5 | + | 2, 3, 4, 5
+% de astilla conforme | 60 | 90 | + | 40, 50, 60
+Ton de astilla vendida | 120 | 400 | + | 0, 40, 120</textarea>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="btnEval">Evaluar</button></div>
+  <div class="err" id="msg"></div>
+</div>
+
+<div class="panel" id="resultado" hidden>
+  <h2>2 · Tablero situacional</h2>
+  <div class="tiles" id="tiles"></div>
+  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
+  <table class="res" id="tabla"></table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'situacional:solve_api' %}";
+
+  function parse(){
+    var out=[];
+    document.getElementById('inds').value.split('\n').forEach(function(l){ l=l.trim(); if(!l) return;
+      var p=l.split('|').map(function(x){return x.trim();});
+      if(p.length<4) return;
+      var serie=[]; if(p[4]) serie=p[4].split(',').map(function(x){return parseFloat(x.trim());}).filter(function(x){return !isNaN(x);});
+      out.push({nombre:p[0], valor:parseFloat(p[1])||0, meta:parseFloat(p[2])||0, direccion:(p[3].indexOf('-')>=0?'menor':'mayor'), serie:serie});
+    });
+    return out;
+  }
+
+  function evaluar(){
+    var inds=parse(); var msg=document.getElementById('msg'); msg.textContent='';
+    if(!inds.length){ msg.textContent='Define al menos un indicador.'; return; }
+    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ indicadores:inds }) })
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
+    .then(function(res){ if(!res.ok) throw new Error(res.j.error||'Error'); pintar(res.j); })
+    .catch(function(e){ msg.textContent=e.message; });
+  }
+
+  function interpretar(r){
+    var s=r.resumen, t='';
+    t += 'De '+s.n+' indicadores, <strong>'+s.verde+'</strong> están en verde, <strong>'+s.amarillo+'</strong> en amarillo y <strong>'+s.rojo+'</strong> en rojo. ';
+    if(s.en_riesgo>0){ t += 'La proyección advierte que <strong>'+s.en_riesgo+'</strong> no alcanzarán su meta si se mantiene la tendencia actual, lo que exige acciones correctivas anticipadas. '; }
+    else { t += 'Según la proyección, ningún indicador está en riesgo de incumplir su meta. '; }
+    t += 'La percepción muestra el estado; la comprensión, si mejora o empeora; y la proyección, el riesgo futuro para decidir a tiempo.';
+    return t;
+  }
+
+  function pintar(r){
+    document.getElementById('resultado').hidden=false;
+    var s=r.resumen;
+    document.getElementById('tiles').innerHTML =
+      tile('v',s.verde,'en meta (verde)') + tile('a',s.amarillo,'atención (amarillo)') +
+      tile('r',s.rojo,'críticos (rojo)') + tile('',s.en_riesgo,'en riesgo (proyección)');
+    document.getElementById('interpTexto').innerHTML=interpretar(r);
+    document.getElementById('interpretacion').hidden=false;
+
+    var h='<tr><th>Indicador</th><th class="lvl">Percepción</th><th class="lvl">Comprensión</th><th class="lvl">Proyección</th></tr>';
+    r.indicadores.forEach(function(x){
+      var tnd=x.tendencia, tclass=tnd? (tnd.estado==='mejora'?'up':(tnd.estado==='empeora'?'down':'flat')):'flat';
+      var tarrow=tnd? (tnd.estado==='mejora'?'▲ mejora':(tnd.estado==='empeora'?'▼ empeora':'▬ estable')):'—';
+      var proy = (x.alcanza_meta_proyeccion===null)?'—':
+        '<span class="risk '+(x.alcanza_meta_proyeccion?'ok':'no')+'">'+(x.alcanza_meta_proyeccion?'alcanzará meta':'no alcanzará')+'</span>';
+      h+='<tr><td><b>'+x.nombre+'</b><br><span style="color:var(--muted);font-size:.78rem">valor '+x.valor+' · meta '+x.meta+'</span></td>'
+        + '<td><span class="dot '+x.semaforo+'"></span>'+(x.cumplimiento*100).toFixed(0)+'%</td>'
+        + '<td class="trend '+tclass+'">'+tarrow+(tnd?(' <span style="color:var(--muted)">→ '+tnd.proyeccion.toFixed(1)+'</span>'):'')+'</td>'
+        + '<td>'+proy+'</td></tr>';
+    });
+    document.getElementById('tabla').innerHTML=h;
+  }
+  function tile(cls,n,lab){ return '<div class="tile '+cls+'"><b>'+n+'</b><span>'+lab+'</span></div>'; }
+
+  document.getElementById('btnEval').addEventListener('click', evaluar);
+  evaluar();
+})();
+</script>
+{% endblock %}

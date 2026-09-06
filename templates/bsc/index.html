@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Mapa estratégico · PlanEstrat{% endblock %}
-{% block topbar %}BSC · Mapa estratégico{% endblock %}
+{% block topbar %}BSC · Mapa estratégico y hoja de ruta{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -10,104 +10,145 @@
   .intro{color:var(--ink-soft);max-width:74ch}
   .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line)}
   .ref b{color:var(--ink-soft);font-weight:600}
-  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
-    border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
-  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);
-    font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
   details.teoria>summary::-webkit-details-marker{display:none}
   details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
   details.teoria[open]>summary::before{transform:rotate(90deg)}
   details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
-  details.teoria .cont h4{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--star-ink);margin:16px 0 4px}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
   .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
   .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:760px){.cols{grid-template-columns:1fr}}
-  label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
-  textarea{font-family:var(--font-mono);font-size:.82rem;width:100%;min-height:190px;padding:10px;border:1px solid var(--line-strong);
-    border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  textarea{font-family:var(--font-mono);font-size:.78rem;width:100%;min-height:240px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  .msg{font-size:.84rem;color:var(--crit);margin-top:8px;font-weight:600}
   .map-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
   svg.mapa{display:block;width:100%;min-width:760px;height:auto}
-  .msg{font-size:.84rem;color:var(--crit);margin-top:8px;font-weight:600}
   .leyenda{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.78rem;color:var(--muted)}
   .leyenda span{display:inline-flex;align-items:center;gap:6px}
   .leyenda i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  /* roadmap */
+  .rm-wrap{overflow-x:auto}
+  .roadmap{min-width:720px}
+  .rm-head{display:grid;gap:6px;margin-bottom:6px}
+  .rm-head .cell{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);text-align:center;padding:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px}
+  .rm-head .cell.lab{text-align:left;background:transparent;border:none}
+  .rm-row{display:grid;gap:6px;align-items:center;margin-bottom:4px}
+  .rm-lab{font-size:.82rem;color:var(--ink-soft);padding:4px 6px}
+  .rm-lab b{font-family:var(--font-mono);font-size:.72rem;margin-right:4px}
+  .rm-bar{height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.68rem;color:#1e2a38;font-weight:600}
+  .rm-persp{font-family:var(--font-head);font-weight:700;font-size:.92rem;margin:14px 0 6px;padding-left:4px}
+  /* detalle */
+  table.det{border-collapse:collapse;width:100%;font-size:.86rem;margin-top:6px}
+  table.det th,table.det td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  table.det th{background:var(--surface-2);font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted)}
+  table.det td.obj{white-space:nowrap;font-weight:600}
+  table.det ul{margin:0;padding-left:16px}
+  table.det li{margin:2px 0}
+  .persp-tag{display:inline-block;font-size:.66rem;font-weight:700;padding:1px 7px;border-radius:999px;margin-bottom:6px}
   :root{--crit:#b0483c}
   @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 class="h1">Mapa estratégico (Balanced Scorecard)</h1>
-<p class="intro">Organiza los objetivos estratégicos en perspectivas y conecta sus relaciones causa–efecto de abajo hacia arriba: las capacidades habilitan la tecnología y los procesos, que sostienen la propuesta a clientes, que producen los resultados financieros y de impacto. Este mapa es la estructura sobre la que operan DEMATEL, ANP y la optimización.</p>
-<p class="ref"><b>Ejemplo cargado:</b> Proyecto FIC 23-12 · “Bioenergía circular Los Ríos” (mapa 2026–2036). <b>Método basado en:</b> Quezada, L.E. et al. (2018). <em>Identifying causal relationships in strategy maps using ANP and DEMATEL.</em> Computers &amp; Industrial Engineering 118, 170–179. DOI: 10.1016/j.cie.2018.02.020</p>
+<h1 class="h1">Mapa estratégico y hoja de ruta (BSC)</h1>
+<p class="intro">Un módulo estratégico completo: el <strong>mapa</strong> conecta los objetivos por relaciones causa–efecto; la <strong>hoja de ruta</strong> ubica cada objetivo en fases con horizonte temporal; y el <strong>detalle</strong> asocia a cada objetivo sus planes de acción y sus KPIs. Todo se edita en un mismo modelo y alimenta a DEMATEL, ANP, la optimización y la cartera.</p>
+<p class="ref"><b>Ejemplo cargado:</b> Proyecto FIC 23-12 · “Bioenergía circular Los Ríos” (hoja de ruta 2024–2036). <b>Método:</b> Quezada, L.E. et al. (2018), <em>Identifying causal relationships in strategy maps using ANP and DEMATEL.</em> Computers &amp; Industrial Engineering 118, 170–179. DOI: 10.1016/j.cie.2018.02.020</p>
 
 <details class="teoria">
   <summary>Cómo funciona</summary>
   <div class="cont">
-    <p>Un <strong>mapa estratégico</strong> traduce la estrategia en objetivos conectados por relaciones causa–efecto, agrupados en <strong>perspectivas</strong> del Balanced Scorecard. La lógica es ascendente:</p>
-    <h4>Perspectivas (de abajo hacia arriba)</h4>
-    <p><strong>Aprendizaje y Desarrollo</strong> (capacidades) → <strong>Tecnología</strong> → <strong>Procesos</strong> → <strong>Clientes y Mercado</strong> → <strong>Financiera / Impacto</strong> (resultados). Cada nivel habilita al siguiente.</p>
-    <h4>Objetivos</h4>
-    <p>Cada objetivo pertenece a una perspectiva y tiene un código (F1, T2, …). Se escriben como <code>Perspectiva | Código | Nombre</code>.</p>
-    <h4>Relaciones causa–efecto</h4>
-    <p>Un objetivo influye sobre otro de una perspectiva superior. Se escriben como <code>A1 -&gt; T1</code>. Estas relaciones son las que DEMATEL/ANP ponderan y la optimización depura.</p>
-    <h4>Uso</h4>
-    <p>Edita los objetivos y las relaciones y presiona “Construir mapa”. El mapa se dibuja con las perspectivas en bandas y las flechas causa–efecto entre objetivos.</p>
+    <p>El modelo se describe en JSON con tres partes:</p>
+    <p><code>fases</code>: etapas con su rango temporal (ej. “Diseño validado”, 2024–2027).</p>
+    <p><code>objetivos</code>: cada uno con su <em>perspectiva</em> (F, C, P, T, A), <em>código</em>, <em>nombre</em>, las <em>fases</em> que abarca <code>[inicio, fin]</code>, sus <em>planes</em> de acción y sus <em>kpis</em>.</p>
+    <p><code>relaciones</code>: pares causa–efecto <code>["A1","T1"]</code> (un objetivo habilita a otro superior).</p>
+    <p>Perspectivas de abajo hacia arriba: Aprendizaje → Tecnología → Procesos → Clientes → Financiera. Edita el modelo y presiona “Construir” para regenerar el mapa, la hoja de ruta y el detalle.</p>
   </div>
 </details>
 
 <div class="panel">
-  <h2>1 · Objetivos y relaciones</h2>
-  <p class="sub">Formato objetivos: <code>Perspectiva | Código | Nombre</code> (perspectiva ∈ F, C, P, T, A). Formato relaciones: <code>Origen -&gt; Destino</code>.</p>
-  <div class="cols">
-    <div>
-      <label for="objetivos">Objetivos</label>
-      <textarea id="objetivos">F | F1 | Incorporar biomasa alternativa
-F | F2 | Generar valor económico territorial
-F | F3 | Fortalecer la sostenibilidad energética regional
-C | C1 | Articular la red de abastecimiento
-C | C2 | Ampliar la base de clientes clave
-C | C3 | Desarrollar mercado para la astilla seca y calibrada
-P | P1 | Estandarizar los procesos de secado y pelletizado
-P | P2 | Asegurar el cumplimiento de estándares de calidad
-P | P3 | Optimizar la logística de recolección, acopio y transporte
-T | T1 | Validar tecnología de secado de biomasa
-T | T2 | Optimizar la mezcla de materias primas para pelletización
-T | T3 | Mejorar la transformación energética
-T | T4 | Escalar soluciones tecnológicas replicables
-A | A1 | Fortalecer capacidades técnicas
-A | A2 | Consolidar coordinación institucional estatal-industria-academia</textarea>
-    </div>
-    <div>
-      <label for="relaciones">Relaciones causa–efecto</label>
-      <textarea id="relaciones">A1 -> T1
-A1 -> T2
-A1 -> T3
-A2 -> P3
-A2 -> C1
-T1 -> P1
-T2 -> P1
-T3 -> P2
-T4 -> C3
-P1 -> C1
-P2 -> C3
-P3 -> C1
-C1 -> F1
-C2 -> F2
-C3 -> F2
-C1 -> F3</textarea>
-    </div>
-  </div>
-  <div style="margin-top:14px"><button class="btn btn-primary" id="btnMapa">Construir mapa</button></div>
+  <h2>1 · Modelo estratégico</h2>
+  <p class="sub">Edita el JSON (fases, objetivos con planes y KPIs, y relaciones).</p>
+  <textarea id="modelo" spellcheck="false">{% verbatim %}{
+  "fases": [
+    {"nombre": "Diseño validado", "rango": "2024–2027"},
+    {"nombre": "Operación piloto", "rango": "2028–2029"},
+    {"nombre": "Escalamiento", "rango": "2030–2032"},
+    {"nombre": "Régimen y réplica", "rango": "2033–2036"}
+  ],
+  "objetivos": [
+    {"persp":"F","id":"F1","nombre":"Incorporar biomasa alternativa","fases":[1,2],
+     "planes":["Evaluar factibilidad financiera","Caracterizar oferta y demanda","Definir costos"],
+     "kpis":["Costos definidos","Oferta y demanda caracterizadas"]},
+    {"persp":"F","id":"F2","nombre":"Generar valor económico territorial","fases":[2,4],
+     "planes":["Valorizar el incremento de utilidad en la cadena","Promover inversión pública y privada"],
+     "kpis":["Aumento de utilidad ($)","Inversión movilizada ($)"]},
+    {"persp":"F","id":"F3","nombre":"Fortalecer la sostenibilidad energética regional","fases":[3,4],
+     "planes":["Desarrollar plan estratégico de sostenibilidad","Socializar y publicar el plan"],
+     "kpis":["Plan publicado","Actores adheridos"]},
+    {"persp":"C","id":"C1","nombre":"Articular la red de abastecimiento","fases":[1,4],
+     "planes":["Formalizar acuerdos bosque–aserraderos–operador–pelletizadoras","Proponer precios de venta"],
+     "kpis":["Volumen de flujo","Tabla de precios construida"]},
+    {"persp":"C","id":"C2","nombre":"Consolidar la oferta regional de pellet","fases":[2,4],
+     "planes":["Acompañar de forma continua la cadena productiva"],
+     "kpis":["Volumen producido de pellet (ton)"]},
+    {"persp":"C","id":"C3","nombre":"Desarrollar mercado para la astilla seca y calibrada","fases":[2,4],
+     "planes":["Validar uso en calderas 60–120 kW","Validar otros usos de la astilla","Comunicar precio por energía útil"],
+     "kpis":["Calderas piloto instaladas","Ton de astilla vendida","Satisfacción de clientes"]},
+    {"persp":"P","id":"P1","nombre":"Estandarizar los procesos de secado y pelletizado","fases":[1,3],
+     "planes":["Definir POE de acopio y homogeneización","Aplicar listas de chequeo operativas","Controlar ingreso y salida de biomasa"],
+     "kpis":["Documento técnico publicado"]},
+    {"persp":"P","id":"P2","nombre":"Asegurar el cumplimiento de estándares de calidad","fases":[2,4],
+     "planes":["Muestreo y control de humedad","Controlar granulometría, cenizas y pureza"],
+     "kpis":["Nº mediciones según protocolo"]},
+    {"persp":"P","id":"P3","nombre":"Optimizar la logística de recolección, acopio y transporte","fases":[1,4],
+     "planes":["Desarrollar instructivos y procedimiento de gestión de materias primas"],
+     "kpis":["Instructivos publicados"]},
+    {"persp":"T","id":"T1","nombre":"Validar tecnología de secado de biomasa","fases":[1,2],
+     "planes":["Ensayar mezclas de distintos tamaños de biomasa","Medir humedad, rendimiento, energía y mantención","Ajustar diseño y operación del secador móvil"],
+     "kpis":["Modelo de humedad y consumo de energía","Productividad kg/h estandarizada","Tiempos de ciclo definidos"]},
+    {"persp":"T","id":"T2","nombre":"Optimizar la mezcla de materias primas para pelletización","fases":[1,3],
+     "planes":["Ensayar mezclas de biomasa","Ajustar molienda, prensado y humedad","Validar calidad física y energética del pellet"],
+     "kpis":["Nº de ensayos de mezclas","Estándar de consumo kWh/ton","% de defectos y propiedades físicas"]},
+    {"persp":"T","id":"T3","nombre":"Mejorar la transformación energética","fases":[2,3],
+     "planes":["Transformar biomasa en astillas secas y calibradas","Evaluar fuente de calor móvil","Medir eficiencia térmica y costos"],
+     "kpis":["% de astilla conforme","Costos operacionales respaldados","Eficiencia térmica medida"]},
+    {"persp":"T","id":"T4","nombre":"Escalar soluciones tecnológicas replicables","fases":[3,4],
+     "planes":["Especificar segundo secador y equipos anexos","Diseñar paquete tecnológico replicable","Transferir tecnología al territorio"],
+     "kpis":["Nº de soluciones replicadas","CAPEX validado","Nº de capacitaciones con PYMES"]},
+    {"persp":"A","id":"A1","nombre":"Fortalecer capacidades técnicas","fases":[1,4],
+     "planes":["Transferir protocolos de secado y astillas calibradas","Generar manuales y rutinas de mejora","Realizar capacitaciones"],
+     "kpis":["Nº de informes técnicos","Nº de capacitaciones"]},
+    {"persp":"A","id":"A2","nombre":"Consolidar coordinación institucional estatal-industria-academia","fases":[1,4],
+     "planes":["Crear comité directivo y mesas técnicas","Definir roles, actas y responsables","Gestionar convenios y acuerdos de continuidad"],
+     "kpis":["Sesiones realizadas","Acuerdos cumplidos","Actores activos","Convenios vigentes"]}
+  ],
+  "relaciones": [
+    ["A1","T1"],["A1","T2"],["A1","T3"],["A2","P3"],["A2","C1"],
+    ["T1","P1"],["T2","P1"],["T3","P2"],["T4","C3"],
+    ["P1","C1"],["P2","C3"],["P3","C1"],
+    ["C1","F1"],["C2","F2"],["C3","F2"],["C1","F3"]
+  ]
+}{% endverbatim %}</textarea>
+  <div style="margin-top:14px"><button class="btn btn-primary" id="btnBuild">Construir</button></div>
   <div class="msg" id="msg"></div>
 </div>
 
-<div class="panel" id="salida" hidden>
+<div class="panel" id="s-mapa" hidden>
   <h2>2 · Mapa estratégico</h2>
   <div class="map-wrap"><div id="mapa"></div></div>
   <div class="leyenda" id="leyenda"></div>
+</div>
+
+<div class="panel" id="s-roadmap" hidden>
+  <h2>3 · Hoja de ruta por fases</h2>
+  <div class="rm-wrap"><div class="roadmap" id="roadmap"></div></div>
+</div>
+
+<div class="panel" id="s-detalle" hidden>
+  <h2>4 · Planes de acción y KPIs por objetivo</h2>
+  <div style="overflow-x:auto"><div id="detalle"></div></div>
 </div>
 {% endblock %}
 
@@ -123,113 +164,112 @@ C1 -> F3</textarea>
     T:{n:'Tecnología',              fill:'#e6ddf1', stroke:'#6a4b9c'},
     A:{n:'Aprendizaje y Desarrollo',fill:'#d9ecd6', stroke:'#3f7a52'}
   };
-  var TXT = '#1e2a38';
+  var TXT='#1e2a38';
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function corta(s,n){ s=String(s); return s.length>n ? s.slice(0,n-1)+'…' : s; }
 
-  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function corta(s,n){ return s.length>n ? s.slice(0,n-1)+'…' : s; }
+  function grupos(obj){ var by={}; PORDER.forEach(function(p){by[p]=[];}); obj.forEach(function(o){ if(by[o.persp]) by[o.persp].push(o); }); return by; }
 
-  function parseObjetivos(txt){
-    var out=[], err=[];
-    txt.split('\n').forEach(function(line){
-      line=line.trim(); if(!line) return;
-      var p=line.split('|').map(function(x){return x.trim();});
-      if(p.length<3){ err.push('Objetivo mal formado: "'+line+'"'); return; }
-      var persp=p[0].toUpperCase();
-      if(PORDER.indexOf(persp)<0){ err.push('Perspectiva desconocida en: "'+line+'"'); return; }
-      out.push({persp:persp, id:p[1], nombre:p.slice(2).join('|')});
-    });
-    return {obj:out, err:err};
-  }
-  function parseRelaciones(txt){
-    var out=[];
-    txt.split('\n').forEach(function(line){
-      line=line.trim(); if(!line) return;
-      var m=line.split(/->|→/);
-      if(m.length===2){ out.push([m[0].trim(), m[1].trim()]); }
-    });
-    return out;
-  }
-
-  function render(objetivos, relaciones){
-    var byP={}; PORDER.forEach(function(p){ byP[p]=[]; });
-    objetivos.forEach(function(o){ if(byP[o.persp]) byP[o.persp].push(o); });
-
-    var W=1040, plotL=178, plotR=1022, plotW=plotR-plotL;
-    var top=18, bandH=124, boxW=150, boxH=58;
+  // ---------- MAPA ----------
+  function renderMapa(objetivos, relaciones){
+    var by=grupos(objetivos);
+    var W=1040, plotL=178, plotR=1022, plotW=plotR-plotL, top=18, bandH=124, boxW=150, boxH=58;
     var pos={}, bands=[], bi=0;
     PORDER.forEach(function(p){
-      if(!byP[p].length) return;
-      var yc = top + bi*bandH + bandH/2;
-      bands.push({p:p, yc:yc, y0:top+bi*bandH, y1:top+(bi+1)*bandH});
-      var m=byP[p].length;
-      byP[p].forEach(function(o,k){
-        var cx = plotL + (k+0.5)*(plotW/m);
-        pos[o.id]={cx:cx, cy:yc, top:yc-boxH/2, bottom:yc+boxH/2, o:o, p:p};
-      });
+      if(!by[p].length) return;
+      var yc=top+bi*bandH+bandH/2;
+      bands.push({p:p,yc:yc,y1:top+(bi+1)*bandH});
+      var m=by[p].length;
+      by[p].forEach(function(o,k){ var cx=plotL+(k+0.5)*(plotW/m); pos[o.id]={cx:cx,cy:yc,top:yc-boxH/2,bottom:yc+boxH/2,o:o,p:p}; });
       bi++;
     });
-    var H = top + bi*bandH + top;
-
-    var s = '<svg class="mapa" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" font-family="\'IBM Plex Sans\',sans-serif">';
-    s += '<defs><marker id="arh" markerWidth="9" markerHeight="9" refX="7.5" refY="3" orient="auto" markerUnits="userSpaceOnUse">'
-       + '<path d="M0,0 L8,3 L0,6 Z" fill="#8b94a1"/></marker></defs>';
-
-    // bandas: separadores y etiqueta de perspectiva
+    var H=top+bi*bandH+top;
+    var s='<svg class="mapa" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" font-family="\'IBM Plex Sans\',sans-serif">';
+    s+='<defs><marker id="arh" markerWidth="9" markerHeight="9" refX="7.5" refY="3" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,3 L0,6 Z" fill="#8b94a1"/></marker></defs>';
     bands.forEach(function(b){
-      s += '<line x1="8" y1="'+b.y1+'" x2="'+(W-10)+'" y2="'+b.y1+'" stroke="#e2e5ea" stroke-width="1"/>';
-      s += '<text x="14" y="'+(b.yc-6)+'" fill="'+PMETA[b.p].stroke+'" font-size="12.5" font-weight="700">'+esc(PMETA[b.p].n)+'</text>';
-      s += '<text x="14" y="'+(b.yc+11)+'" fill="#8b94a1" font-size="10.5">Perspectiva '+b.p+'</text>';
+      s+='<line x1="8" y1="'+b.y1+'" x2="'+(W-10)+'" y2="'+b.y1+'" stroke="#e2e5ea"/>';
+      s+='<text x="14" y="'+(b.yc-6)+'" fill="'+PMETA[b.p].stroke+'" font-size="12.5" font-weight="700">'+esc(PMETA[b.p].n)+'</text>';
+      s+='<text x="14" y="'+(b.yc+11)+'" fill="#8b94a1" font-size="10.5">Perspectiva '+b.p+'</text>';
     });
-
-    // flechas (debajo de las cajas)
     relaciones.forEach(function(r){
-      var a=pos[r[0]], b=pos[r[1]];
-      if(!a||!b) return;
-      var x1,y1,x2,y2;
-      if(a.cy>b.cy){ y1=a.top; y2=b.bottom+2; }      // origen abajo -> destino arriba
-      else if(a.cy<b.cy){ y1=a.bottom; y2=b.top-2; } // (raro) origen arriba
-      else { y1=a.cy; y2=b.cy; }                      // misma banda
-      x1=a.cx; x2=b.cx;
-      s += '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#b7bec9" stroke-width="1.5" marker-end="url(#arh)"/>';
+      var a=pos[r[0]], b=pos[r[1]]; if(!a||!b) return;
+      var y1,y2; if(a.cy>b.cy){y1=a.top;y2=b.bottom+2;} else if(a.cy<b.cy){y1=a.bottom;y2=b.top-2;} else {y1=a.cy;y2=b.cy;}
+      s+='<line x1="'+a.cx.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+b.cx.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#b7bec9" stroke-width="1.5" marker-end="url(#arh)"/>';
     });
-
-    // cajas de objetivos
     Object.keys(pos).forEach(function(id){
       var q=pos[id], m=PMETA[q.p], x=q.cx-boxW/2, y=q.top;
-      s += '<g>';
-      s += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+boxW+'" height="'+boxH+'" rx="9" fill="'+m.fill+'" stroke="'+m.stroke+'" stroke-width="1.4"/>';
-      s += '<text x="'+q.cx.toFixed(1)+'" y="'+(y+18)+'" text-anchor="middle" fill="'+m.stroke+'" font-size="12.5" font-weight="700">'+esc(id)+'</text>';
-      // nombre en hasta dos líneas
-      var nm=q.o.nombre, l1=corta(nm,26), l2='';
-      if(nm.length>26){ l2=corta(nm.slice(25),24); }
-      s += '<text x="'+q.cx.toFixed(1)+'" y="'+(y+34)+'" text-anchor="middle" fill="'+TXT+'" font-size="10.5">'+esc(l1)+'</text>';
-      if(l2) s += '<text x="'+q.cx.toFixed(1)+'" y="'+(y+47)+'" text-anchor="middle" fill="'+TXT+'" font-size="10.5">'+esc(l2)+'</text>';
-      s += '</g>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+boxW+'" height="'+boxH+'" rx="9" fill="'+m.fill+'" stroke="'+m.stroke+'" stroke-width="1.4"/>';
+      s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+18)+'" text-anchor="middle" fill="'+m.stroke+'" font-size="12.5" font-weight="700">'+esc(id)+'</text>';
+      var nm=q.o.nombre, l1=corta(nm,26), l2=nm.length>26?corta(nm.slice(25),24):'';
+      s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+34)+'" text-anchor="middle" fill="'+TXT+'" font-size="10.5">'+esc(l1)+'</text>';
+      if(l2) s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+47)+'" text-anchor="middle" fill="'+TXT+'" font-size="10.5">'+esc(l2)+'</text>';
     });
+    s+='</svg>';
+    document.getElementById('mapa').innerHTML=s;
+    var leq=''; bands.forEach(function(b){ leq+='<span><i style="background:'+PMETA[b.p].fill+';border:1px solid '+PMETA[b.p].stroke+'"></i>'+esc(PMETA[b.p].n)+'</span>'; });
+    document.getElementById('leyenda').innerHTML=leq;
+  }
 
-    s += '</svg>';
-    document.getElementById('mapa').innerHTML = s;
+  // ---------- HOJA DE RUTA ----------
+  function renderRoadmap(fases, objetivos){
+    var nF=fases.length;
+    var cols='220px repeat('+nF+', 1fr)';
+    var h='';
+    // encabezado
+    h+='<div class="rm-head" style="grid-template-columns:'+cols+'">';
+    h+='<div class="cell lab"></div>';
+    fases.forEach(function(f){ h+='<div class="cell"><b>'+esc(f.nombre)+'</b><br>'+esc(f.rango||'')+'</div>'; });
+    h+='</div>';
+    var by=grupos(objetivos);
+    PORDER.forEach(function(p){
+      if(!by[p].length) return;
+      h+='<div class="rm-persp" style="color:'+PMETA[p].stroke+'">'+esc(PMETA[p].n)+'</div>';
+      by[p].forEach(function(o){
+        var f=o.fases||[1,nF]; var ini=Math.max(1,f[0]||1), fin=Math.min(nF,f[1]||f[0]||nF);
+        h+='<div class="rm-row" style="grid-template-columns:'+cols+'">';
+        h+='<div class="rm-lab"><b>'+esc(o.id)+'</b>'+esc(corta(o.nombre,42))+'</div>';
+        h+='<div style="grid-column:'+(1+ini)+' / '+(1+fin+1)+';"><div class="rm-bar" style="background:'+PMETA[p].fill+';border:1px solid '+PMETA[p].stroke+'">F'+ini+(fin>ini?('–F'+fin):'')+'</div></div>';
+        h+='</div>';
+      });
+    });
+    document.getElementById('roadmap').innerHTML=h;
+  }
 
-    var leq=''; bands.forEach(function(b){ leq += '<span><i style="background:'+PMETA[b.p].fill+';border:1px solid '+PMETA[b.p].stroke+'"></i>'+esc(PMETA[b.p].n)+'</span>'; });
-    document.getElementById('leyenda').innerHTML = leq;
+  // ---------- DETALLE ----------
+  function renderDetalle(objetivos){
+    var by=grupos(objetivos), h='';
+    h+='<table class="det"><tr><th style="width:210px">Objetivo</th><th>Planes de acción</th><th style="width:32%">KPIs</th></tr>';
+    PORDER.forEach(function(p){
+      if(!by[p].length) return;
+      h+='<tr><td colspan="3" style="background:'+PMETA[p].fill+';color:'+PMETA[p].stroke+';font-weight:700">'+esc(PMETA[p].n)+'</td></tr>';
+      by[p].forEach(function(o){
+        h+='<tr><td class="obj"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td>';
+        h+='<td><ul>'+(o.planes||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></td>';
+        h+='<td><ul>'+(o.kpis||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></td></tr>';
+      });
+    });
+    h+='</table>';
+    document.getElementById('detalle').innerHTML=h;
   }
 
   function construir(){
-    var po=parseObjetivos(document.getElementById('objetivos').value);
-    var rel=parseRelaciones(document.getElementById('relaciones').value);
-    var ids={}; po.obj.forEach(function(o){ ids[o.id]=true; });
-    var relErr=[];
-    rel.forEach(function(r){ if(!ids[r[0]]||!ids[r[1]]) relErr.push(r[0]+' -> '+r[1]); });
-    var msg=document.getElementById('msg');
-    var avisos=po.err.slice();
-    if(relErr.length) avisos.push('Relaciones con objetivos inexistentes (se omiten): '+relErr.join(', '));
-    msg.textContent = avisos.join('  ·  ');
-    if(!po.obj.length){ document.getElementById('salida').hidden=true; return; }
-    render(po.obj, rel.filter(function(r){ return ids[r[0]]&&ids[r[1]]; }));
-    document.getElementById('salida').hidden=false;
+    var msg=document.getElementById('msg'); msg.textContent='';
+    var data;
+    try{ data=JSON.parse(document.getElementById('modelo').value); }
+    catch(e){ msg.textContent='JSON inválido: '+e.message; return; }
+    var obj=data.objetivos||[], rel=data.relaciones||[], fases=data.fases||[];
+    if(!obj.length){ msg.textContent='Define al menos un objetivo.'; return; }
+    var ids={}; obj.forEach(function(o){ ids[o.id]=true; });
+    var relOk=rel.filter(function(r){ return ids[r[0]]&&ids[r[1]]; });
+    renderMapa(obj, relOk);
+    renderRoadmap(fases.length?fases:[{nombre:'Fase 1'}], obj);
+    renderDetalle(obj);
+    document.getElementById('s-mapa').hidden=false;
+    document.getElementById('s-roadmap').hidden=false;
+    document.getElementById('s-detalle').hidden=false;
   }
 
-  document.getElementById('btnMapa').addEventListener('click', construir);
+  document.getElementById('btnBuild').addEventListener('click', construir);
   construir();
 })();
 </script>

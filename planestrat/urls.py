@@ -8,12 +8,18 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', include('apps.home.urls')),
+    path('formulacion/', include('apps.formulacion.urls')),
     path('ahp/', include('apps.ahp.urls')),
     path('dematel/', include('apps.dematel.urls')),
     path('anp/', include('apps.anp.urls')),
     path('bsc/', include('apps.bsc.urls')),
     path('optimizacion/', include('apps.optimizacion.urls')),
     path('cartera/', include('apps.cartera.urls')),
+    path('difuso/', include('apps.difuso.urls')),
+    path('situacional/', include('apps.situacional.urls')),
+    path('planes/', include('apps.planes.urls')),
+    path('exportar/', include('apps.exportar.urls')),
+    path('decisiones/', include('apps.decisiones.urls')),
 
     # --- PWA (servidas en la raíz) ---
     path(

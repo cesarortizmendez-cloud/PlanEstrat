@@ -60,6 +60,12 @@ INSTALLED_APPS = [
     'apps.bsc',
     'apps.optimizacion',
     'apps.cartera',
+    'apps.difuso',
+    'apps.situacional',
+    'apps.planes',
+    'apps.exportar',
+    'apps.decisiones',
+    'apps.formulacion',
 ]
 
 # --- Middleware ------------------------------------------------------------

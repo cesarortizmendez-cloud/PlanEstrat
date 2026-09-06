@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Decisiones colaborativas · PlanEstrat{% endblock %}
+{% block topbar %}Decisiones colaborativas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel.star{border-color:var(--star);box-shadow:0 0 0 1px var(--star-soft) inset}
+  .panel h2{font-family:var(--font-head);font-size:1.16rem;margin:0 0 4px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 12px}
+  label{font-size:.82rem;color:var(--muted);display:block;margin:10px 0 4px}
+  input[type=text],input[type=password],select,textarea{font:inherit;font-size:.9rem;width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink)}
+  textarea{font-family:var(--font-mono);font-size:.82rem;min-height:110px;line-height:1.5;resize:vertical}
+  .msg{font-size:.84rem;margin-top:10px;font-weight:600}
+  .msg.err{color:var(--crit)} .msg.ok{color:var(--good)}
+  .share{margin-top:12px;padding:12px 14px;border:1px dashed var(--star);border-radius:8px;background:var(--star-soft);font-size:.86rem;color:var(--star-ink)}
+  .share a{word-break:break-all}
+  table.mtx{border-collapse:collapse;margin-top:8px}
+  table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:70px}
+  table.mtx th{background:var(--surface-2);font-size:.74rem;font-family:var(--font-mono);color:var(--muted);max-width:120px}
+  table.mtx td.diag{background:var(--surface-2);color:var(--muted)}
+  table.mtx td.low{background:var(--ground);color:var(--faint);font-family:var(--font-mono);font-size:.8rem}
+  table.mtx select{padding:3px;font-size:.82rem}
+  .mtx-wrap{overflow-x:auto}
+  .cr{display:inline-block;font-size:.74rem;font-weight:600;padding:3px 10px;border-radius:999px;margin-top:8px}
+  .cr.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
+  .cr.no{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit);border:1px solid var(--crit)}
+  :root{--crit:#b0483c;--good:#3f7a52}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Decisiones colaborativas</h1>
+<p class="intro">Toma una decisión multicriterio entre varios expertos. El facilitador crea la decisión con un nombre y una clave; comparte ambos; y cada participante entrega su evaluación por pares. El sistema agrega los juicios (media geométrica) y calcula las prioridades del grupo.</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p><strong>1.</strong> El facilitador define la decisión: nombre, los criterios a comparar, una clave para los participantes y la privacidad. Recibe un <em>enlace de administración</em> privado.</p>
+    <p><strong>2.</strong> Comparte el <em>nombre + clave</em>. Cada participante entra, completa su matriz de comparación por pares (con chequeo de consistencia) y la envía.</p>
+    <p><strong>3.</strong> El facilitador abre su enlace de administración, ve quién respondió y obtiene las prioridades agregadas del grupo. Puede cerrar la decisión cuando termine.</p>
+    <p>Privacidad: <em>privada</em> (solo el facilitador ve el detalle), <em>grupal</em> o <em>anónima</em>.</p>
+  </div>
+</details>
+
+<div class="cols">
+  <!-- CREAR -->
+  <div class="panel star">
+    <h2>Crear una decisión</h2>
+    <p class="sub">Para el facilitador.</p>
+    <label>Nombre de la decisión</label>
+    <input type="text" id="c-nombre" placeholder="Ej: Priorización de criterios del proyecto">
+    <label>Criterios a comparar (uno por línea)</label>
+    <textarea id="c-criterios">Impacto territorial
+Factibilidad técnica
+Costo
+Riesgo</textarea>
+    <label>Clave para participantes</label>
+    <input type="text" id="c-clave" placeholder="una clave que compartirás">
+    <label>Privacidad</label>
+    <select id="c-priv">
+      <option value="privada">Privada (solo el facilitador ve el detalle)</option>
+      <option value="grupal">Grupal (visible al grupo)</option>
+      <option value="anonima">Anónima</option>
+    </select>
+    <div style="margin-top:12px"><button class="btn btn-primary" id="c-btn">Crear decisión</button></div>
+    <div class="msg" id="c-msg"></div>
+    <div class="share" id="c-share" hidden></div>
+  </div>
+
+  <!-- UNIRSE -->
+  <div class="panel">
+    <h2>Unirse a una decisión</h2>
+    <p class="sub">Para los participantes.</p>
+    <label>Nombre de la decisión</label>
+    <input type="text" id="u-nombre">
+    <label>Clave</label>
+    <input type="text" id="u-clave">
+    <div style="margin-top:12px"><button class="btn btn-secondary" id="u-btn">Entrar</button></div>
+    <div class="msg" id="u-msg"></div>
+
+    <div id="u-eval" hidden>
+      <label>Tu nombre</label>
+      <input type="text" id="u-part">
+      <p class="sub" style="margin-top:12px">Compara cada par de criterios (escala de Saaty).</p>
+      <div class="mtx-wrap"><div id="u-mtx"></div></div>
+      <div style="margin-top:12px"><button class="btn btn-primary" id="u-send">Enviar evaluación</button></div>
+      <div id="u-cr"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var URL_CREAR="{% url 'decisiones:crear' %}", URL_UNIRSE="{% url 'decisiones:unirse' %}", URL_ENVIAR="{% url 'decisiones:enviar' %}";
+  var estado={nombre:'',clave:'',criterios:[]};
+
+  function post(url,body){ return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}); }
+
+  // ---- Crear ----
+  document.getElementById('c-btn').addEventListener('click', function(){
+    var msg=document.getElementById('c-msg'); msg.className='msg'; msg.textContent='Creando…';
+    var criterios=document.getElementById('c-criterios').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    post(URL_CREAR,{nombre:document.getElementById('c-nombre').value, clave:document.getElementById('c-clave').value, criterios:criterios, privacidad:document.getElementById('c-priv').value})
+    .then(function(res){
+      if(!res.ok){ msg.className='msg err'; msg.textContent=res.j.error||'Error'; return; }
+      msg.textContent='';
+      var sh=document.getElementById('c-share'); sh.hidden=false;
+      sh.innerHTML='<b>Decisión creada.</b><br>Comparte con los participantes:<br>• Nombre: <b>'+res.j.nombre+'</b><br>• Clave: <b>'+document.getElementById('c-clave').value+'</b><br><br>Tu enlace de administración (guárdalo, es privado):<br><a href="'+res.j.admin_url+'">'+res.j.admin_url+'</a>';
+    });
+  });
+
+  // ---- Unirse ----
+  document.getElementById('u-btn').addEventListener('click', function(){
+    var msg=document.getElementById('u-msg'); msg.className='msg'; msg.textContent='Entrando…';
+    estado.nombre=document.getElementById('u-nombre').value; estado.clave=document.getElementById('u-clave').value;
+    post(URL_UNIRSE,{nombre:estado.nombre, clave:estado.clave}).then(function(res){
+      if(!res.ok){ msg.className='msg err'; msg.textContent=res.j.error||'Error'; document.getElementById('u-eval').hidden=true; return; }
+      msg.textContent=''; estado.criterios=res.j.decision.criterios;
+      construirMatriz(estado.criterios);
+      document.getElementById('u-eval').hidden=false;
+    });
+  });
+
+  function opciones(){
+    var out='', vals=[9,8,7,6,5,4,3,2];
+    vals.forEach(function(k){ out+='<option value="'+k+'">'+k+'</option>'; });
+    out+='<option value="1" selected>1 (igual)</option>';
+    vals.slice().reverse().forEach(function(k){ out+='<option value="'+(1/k)+'">1/'+k+'</option>'; });
+    return out;
+  }
+  function fmt(v){ if(Math.abs(v-1)<1e-9) return '1'; if(v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
+  function construirMatriz(nm){
+    var n=nm.length, h='<table class="mtx"><tr><th></th>';
+    nm.forEach(function(c){ h+='<th title="'+c+'">'+c+'</th>'; });
+    h+='</tr>';
+    for(var i=0;i<n;i++){
+      h+='<tr><th title="'+nm[i]+'">'+nm[i]+'</th>';
+      for(var j=0;j<n;j++){
+        if(i===j) h+='<td class="diag">1</td>';
+        else if(i<j) h+='<td><select data-i="'+i+'" data-j="'+j+'" onchange="__sync('+i+','+j+')">'+opciones()+'</select></td>';
+        else h+='<td class="low" id="lw-'+i+'-'+j+'">1</td>';
+      }
+      h+='</tr>';
+    }
+    h+='</table>';
+    document.getElementById('u-mtx').innerHTML=h;
+  }
+  window.__sync=function(i,j){ var s=document.querySelector('#u-mtx select[data-i="'+i+'"][data-j="'+j+'"]'); var l=document.getElementById('lw-'+j+'-'+i); if(s&&l) l.textContent=fmt(1/parseFloat(s.value)); };
+
+  document.getElementById('u-send').addEventListener('click', function(){
+    var n=estado.criterios.length, M=[];
+    for(var i=0;i<n;i++){ M.push(new Array(n).fill(1)); }
+    document.querySelectorAll('#u-mtx select').forEach(function(s){ var i=+s.dataset.i,j=+s.dataset.j,v=parseFloat(s.value); M[i][j]=v; M[j][i]=1/v; });
+    var cr=document.getElementById('u-cr'); cr.innerHTML='Enviando…';
+    post(URL_ENVIAR,{nombre:estado.nombre, clave:estado.clave, participante:document.getElementById('u-part').value, matriz:M}).then(function(res){
+      if(!res.ok){ cr.innerHTML='<span class="msg err">'+(res.j.error||'Error')+'</span>'; return; }
+      cr.innerHTML='<div class="cr '+(res.j.consistente?'ok':'no')+'">Evaluación enviada · tu consistencia CR = '+res.j.consistencia.toFixed(3)+(res.j.consistente?' (consistente)':' (revisa tus juicios)')+'</div>';
+    });
+  });
+})();
+</script>
+{% endblock %}

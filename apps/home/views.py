@@ -31,7 +31,7 @@ MODULOS = [
     },
     {
         'codigo': 'M3', 'slug': 'difuso', 'nombre': 'Métodos difusos',
-        'grupo': 'Laboratorio multicriterio', 'estado': 'proximo', 'fase': 'Fase 2',
+        'grupo': 'Laboratorio multicriterio', 'estado': 'activo', 'fase': 'Fase 2', 'url': '/difuso/',
         'desc': 'Fuzzy DEMATEL y Fuzzy VIKOR con números difusos triangulares.',
     },
     {
@@ -46,12 +46,12 @@ MODULOS = [
     },
     {
         'codigo': '★', 'slug': 'decisiones', 'nombre': 'Decisiones colaborativas',
-        'grupo': 'Diferenciador', 'estado': 'proximo', 'fase': 'Fase 3',
+        'grupo': 'Diferenciador', 'estado': 'activo', 'fase': 'Fase 3', 'url': '/decisiones/',
         'desc': 'Evaluación multiusuario por nombre + clave, con opciones del administrador.',
     },
     {
         'codigo': 'M1', 'slug': 'formulacion', 'nombre': 'Diagnóstico y formulación',
-        'grupo': 'Estrategia', 'estado': 'proximo', 'fase': 'Fase 4',
+        'grupo': 'Estrategia', 'estado': 'activo', 'fase': 'Fase 4', 'url': '/formulacion/',
         'desc': 'Misión, visión, FODA y factores críticos de éxito.',
     },
     {
@@ -61,17 +61,17 @@ MODULOS = [
     },
     {
         'codigo': 'M6', 'slug': 'situacional', 'nombre': 'Conciencia situacional',
-        'grupo': 'Estrategia', 'estado': 'proximo', 'fase': 'Fase 4',
+        'grupo': 'Estrategia', 'estado': 'activo', 'fase': 'Fase 4', 'url': '/situacional/',
         'desc': 'Indicadores, escenarios y alertas.',
     },
     {
         'codigo': 'M7', 'slug': 'planes', 'nombre': 'Planes de acción · Lean',
-        'grupo': 'Ejecución', 'estado': 'proximo', 'fase': 'Fase 4',
+        'grupo': 'Ejecución', 'estado': 'activo', 'fase': 'Fase 4', 'url': '/planes/',
         'desc': 'Ishikawa, Pareto, 5S, SMED, TPM/OEE y VSM.',
     },
     {
         'codigo': 'M8', 'slug': 'exportar', 'nombre': 'Informes y exportación',
-        'grupo': 'Ejecución', 'estado': 'proximo', 'fase': 'Fase 5',
+        'grupo': 'Ejecución', 'estado': 'activo', 'fase': 'Fase 5', 'url': '/exportar/',
         'desc': 'Exportación a Excel (openpyxl) en cada módulo.',
     },
 ]

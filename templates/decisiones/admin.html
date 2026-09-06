@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Administración · {{ d.nombre }} · PlanEstrat{% endblock %}
+{% block topbar %}Decisión colaborativa · administración{% endblock %}
+
+{% block extra_head %}
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.7rem;letter-spacing:-.01em;margin:0 0 4px}
+  .meta{color:var(--muted);font-size:.86rem;margin:0 0 16px}
+  .pill{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 10px;border-radius:999px;margin-left:6px}
+  .pill.abierta{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
+  .pill.cerrada{background:var(--surface-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.16rem;margin:0 0 10px}
+  table.res{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
+  table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  td.num{font-family:var(--font-mono);text-align:right}
+  .cr.ok{color:var(--good);font-weight:600} .cr.no{color:var(--crit);font-weight:600}
+  .bar{height:8px;border-radius:4px;background:var(--accent);display:inline-block;vertical-align:middle}
+  .crit{margin-top:8px;font-size:.86rem;color:var(--ink-soft)}
+  .empty{color:var(--muted);font-size:.9rem}
+  .btn-cerrar{background:var(--crit);color:#fff;border:none;border-radius:8px;font:inherit;font-weight:600;padding:9px 16px;cursor:pointer}
+  :root{--crit:#b0483c;--good:#3f7a52}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">{{ d.nombre }}
+  {% if d.estado == 'abierta' %}<span class="pill abierta">Abierta</span>{% else %}<span class="pill cerrada">Cerrada</span>{% endif %}
+</h1>
+<p class="meta">Método AHP · privacidad: {{ d.get_privacidad_display }} · {{ n_parts }} participación{{ n_parts|pluralize:"es" }} · criterios: {% for c in d.criterios %}{{ c }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+<div class="panel">
+  <h2>Prioridades del grupo</h2>
+  {% if resultado %}
+    <table class="res">
+      <tr><th>#</th><th>Criterio</th><th>Peso</th><th style="width:40%"></th></tr>
+      {% for item in resultado.ranking %}
+      <tr>
+        <td class="num">{{ forloop.counter }}</td>
+        <td>{{ item.nombre }}</td>
+        <td class="num">{{ item.pct }}%</td>
+        <td><span class="bar" style="width:{{ item.pct }}%"></span></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <p class="crit">Consistencia del agregado: <span class="cr {% if resultado.consistente %}ok{% else %}no{% endif %}">CR = {{ resultado.CR|floatformat:4 }}</span> {% if resultado.consistente %}(consistente){% else %}(revisar juicios){% endif %}</p>
+  {% else %}
+    <p class="empty">Aún no hay participaciones para agregar.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <h2>Participaciones</h2>
+  {% if parts %}
+    <table class="res">
+      <tr><th>Participante</th><th>Consistencia (CR)</th><th>Enviado</th></tr>
+      {% for p in parts %}
+      <tr>
+        <td>{{ p.nombre }}</td>
+        <td><span class="cr {% if p.consistente %}ok{% else %}no{% endif %}">{{ p.cr|floatformat:3 }}</span></td>
+        <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p class="empty">Nadie ha respondido todavía. Comparte el nombre y la clave con los participantes.</p>
+  {% endif %}
+  <p class="crit">Recarga esta página para actualizar a medida que llegan las evaluaciones.</p>
+</div>
+
+{% if d.estado == 'abierta' %}
+<div class="panel">
+  <h2>Cerrar la decisión</h2>
+  <p class="empty" style="margin-bottom:10px">Al cerrar, deja de recibir evaluaciones. El resultado agregado queda fijado.</p>
+  <form method="post" action="{% url 'decisiones:cerrar' token %}">{% csrf_token %}
+    <button class="btn-cerrar" type="submit">Cerrar decisión</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

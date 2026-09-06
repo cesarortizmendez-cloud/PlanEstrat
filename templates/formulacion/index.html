@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Diagnóstico y formulación · PlanEstrat{% endblock %}
+{% block topbar %}Diagnóstico y formulación estratégica{% endblock %}
+
+{% block extra_head %}
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 10px}
+  label{font-size:.82rem;color:var(--muted);display:block;margin:10px 0 4px}
+  input[type=text],textarea{font:inherit;width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink)}
+  textarea{font-size:.86rem;min-height:96px;line-height:1.5;resize:vertical}
+  .foda{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.foda{grid-template-columns:1fr}}
+  .q{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+  .q h3{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px}
+  .q.f{border-top:3px solid #3f7a52} .q.f h3{color:#3f7a52}
+  .q.o{border-top:3px solid #2c5c86} .q.o h3{color:#2c5c86}
+  .q.d{border-top:3px solid #b0862a} .q.d h3{color:#b0862a}
+  .q.a{border-top:3px solid #b0483c} .q.a h3{color:#b0483c}
+  .misc{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.misc{grid-template-columns:1fr}}
+  table.tows{border-collapse:collapse;width:100%;margin-top:10px;font-size:.84rem}
+  table.tows th,table.tows td{border:1px solid var(--line);padding:10px;vertical-align:top}
+  table.tows th{background:var(--surface-2);font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
+  table.tows td ul{margin:0 0 6px;padding-left:16px}
+  table.tows .est{font-weight:600;color:var(--ink)}
+  .cross{color:var(--ink-soft)}
+  .cross b{color:var(--star-ink)}
+  .mv{color:var(--ink-soft);line-height:1.6}
+  .mv b{color:var(--ink)}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Diagnóstico y formulación estratégica</h1>
+<p class="intro">La primera etapa del ciclo: se declara la identidad (misión, visión, valores), se diagnostica con FODA, se identifican factores críticos de éxito y se cruzan fortalezas/debilidades con oportunidades/amenazas (TOWS) para derivar líneas estratégicas. Sus salidas se convierten en los objetivos del mapa BSC.</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p>El <strong>FODA</strong> organiza el diagnóstico interno (Fortalezas, Debilidades) y externo (Oportunidades, Amenazas). El cruce <strong>TOWS</strong> genera cuatro tipos de estrategias:</p>
+    <p><b>FO</b> (ofensivas): usar fortalezas para aprovechar oportunidades. <b>FA</b> (defensivas): usar fortalezas para enfrentar amenazas. <b>DO</b> (reorientación): superar debilidades aprovechando oportunidades. <b>DA</b> (supervivencia): reducir debilidades y amenazas.</p>
+    <p>Edita los campos y presiona “Construir diagnóstico”. Las líneas estratégicas y los factores críticos derivados alimentan los objetivos del mapa estratégico (módulo BSC).</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>1 · Identidad</h2>
+  <div class="misc">
+    <div><label>Misión</label><textarea id="mision">Convertir residuos forestales de la Región de Los Ríos en energía limpia y productos de valor (pellet, astilla P31,5 y calor útil), mediante secado móvil y logística coordinada.</textarea></div>
+    <div><label>Visión</label><textarea id="vision">2036: un ecosistema regional de bioenergía circular consolidado, con oferta productiva estable y desarrollo territorial.</textarea></div>
+  </div>
+  <label>Valores</label>
+  <input type="text" id="valores" value="Sostenibilidad, colaboración público-privada-academia, innovación, desarrollo territorial">
+</div>
+
+<div class="panel">
+  <h2>2 · FODA</h2>
+  <div class="foda">
+    <div class="q f"><h3>Fortalezas</h3><textarea id="F">Oferta de residuos disponible y cuantificada (≈45.000 m³/año)
+Secador móvil como tecnología habilitante
+Coordinación público-privada-academia iniciada</textarea></div>
+    <div class="q o"><h3>Oportunidades</h3><textarea id="O">Demanda regional de pellet y astilla
+Política de energía y descarbonización
+Interés de PYMES madereras</textarea></div>
+    <div class="q d"><h3>Debilidades</h3><textarea id="D">Humedad alta (40–50%) y calidad incipiente
+Logística de residuos dispersa
+Capacidad concentrada en una sola planta
+Financiamiento limitado</textarea></div>
+    <div class="q a"><h3>Amenazas</h3><textarea id="A">Pellet sensible al precio
+Mercado de astilla seca por desarrollar
+Riesgo tecnológico y escala PYME
+Estacionalidad de lluvias</textarea></div>
+  </div>
+  <label style="margin-top:14px">Factores críticos de éxito</label>
+  <textarea id="fce">Asegurar biomasa seca, estable y trazable
+Logística coordinada de recolección, acopio y transporte
+Acuerdos de abastecimiento y desarrollo de demanda
+Financiamiento e inversión público-privada</textarea>
+  <div style="margin-top:14px"><button class="btn btn-primary" id="btn">Construir diagnóstico</button></div>
+</div>
+
+<div class="panel" id="salida" hidden>
+  <h2>3 · Cruce estratégico (TOWS)</h2>
+  <div style="overflow-x:auto"><div id="tows"></div></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  function items(id){ return document.getElementById(id).value.split('\n').map(function(s){return s.trim();}).filter(Boolean); }
+  function ul(arr){ return '<ul>'+arr.map(function(x){return '<li>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</li>';}).join('')+'</ul>'; }
+
+  function construir(){
+    var F=items('F'),O=items('O'),D=items('D'),A=items('A');
+    var h='<table class="tows"><tr><th></th><th>Oportunidades (O)</th><th>Amenazas (A)</th></tr>';
+    h+='<tr><th>Fortalezas (F)</th>'
+      +'<td class="cross"><b>Estrategias FO (ofensivas)</b><br>'+ul(F.slice(0,3))+'<span class="est">Usar fortalezas para aprovechar oportunidades.</span></td>'
+      +'<td class="cross"><b>Estrategias FA (defensivas)</b><br>'+ul(F.slice(0,3))+'<span class="est">Usar fortalezas para enfrentar amenazas.</span></td></tr>';
+    h+='<tr><th>Debilidades (D)</th>'
+      +'<td class="cross"><b>Estrategias DO (reorientación)</b><br>'+ul(D.slice(0,3))+'<span class="est">Superar debilidades aprovechando oportunidades.</span></td>'
+      +'<td class="cross"><b>Estrategias DA (supervivencia)</b><br>'+ul(D.slice(0,3))+'<span class="est">Reducir debilidades y amenazas.</span></td></tr>';
+    h+='</table>';
+    h+='<p style="margin-top:12px;color:var(--muted);font-size:.84rem">Las oportunidades consideradas: '+O.join(' · ')+'. Amenazas: '+A.join(' · ')+'. Estas líneas y los factores críticos se traducen en objetivos del mapa BSC.</p>';
+    document.getElementById('tows').innerHTML=h;
+    document.getElementById('salida').hidden=false;
+  }
+  document.getElementById('btn').addEventListener('click', construir);
+  construir();
+})();
+</script>
+{% endblock %}

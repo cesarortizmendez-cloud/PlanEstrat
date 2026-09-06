@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Exportar a Excel · PlanEstrat{% endblock %}
+{% block topbar %}Informes · Exportar a Excel{% endblock %}
+
+{% block extra_head %}
+<style>
+  .h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
+  .intro{color:var(--ink-soft);max-width:74ch}
+  details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
+  details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);font-weight:600;color:var(--star-ink);font-size:1.06rem;display:flex;align-items:center;gap:10px;user-select:none}
+  details.teoria>summary::-webkit-details-marker{display:none}
+  details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
+  details.teoria[open]>summary::before{transform:rotate(90deg)}
+  details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria code{background:var(--surface);border:1px solid var(--line)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
+  textarea{font-family:var(--font-mono);font-size:.8rem;width:100%;min-height:280px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);line-height:1.5;resize:vertical}
+  .msg{font-size:.84rem;margin-top:10px;font-weight:600}
+  .msg.err{color:var(--crit)} .msg.ok{color:var(--good)}
+  :root{--crit:#b0483c;--good:#3f7a52}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="h1">Informes · Exportar a Excel</h1>
+<p class="intro">Todo resultado de PlanEstrat puede exportarse a Excel con formato. Este módulo genera el archivo con <code>openpyxl</code> a partir de un modelo de hojas; los demás módulos usan este mismo motor para descargar sus tablas.</p>
+
+<details class="teoria">
+  <summary>Cómo funciona</summary>
+  <div class="cont">
+    <p>El modelo describe una o más hojas: <code>{ "titulo": "...", "hojas": [ { "nombre": "...", "encabezados": [...], "filas": [[...]] } ] }</code>.</p>
+    <p>El servidor construye el libro .xlsx con encabezados con formato y ancho de columnas automático, y lo entrega como descarga. Cada módulo arma este modelo con sus resultados y lo envía a este mismo endpoint.</p>
+  </div>
+</details>
+
+<div class="panel">
+  <h2>Modelo a exportar</h2>
+  <p class="sub">Edita el JSON (hojas, encabezados y filas). El ejemplo trae los objetivos y KPIs del caso Los Ríos.</p>
+  <textarea id="modelo" spellcheck="false">{% verbatim %}{
+  "titulo": "PlanEstrat - Los Rios",
+  "hojas": [
+    {
+      "nombre": "Objetivos",
+      "encabezados": ["Perspectiva", "Código", "Objetivo"],
+      "filas": [
+        ["Financiera", "F1", "Incorporar biomasa alternativa"],
+        ["Financiera", "F2", "Generar valor económico territorial"],
+        ["Financiera", "F3", "Fortalecer la sostenibilidad energética regional"],
+        ["Clientes", "C1", "Articular la red de abastecimiento"],
+        ["Clientes", "C2", "Consolidar la oferta regional de pellet"],
+        ["Clientes", "C3", "Desarrollar mercado para la astilla seca y calibrada"],
+        ["Procesos", "P1", "Estandarizar los procesos de secado y pelletizado"],
+        ["Procesos", "P2", "Asegurar el cumplimiento de estándares de calidad"],
+        ["Procesos", "P3", "Optimizar la logística de recolección, acopio y transporte"],
+        ["Tecnología", "T1", "Validar tecnología de secado de biomasa"],
+        ["Tecnología", "T2", "Optimizar la mezcla de materias primas para pelletización"],
+        ["Tecnología", "T3", "Mejorar la transformación energética"],
+        ["Tecnología", "T4", "Escalar soluciones tecnológicas replicables"],
+        ["Aprendizaje", "A1", "Fortalecer capacidades técnicas"],
+        ["Aprendizaje", "A2", "Consolidar coordinación institucional"]
+      ]
+    },
+    {
+      "nombre": "KPIs",
+      "encabezados": ["Objetivo", "KPI", "Meta"],
+      "filas": [
+        ["F2", "Aumento de utilidad ($)", "por definir"],
+        ["C2", "Volumen producido de pellet (ton)", "2500"],
+        ["C3", "Ton de astilla vendida", "400"],
+        ["T1", "Productividad kg/h estandarizada", "por definir"],
+        ["A1", "Nº de capacitaciones", "8"],
+        ["A2", "Convenios vigentes", "5"]
+      ]
+    }
+  ]
+}{% endverbatim %}</textarea>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="btn">Descargar Excel</button></div>
+  <div class="msg" id="msg"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var API = "{% url 'exportar:xlsx' %}";
+  document.getElementById('btn').addEventListener('click', function(){
+    var msg=document.getElementById('msg'); msg.className='msg'; msg.textContent='Generando…';
+    var body;
+    try{ body=JSON.parse(document.getElementById('modelo').value); }
+    catch(e){ msg.className='msg err'; msg.textContent='JSON inválido: '+e.message; return; }
+    fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)})
+    .then(function(r){
+      if(!r.ok) return r.json().then(function(j){ throw new Error(j.error||'Error'); });
+      return r.blob();
+    })
+    .then(function(blob){
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url; a.download=(body.titulo||'PlanEstrat')+'.xlsx';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+      msg.className='msg ok'; msg.textContent='Archivo descargado.';
+    })
+    .catch(function(e){ msg.className='msg err'; msg.textContent=e.message; });
+  });
+})();
+</script>
+{% endblock %}
