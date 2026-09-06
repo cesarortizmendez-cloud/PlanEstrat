@@ -64,3 +64,72 @@ def ranking(nombres, pesos):
     pares = list(zip(nombres, pesos))
     pares.sort(key=lambda p: p[1], reverse=True)
     return [{"nombre": n, "peso": float(w)} for n, w in pares]
+
+
+def decidir_ahp(criterios_matriz, nombres_criterios, alternativas, desempeno):
+    """AHP completo de decisión: elige la mejor alternativa.
+
+    - criterios_matriz: matriz n_crit x n_crit de comparación por pares de los criterios.
+    - nombres_criterios: lista de n_crit nombres.
+    - alternativas: lista de m nombres de alternativas.
+    - desempeno: matriz m x n_crit con la valoración (1..9) de cuán bien cada
+      alternativa SATISFACE cada criterio (mayor = mejor). Cada columna se normaliza
+      para obtener las prioridades locales por criterio.
+
+    Devuelve los pesos de criterios (con su consistencia), la matriz de prioridades
+    locales, el puntaje global de cada alternativa, el ranking y la seleccionada.
+    """
+    base = prioridades_ahp(criterios_matriz)
+    w = np.asarray(base["pesos"], dtype=float)
+    n_crit = w.shape[0]
+
+    if not alternativas:
+        raise ValueError("Define al menos una alternativa.")
+    D = np.asarray(desempeno, dtype=float)
+    if D.ndim != 2:
+        raise ValueError("El desempeño debe ser una matriz alternativas x criterios.")
+    m, c = D.shape
+    if c != n_crit:
+        raise ValueError("El desempeño debe tener una columna por criterio.")
+    if m != len(alternativas):
+        raise ValueError("Cada fila del desempeño es una alternativa.")
+    if np.any(D <= 0):
+        raise ValueError("Las valoraciones deben ser positivas (escala 1 a 9).")
+
+    # Prioridades locales por criterio: normalizar cada columna a suma 1.
+    col = D.sum(axis=0)
+    L = D / col  # m x n_crit
+    # Puntaje global de cada alternativa (suma ponderada). Suma total = 1.
+    scores = L @ w
+    total = scores.sum()
+    if total > 0:
+        scores = scores / total
+
+    orden = list(np.argsort(-scores))
+    rank = [{
+        "nombre": alternativas[i],
+        "score": float(scores[i]),
+        "local": [float(x) for x in L[i]],
+    } for i in orden]
+
+    margen = float(rank[0]["score"] - rank[1]["score"]) if len(rank) > 1 else 1.0
+
+    return {
+        "modo": "decision",
+        "criterios": {
+            "nombres": list(nombres_criterios),
+            "pesos": w.tolist(),
+            "lambda_max": base["lambda_max"],
+            "CI": base["CI"],
+            "RI": base["RI"],
+            "CR": base["CR"],
+            "n": base["n"],
+            "consistente": base["consistente"],
+        },
+        "alternativas": list(alternativas),
+        "local": L.tolist(),
+        "scores": scores.tolist(),
+        "ranking": rank,
+        "seleccionado": rank[0]["nombre"],
+        "margen": margen,
+    }

@@ -2,17 +2,16 @@
 {% load static %}
 
 {% block title %}AHP · PlanEstrat{% endblock %}
-{% block topbar %}AHP · Proceso Analítico Jerárquico{% endblock %}
+{% block topbar %}AHP · Decisión multicriterio{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   .ahp-h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
-  .ahp-intro{color:var(--ink-soft);max-width:72ch}
+  .ahp-intro{color:var(--ink-soft);max-width:74ch}
   .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0}
   .ref b{color:var(--ink-soft);font-weight:600}
 
-  /* Lengüeta desplegable "Cómo funciona" */
   details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
     border-radius:0 var(--radius) var(--radius) 0;margin:16px 0 26px;overflow:hidden}
   details.teoria>summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--font-head);
@@ -30,98 +29,109 @@
   details.teoria th{background:var(--surface)}
 
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
-  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 12px}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px}
+  .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 4px}
+  .panel .sub{color:var(--muted);font-size:.84rem;margin:0 0 12px}
   label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
-  input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;
-    background:var(--surface);color:var(--ink);min-width:min(520px,100%)}
-  .tool-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);width:100%}
+  .tool-row{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
   .chip-btn{font:inherit;font-size:.84rem;font-weight:600;border:1px solid var(--accent);background:var(--accent);color:#fff;
     border-radius:9px;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
   .chip-btn.sec{background:var(--surface);color:var(--accent-ink)}
   .chip-btn.sec:hover{background:var(--accent-soft)}
-  .campo-avanzado{margin-top:6px}
-  .campo-avanzado>summary{cursor:pointer;list-style:none;font-size:.8rem;color:var(--muted);user-select:none}
-  .campo-avanzado>summary::-webkit-details-marker{display:none}
-  .campo-avanzado>summary::before{content:'\25B8 ';color:var(--muted)}
-  .campo-avanzado[open]>summary::before{content:'\25BE '}
+
+  .obj-box{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+  .obj-box .obj-lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .chip{font-size:.8rem;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--ink-soft)}
+  .chip.alt{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .mini-lbl{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
 
   .mtx-wrap{overflow-x:auto}
   table.mtx{border-collapse:collapse;margin-top:6px}
   table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:74px}
-  table.mtx th{background:var(--surface-2);font-size:.78rem;font-family:var(--font-mono);color:var(--muted);
-    max-width:120px;white-space:nowrap}
+  table.mtx th{background:var(--surface-2);font-size:.78rem;font-family:var(--font-mono);color:var(--muted);max-width:130px;white-space:nowrap}
   table.mtx td.diag{background:var(--surface-2);color:var(--muted);font-family:var(--font-mono)}
   table.mtx td.low{background:var(--ground);color:var(--faint);font-family:var(--font-mono);font-size:.82rem}
-  table.mtx select{font:inherit;font-size:.86rem;border:1px solid var(--line-strong);border-radius:6px;
-    padding:4px;background:var(--surface);color:var(--ink)}
-  .stats{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 14px}
-  .stat b{font-family:var(--font-mono);font-size:1.1rem;color:var(--ink);display:block}
-  .stat span{font-size:.74rem;color:var(--muted)}
+  table.mtx select{font:inherit;font-size:.86rem;border:1px solid var(--line-strong);border-radius:6px;padding:4px;background:var(--surface);color:var(--ink)}
+  table.ev{border-collapse:collapse;margin-top:6px;min-width:520px}
+  table.ev th,table.ev td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+  table.ev th{background:var(--surface-2);font-size:.76rem;font-family:var(--font-mono);color:var(--muted);white-space:nowrap}
+  table.ev td.alt{text-align:left;font-weight:600;white-space:nowrap;background:var(--accent-soft);color:var(--accent-ink)}
+  table.ev select{font:inherit;font-size:.86rem;border:1px solid var(--line-strong);border-radius:6px;padding:4px;background:var(--surface);color:var(--ink)}
+  .escala-nota{font-size:.76rem;color:var(--muted);margin-top:8px}
+
   .cr-badge{display:inline-block;font-weight:600;padding:6px 12px;border-radius:999px;font-size:.86rem}
   .cr-ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border:1px solid var(--good)}
   .cr-bad{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit);border:1px solid var(--crit)}
+  .stats{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0 4px}
+  .stat b{font-family:var(--font-mono);font-size:1.05rem;color:var(--ink);display:block}
+  .stat span{font-size:.72rem;color:var(--muted)}
+
+  /* Resultado destacado */
+  .winner{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border:1.5px solid var(--accent);
+    border-radius:14px;padding:22px 24px;text-align:center;margin-bottom:6px}
+  .winner .cap{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+  .winner .name{font-family:var(--font-head);font-weight:700;font-size:2rem;color:var(--ink);margin:6px 0 2px;line-height:1.1}
+  .winner .score{font-family:var(--font-mono);font-size:1rem;color:var(--accent-ink)}
+  .winner .obj{font-size:.86rem;color:var(--muted);margin-top:6px}
   .interpretacion{margin:16px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--lean);
     border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);color:var(--ink-soft);line-height:1.6}
-  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--lean-ink);margin-bottom:6px}
+  .interpretacion .lbl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lean-ink);margin-bottom:6px}
   .interpretacion strong{color:var(--ink)}
   table.res{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
   table.res th,table.res td{border-bottom:1px solid var(--line);padding:8px 12px;text-align:left}
   table.res th{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted)}
   table.res td.num{font-family:var(--font-mono);text-align:right}
-  .bar{height:8px;border-radius:4px;background:var(--accent);display:inline-block;vertical-align:middle}
+  table.res tr.win td{background:var(--accent-soft);font-weight:600}
+  .bar{height:9px;border-radius:5px;background:var(--accent);display:inline-block;vertical-align:middle}
   .chart-box{margin-top:16px;max-width:640px}
   .err{color:var(--crit);font-weight:600}
 
-  /* Ventanas (modales) reutilizables */
+  /* Ventanas (modales) */
   .vm-overlay{position:fixed;inset:0;background:rgba(20,26,36,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:200}
-  .vm{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:660px;width:100%;max-height:88vh;
-    display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.32)}
+  .vm{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:680px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.32)}
   .vm-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line)}
   .vm-head h3{margin:0;font-family:var(--font-head);font-size:1.15rem}
   .vm-x{border:none;background:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--muted)}
   .vm-body{padding:18px 20px;overflow:auto}
-  .vm-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .vm-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
   .ej-card{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px}
   .ej-card h4{margin:0 0 4px;font-family:var(--font-head);font-size:1.02rem}
   .ej-card p{margin:0 0 8px;font-size:.85rem;color:var(--ink-soft)}
-  .ej-card .crs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-  .ej-card .cr{font-size:.74rem;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink-soft)}
+  .ej-card .crs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+  .ej-card .cr{font-size:.72rem;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink-soft)}
+  .ej-card .al{font-size:.72rem;background:var(--accent-soft);border:1px solid var(--accent);border-radius:999px;padding:2px 9px;color:var(--accent-ink)}
   .ej-ref{font-size:.72rem;color:var(--muted);margin-top:8px}
   .crit-row{display:flex;gap:8px;margin-bottom:7px;align-items:center}
   .crit-row input{flex:1;min-width:0}
   .crit-row .num{font-family:var(--font-mono);color:var(--muted);width:22px}
+  .vmdel{flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:32px;height:32px;cursor:pointer}
+  .vmadd{border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;font-size:.82rem;cursor:pointer;margin-top:4px}
   .guia-vs{text-align:center;font-size:.82rem;color:var(--muted);margin:2px 0 12px}
   .guia-pair{text-align:center;font-family:var(--font-head);font-size:1.15rem;margin:0 0 14px}
   .guia-pair .a{color:var(--accent-ink);font-weight:700}
   .guia-pair .b{color:var(--star-ink);font-weight:700}
-  .guia-opts{display:flex;flex-direction:column;gap:6px;max-width:460px;margin:0 auto}
-  .guia-opts button{font:inherit;font-size:.86rem;text-align:left;padding:9px 12px;border:1px solid var(--line-strong);
-    border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}
+  .guia-opts{display:flex;flex-direction:column;gap:6px;max-width:470px;margin:0 auto}
+  .guia-opts button{font:inherit;font-size:.86rem;text-align:left;padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}
   .guia-opts button:hover{border-color:var(--accent)}
   .guia-opts button.sel{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
   .guia-prog{font-family:var(--font-mono);font-size:.75rem;color:var(--muted)}
-  :root{--crit:#b0483c}
-  @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
+  :root{--crit:#b0483c;--good:#3f7a52}
+  @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 class="ahp-h1">AHP · Proceso Analítico Jerárquico</h1>
-<p class="ahp-intro">Compara criterios por pares con la escala de Saaty para obtener sus prioridades (pesos) y verificar la consistencia de los juicios. Es la base para ponderar objetivos, criterios y alternativas en el resto del sistema.</p>
+<h1 class="ahp-h1">AHP · Decisión multicriterio</h1>
+<p class="ahp-intro">Elige la mejor alternativa entre varias opciones —un proveedor, un colegio, un empleo, una inversión— comparando criterios por pares con la escala de Saaty y evaluando cómo se desempeña cada alternativa. El sistema pondera los criterios, calcula el puntaje global de cada opción y <strong>recomienda la seleccionada</strong>.</p>
 <p class="ref"><b>Método basado en:</b> Quezada, L.E. &amp; López-Ospina, H.A. (2014). <em>A method for designing a strategy map using AHP and linear programming.</em> Int. J. Production Economics 158, 244–255. DOI: 10.1016/j.ijpe.2014.08.011</p>
 
 <details class="teoria">
   <summary>Cómo funciona</summary>
   <div class="cont">
-    <p>El <strong>Proceso Analítico Jerárquico (AHP)</strong>, desarrollado por Thomas Saaty, convierte juicios subjetivos en prioridades numéricas. En lugar de asignar pesos directamente —algo difícil y poco confiable cuando hay muchos criterios— se compara de a dos, que es una tarea cognitivamente más simple y precisa.</p>
-
-    <h4>1 · Definir los criterios</h4>
-    <p>Se listan los criterios (o los objetivos/alternativas) que se quieren ponderar. Con <em>n</em> criterios habrá <em>n·(n−1)/2</em> comparaciones independientes (el triángulo superior de la matriz).</p>
-
-    <h4>2 · Comparar por pares con la escala de Saaty</h4>
-    <p>Para cada par (i, j) se responde <em>¿cuánto más importante es i que j?</em> usando una escala de 1 a 9. La celda inferior es siempre el recíproco de la superior, y la diagonal vale 1.</p>
+    <p>El <strong>Proceso Analítico Jerárquico (AHP)</strong>, de Thomas Saaty, resuelve una decisión en tres niveles: el <b>objetivo</b> (qué se quiere decidir), los <b>criterios</b> (qué importa) y las <b>alternativas</b> (las opciones a elegir).</p>
+    <h4>1 · Ponderar los criterios</h4>
+    <p>Se comparan los criterios de a dos con la escala de Saaty (1–9) para obtener su peso relativo. La celda inferior de la matriz es el recíproco de la superior; la diagonal vale 1. El peso de cada criterio es la media geométrica de su fila, normalizada.</p>
     <div class="esc">
       <table>
         <tr><th>Valor</th><th>Significado</th></tr>
@@ -130,62 +140,61 @@
         <tr><td>5</td><td>Fuertemente más importante</td></tr>
         <tr><td>7</td><td>Muy fuertemente más importante</td></tr>
         <tr><td>9</td><td>Extremadamente más importante</td></tr>
-        <tr><td>2, 4, 6, 8</td><td>Valores intermedios</td></tr>
-        <tr><td>1/3, 1/5, …</td><td>Recíprocos: i es menos importante que j</td></tr>
+        <tr><td>1/3, 1/5…</td><td>Recíprocos (menos importante)</td></tr>
       </table>
     </div>
-
-    <h4>3 · Calcular las prioridades</h4>
-    <p>El peso de cada criterio se obtiene por la <strong>media geométrica de su fila</strong> en la matriz, normalizada para que los pesos sumen 1 (100%). Este método aproxima el vector propio principal de la matriz y es estable y fácil de reproducir.</p>
-
-    <h4>4 · Verificar la consistencia</h4>
-    <p>Como los juicios humanos pueden contradecirse (si A&gt;B y B&gt;C, debería cumplirse A&gt;C en la proporción correcta), AHP mide cuán coherentes son. Se calcula el mayor valor propio <code>λ<sub>máx</sub></code> y con él:</p>
-    <p><code>CI = (λ<sub>máx</sub> − n) / (n − 1)</code> &nbsp;·&nbsp; <code>CR = CI / RI</code></p>
-    <p>donde <code>RI</code> es el índice aleatorio de Saaty (depende de <em>n</em>). Se aceptan los juicios cuando <code>CR ≤ 0,10</code>; si es mayor, hay contradicciones y conviene revisar las comparaciones.</p>
-
-    <h4>5 · Grupo de expertos</h4>
-    <p>Cuando varias personas evalúan, sus matrices se combinan por media geométrica elemento a elemento antes de calcular las prioridades. Esta es la base de la decisión colaborativa que PlanEstrat incorpora como módulo aparte.</p>
-
-    <h4>Cómo leer el resultado</h4>
-    <p>Los pesos indican la importancia relativa de cada criterio: a mayor peso, mayor influencia en la decisión. El CR dice si esos pesos son confiables. El gráfico y la tabla ordenan los criterios de mayor a menor prioridad, y el párrafo de interpretación resume qué significan.</p>
+    <h4>2 · Verificar la consistencia</h4>
+    <p>Con <code>λ<sub>máx</sub></code> se calcula <code>CI = (λ<sub>máx</sub> − n)/(n − 1)</code> y <code>CR = CI/RI</code>. Se aceptan los juicios si <code>CR ≤ 0,10</code>.</p>
+    <h4>3 · Evaluar las alternativas</h4>
+    <p>Para cada criterio se valora del 1 al 9 cuán bien lo <em>satisface</em> cada alternativa (mayor = mejor). Esas valoraciones se normalizan por criterio para obtener las <b>prioridades locales</b>.</p>
+    <h4>4 · Elegir</h4>
+    <p>El puntaje global de cada alternativa es la suma de sus prioridades locales ponderadas por el peso de cada criterio: <code>S<sub>i</sub> = Σ<sub>j</sub> w<sub>j</sub> · l<sub>ij</sub></code>. La alternativa con mayor puntaje es la <strong>seleccionada</strong>.</p>
   </div>
 </details>
 
 <div class="panel">
-  <h2>1 · Define los criterios</h2>
-  <p class="sub" style="color:var(--muted);font-size:.85rem;margin:-6px 0 12px">Carga un ejemplo completo o define tus propios criterios en una ventana. Luego ingresa las comparaciones.</p>
+  <h2>1 · Define la decisión</h2>
+  <p class="sub">Carga un ejemplo completo o define tu propia decisión: el objetivo, los criterios y las alternativas.</p>
   <div class="tool-row">
     <button class="chip-btn" id="btnEjemplos">📚 Cargar un ejemplo</button>
-    <button class="chip-btn sec" id="btnDefinir">✎ Definir criterios (ventana)</button>
+    <button class="chip-btn sec" id="btnDefinir">✎ Definir la decisión (ventana)</button>
   </div>
-  <details class="campo-avanzado">
-    <summary>Entrada rápida por texto (avanzado)</summary>
-    <div class="row" style="margin-top:8px">
-      <div style="flex:1">
-        <label for="nombres">Criterios (separados por coma, entre 2 y 9)</label>
-        <input type="text" id="nombres" value="Financiera, Clientes, Procesos, Tecnología, Aprendizaje">
-      </div>
-      <button class="btn btn-secondary" id="btnConstruir">Construir matriz</button>
-    </div>
-  </details>
+  <div class="obj-box">
+    <span class="obj-lbl">Objetivo de la decisión</span>
+    <input type="text" id="objetivo" value="Elegir un proveedor">
+  </div>
+  <div class="mini-lbl">Criterios</div>
+  <div class="chips" id="chips-crit"></div>
+  <div class="mini-lbl">Alternativas</div>
+  <div class="chips" id="chips-alt"></div>
 </div>
 
 <div class="panel">
-  <h2>2 · Compara por pares</h2>
-  <div class="tool-row">
-    <button class="chip-btn sec" id="btnGuiada">🪟 Comparación guiada (ventana)</button>
-  </div>
+  <h2>2 · Pondera los criterios</h2>
+  <p class="sub">¿Cuánto más importante es un criterio que otro? Compara por pares, o usa la ventana guiada.</p>
+  <div class="tool-row"><button class="chip-btn sec" id="btnGuiada">🪟 Comparación guiada (ventana)</button></div>
   <div class="mtx-wrap"><div id="matriz"></div></div>
-  <div style="margin-top:14px"><button class="btn btn-primary" id="btnCalcular">Calcular prioridades</button></div>
+</div>
+
+<div class="panel">
+  <h2>3 · Evalúa las alternativas</h2>
+  <p class="sub">Para cada criterio, valora del 1 (muy deficiente) al 9 (excelente) cuán bien lo satisface cada alternativa.</p>
+  <div class="mtx-wrap"><div id="eval"></div></div>
+  <div class="escala-nota">Escala: 1 muy deficiente · 3 deficiente · 5 aceptable · 7 bueno · 9 excelente.</div>
+  <div style="margin-top:16px"><button class="btn btn-primary" id="btnDecidir">Calcular la decisión</button></div>
 </div>
 
 <div class="panel" id="resultado" hidden>
-  <h2>3 · Resultados</h2>
+  <h2>4 · Resultado</h2>
+  <div id="winner"></div>
+  <div class="interpretacion" id="interpretacion"><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
+  <div class="mini-lbl">Ranking de alternativas</div>
+  <table class="res" id="tablaRank"></table>
+  <div class="chart-box"><canvas id="grafico" height="220"></canvas></div>
+  <div class="mini-lbl" style="margin-top:18px">Pesos de los criterios</div>
   <div id="crBadge"></div>
   <div class="stats" id="stats"></div>
-  <div class="interpretacion" id="interpretacion" hidden><div class="lbl">Interpretación</div><div id="interpTexto"></div></div>
   <table class="res" id="tablaPesos"></table>
-  <div class="chart-box"><canvas id="grafico" height="220"></canvas></div>
 </div>
 
 <div id="vm-root"></div>
@@ -198,291 +207,283 @@
   var API = "{% url 'ahp:solve_api' %}";
   var chart = null;
 
-  // ---------- Librería de ejemplos completos de toma de decisiones ----------
+  // ---------- Ejemplos completos de decisión ----------
   var EJEMPLOS = [
-    {
-      titulo: 'Perspectivas del Balanced Scorecard',
-      desc: 'Ponderar las cinco perspectivas del BSC para diseñar un mapa estratégico. Caso base del método.',
-      ref: 'Quezada &amp; López-Ospina (2014), IJPE 158.',
-      criterios: ['Financiera','Clientes','Procesos','Tecnología','Aprendizaje'],
-      juicios: {'0-1':2,'0-2':3,'0-3':3,'0-4':4,'1-2':2,'1-3':2,'1-4':3,'2-3':1,'2-4':2,'3-4':2}
-    },
-    {
-      titulo: 'Selección de proveedor',
-      desc: 'Elegir un proveedor comparando precio, calidad, plazo de entrega y servicio postventa. Caso gerencial de compras.',
-      ref: 'Caso didáctico de gestión de abastecimiento.',
-      criterios: ['Precio','Calidad','Entrega','Servicio postventa'],
-      juicios: {'0-1':2,'0-2':3,'0-3':4,'1-2':2,'1-3':3,'2-3':2}
-    },
-    {
-      titulo: 'Tecnología de secado de biomasa',
-      desc: 'Priorizar criterios para elegir una tecnología de secado: inversión, eficiencia energética, mantenimiento y escalabilidad.',
-      ref: 'Caso Bioenergía circular Los Ríos (FIC 23-12).',
-      criterios: ['Inversión','Eficiencia energética','Mantenimiento','Escalabilidad'],
-      juicios: {'0-1':0.5,'0-2':2,'0-3':1,'1-2':3,'1-3':2,'2-3':0.5}
-    },
-    {
-      titulo: 'Priorización de proyectos I+D',
-      desc: 'Ponderar criterios para seleccionar proyectos de innovación: impacto, costo, riesgo y tiempo.',
-      ref: 'Caso didáctico de cartera de proyectos.',
-      criterios: ['Impacto','Costo','Riesgo','Tiempo'],
-      juicios: {'0-1':2,'0-2':3,'0-3':4,'1-2':2,'1-3':3,'2-3':2}
-    }
+    { objetivo:'Elegir un proveedor',
+      desc:'Seleccionar el mejor proveedor comparando precio, calidad, entrega y servicio postventa.',
+      ref:'Caso didáctico de gestión de abastecimiento.',
+      criterios:['Precio competitivo','Calidad','Entrega','Servicio'],
+      juicios:{'0-1':2,'0-2':3,'0-3':4,'1-2':2,'1-3':3,'2-3':2},
+      alternativas:['Proveedor Andes','Proveedor Boreal','Proveedor Cumbre'],
+      desempeno:[[9,6,7,6],[3,9,6,8],[5,6,9,5]] },
+    { objetivo:'Elegir un colegio',
+      desc:'Escoger un colegio ponderando calidad académica, cercanía, costo e infraestructura.',
+      ref:'Caso didáctico de decisión familiar.',
+      criterios:['Calidad académica','Cercanía','Costo accesible','Infraestructura'],
+      juicios:{'0-1':3,'0-2':2,'0-3':4,'1-2':1,'1-3':2,'2-3':2},
+      alternativas:['Colegio San Andrés','Colegio Los Álamos','Colegio del Valle'],
+      desempeno:[[9,4,5,8],[4,9,7,6],[5,6,9,5]] },
+    { objetivo:'Elegir un empleo',
+      desc:'Decidir entre ofertas de trabajo según proyección, salario, ubicación y ambiente.',
+      ref:'Caso didáctico de decisión profesional.',
+      criterios:['Proyección','Salario','Ubicación','Ambiente'],
+      juicios:{'0-1':2,'0-2':3,'0-3':2,'1-2':2,'1-3':2,'2-3':1},
+      alternativas:['Empresa Alfa','Empresa Beta','Empresa Gamma'],
+      desempeno:[[9,7,4,7],[4,9,7,6],[6,5,9,8]] },
+    { objetivo:'Oportunidad de inversión',
+      desc:'Elegir dónde invertir comparando rentabilidad, seguridad, liquidez y horizonte.',
+      ref:'Caso didáctico de finanzas personales.',
+      criterios:['Rentabilidad','Seguridad','Liquidez','Horizonte'],
+      juicios:{'0-1':2,'0-2':3,'0-3':4,'1-2':2,'1-3':3,'2-3':2},
+      alternativas:['Fondo mutuo','Departamento','Startup'],
+      desempeno:[[9,7,8,7],[5,9,3,7],[7,4,6,8]] }
   ];
-  // Juicios precargados que usa construir() para prellenar el triángulo superior (o null = todo 1)
-  var JUICIOS_PRECARGA = EJEMPLOS[0].juicios;
+
+  // ---------- Estado ----------
+  var decision = clon(EJEMPLOS[0]);
+  function clon(e){ return {objetivo:e.objetivo,criterios:e.criterios.slice(),alternativas:e.alternativas.slice(),
+    juicios:Object.assign({},e.juicios), desempeno:e.desempeno.map(function(r){return r.slice();})}; }
 
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escA(s){ return esc(s).replace(/"/g,'&quot;'); }
 
-  function opciones(sel) {
-    var out = '', vals = [9,8,7,6,5,4,3,2];
-    vals.forEach(function (k){ out += opt(k, String(k), sel); });
-    out += opt(1, '1 (igual)', sel);
-    vals.slice().reverse().forEach(function (k){ out += opt(1/k, '1/'+k, sel); });
-    return out;
-  }
-  function opt(v, label, sel){ var s = Math.abs(v-sel)<1e-9?' selected':''; return '<option value="'+v+'"'+s+'>'+label+'</option>'; }
-  function fmtRecip(v){ if (Math.abs(v-1)<1e-9) return '1'; if (v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
+  function opciones(sel){ var out='',vals=[9,8,7,6,5,4,3,2];
+    vals.forEach(function(k){ out+=opt(k,String(k),sel); });
+    out+=opt(1,'1 (igual)',sel);
+    vals.slice().reverse().forEach(function(k){ out+=opt(1/k,'1/'+k,sel); });
+    return out; }
+  function opt(v,label,sel){ var s=Math.abs(v-sel)<1e-9?' selected':''; return '<option value="'+v+'"'+s+'>'+label+'</option>'; }
+  function fmtRecip(v){ if(Math.abs(v-1)<1e-9) return '1'; if(v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
+  function evalOpts(sel){ var o=''; for(var v=9;v>=1;v--){ o+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>'; } return o; }
 
-  function nombres(){
-    return document.getElementById('nombres').value.split(',').map(function (s){return s.trim();}).filter(Boolean);
+  // ---------- Render de definición ----------
+  function renderResumen(){
+    document.getElementById('objetivo').value = decision.objetivo;
+    document.getElementById('chips-crit').innerHTML = decision.criterios.map(function(c){ return '<span class="chip">'+esc(c)+'</span>'; }).join('') || '<span class="chip">—</span>';
+    document.getElementById('chips-alt').innerHTML = decision.alternativas.map(function(a){ return '<span class="chip alt">'+esc(a)+'</span>'; }).join('') || '<span class="chip alt">—</span>';
   }
-  function setNombres(arr){ document.getElementById('nombres').value = arr.join(', '); }
 
-  function construir(){
-    var nm = nombres();
-    if (nm.length < 2 || nm.length > 9){ alert('Ingresa entre 2 y 9 criterios.'); return; }
-    var n = nm.length;
-    var J = JUICIOS_PRECARGA;
-    var h = '<table class="mtx"><tr><th></th>';
-    nm.forEach(function (c){ h += '<th title="'+escA(c)+'">'+esc(c)+'</th>'; });
-    h += '</tr>';
-    for (var i=0;i<n;i++){
-      h += '<tr><th title="'+escA(nm[i])+'">'+esc(nm[i])+'</th>';
-      for (var j=0;j<n;j++){
-        if (i===j){ h += '<td class="diag">1</td>'; }
-        else if (i<j){
-          var pre = (J && J[i+'-'+j]!=null) ? J[i+'-'+j] : 1;
-          h += '<td><select data-i="'+i+'" data-j="'+j+'" onchange="__ahpSync('+i+','+j+')">'+opciones(pre)+'</select></td>';
-        } else { h += '<td class="low" id="low-'+i+'-'+j+'">—</td>'; }
+  // ---------- Matriz de criterios ----------
+  function construirCriterios(){
+    var nm=decision.criterios, n=nm.length, J=decision.juicios;
+    var h='<table class="mtx"><tr><th></th>';
+    nm.forEach(function(c){ h+='<th title="'+escA(c)+'">'+esc(c)+'</th>'; });
+    h+='</tr>';
+    for(var i=0;i<n;i++){
+      h+='<tr><th title="'+escA(nm[i])+'">'+esc(nm[i])+'</th>';
+      for(var j=0;j<n;j++){
+        if(i===j){ h+='<td class="diag">1</td>'; }
+        else if(i<j){ var pre=(J&&J[i+'-'+j]!=null)?J[i+'-'+j]:1;
+          h+='<td><select data-i="'+i+'" data-j="'+j+'" onchange="__ahpSync('+i+','+j+')">'+opciones(pre)+'</select></td>'; }
+        else { h+='<td class="low" id="low-'+i+'-'+j+'">—</td>'; }
       }
-      h += '</tr>';
+      h+='</tr>';
     }
-    h += '</table>';
-    document.getElementById('matriz').innerHTML = h;
-    document.querySelectorAll('#matriz select').forEach(function (s){ __ahpSync(parseInt(s.dataset.i,10), parseInt(s.dataset.j,10)); });
-    document.getElementById('resultado').hidden = true;
+    h+='</table>';
+    document.getElementById('matriz').innerHTML=h;
+    document.querySelectorAll('#matriz select').forEach(function(s){ __ahpSync(+s.dataset.i,+s.dataset.j); });
   }
+  window.__ahpSync=function(i,j){ var sel=document.querySelector('#matriz select[data-i="'+i+'"][data-j="'+j+'"]');
+    var low=document.getElementById('low-'+j+'-'+i); if(sel&&low) low.textContent=fmtRecip(1/parseFloat(sel.value)); };
 
-  window.__ahpSync = function (i,j){
-    var sel = document.querySelector('#matriz select[data-i="'+i+'"][data-j="'+j+'"]');
-    var low = document.getElementById('low-'+j+'-'+i);
-    if (sel && low) low.textContent = fmtRecip(1/parseFloat(sel.value));
-  };
-
-  function matrizCompleta(){
-    var nm = nombres(), n = nm.length, M = [];
-    for (var i=0;i<n;i++){ M.push(new Array(n).fill(1)); }
-    document.querySelectorAll('#matriz select').forEach(function (s){
-      var i = parseInt(s.dataset.i,10), j = parseInt(s.dataset.j,10), v = parseFloat(s.value);
-      M[i][j] = v; M[j][i] = 1/v;
+  // ---------- Tabla de evaluación de alternativas ----------
+  function construirEval(){
+    var cr=decision.criterios, alt=decision.alternativas, D=decision.desempeno;
+    var h='<table class="ev"><tr><th>Alternativa \\ Criterio</th>';
+    cr.forEach(function(c){ h+='<th title="'+escA(c)+'">'+esc(c)+'</th>'; });
+    h+='</tr>';
+    alt.forEach(function(a,ai){
+      h+='<tr><td class="alt">'+esc(a)+'</td>';
+      cr.forEach(function(c,ci){ var v=(D[ai]&&D[ai][ci]!=null)?D[ai][ci]:5;
+        h+='<td><select data-a="'+ai+'" data-c="'+ci+'">'+evalOpts(v)+'</select></td>'; });
+      h+='</tr>';
     });
-    return { M: M, nombres: nm };
+    h+='</table>';
+    document.getElementById('eval').innerHTML=h;
   }
 
-  function calcular(){
-    var d = matrizCompleta();
-    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ matriz:d.M, nombres:d.nombres }) })
-    .then(function (r){ return r.json().then(function (j){ return {ok:r.ok, j:j}; }); })
-    .then(function (res){ if (!res.ok) throw new Error(res.j.error || 'Error de cálculo'); pintar(res.j); })
-    .catch(function (e){
-      var box = document.getElementById('resultado'); box.hidden = false;
-      document.getElementById('crBadge').innerHTML = '<span class="err">'+e.message+'</span>';
-      document.getElementById('stats').innerHTML = '';
-      document.getElementById('interpretacion').hidden = true;
-      document.getElementById('tablaPesos').innerHTML = '';
-    });
+  function leerCriterios(){ var n=decision.criterios.length, M=[]; for(var i=0;i<n;i++){ M.push(new Array(n).fill(1)); }
+    document.querySelectorAll('#matriz select').forEach(function(s){ var i=+s.dataset.i,j=+s.dataset.j,v=parseFloat(s.value); M[i][j]=v; M[j][i]=1/v; });
+    return M; }
+  function leerDesempeno(){ var m=decision.alternativas.length,n=decision.criterios.length,D=[]; for(var a=0;a<m;a++){ D.push(new Array(n).fill(5)); }
+    document.querySelectorAll('#eval select').forEach(function(s){ D[+s.dataset.a][+s.dataset.c]=parseInt(s.value,10); });
+    return D; }
+
+  // ---------- Calcular la decisión ----------
+  function decidir(){
+    // sincroniza estado desde inputs
+    decision.objetivo=document.getElementById('objetivo').value.trim()||'la decisión';
+    var M=leerCriterios(), D=leerDesempeno();
+    decision.desempeno=D;
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({criterios_matriz:M, nombres:decision.criterios, alternativas:decision.alternativas, desempeno:D})})
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
+    .then(function(res){ if(!res.ok) throw new Error(res.j.error||'Error de cálculo'); pintar(res.j); })
+    .catch(function(e){ var box=document.getElementById('resultado'); box.hidden=false;
+      document.getElementById('winner').innerHTML='<span class="err">'+esc(e.message)+'</span>';
+      document.getElementById('interpretacion').hidden=true; document.getElementById('tablaRank').innerHTML=''; });
   }
 
-  var pct = function (x){ return (x*100).toFixed(1)+'%'; };
+  var pct=function(x){ return (x*100).toFixed(1)+'%'; };
 
   function interpretar(r){
-    var rk = r.ranking, top = rk[0], last = rk[rk.length-1], s = '';
-    s += 'El criterio de mayor prioridad es <strong>'+top.nombre+'</strong>, con un peso de '+pct(top.peso)+'';
-    if (rk.length > 2){ s += ', seguido de '+rk[1].nombre+' ('+pct(rk[1].peso)+') y '+rk[2].nombre+' ('+pct(rk[2].peso)+'). '; }
-    else if (rk.length === 2){ s += ', frente a '+rk[1].nombre+' ('+pct(rk[1].peso)+'). '; }
-    else { s += '. '; }
-    if (rk.length > 1){ s += 'El criterio menos determinante es '+last.nombre+' ('+pct(last.peso)+'). '; }
-    if (top.peso >= 0.5){ s += 'Dado que '+top.nombre+' concentra más de la mitad del peso total, domina claramente la decisión. '; }
-    else if (rk.length > 1 && (top.peso - rk[1].peso) < 0.05){ s += 'Los criterios de cabeza tienen pesos muy parecidos, así que la decisión no depende de uno solo, sino de su equilibrio. '; }
-    if (r.consistente){ s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') es menor o igual que 0,10: los juicios son coherentes y estas prioridades pueden usarse con confianza.'; }
-    else { s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') supera el umbral de 0,10, lo que revela contradicciones entre los juicios; conviene revisar las comparaciones por pares antes de usar estos pesos.'; }
+    var rk=r.ranking, top=rk[0], seg=rk[1], w=r.criterios;
+    var iTop=0; for(var k=1;k<w.pesos.length;k++){ if(w.pesos[k]>w.pesos[iTop]) iTop=k; }
+    var m=r.margen*100;
+    var s='Para <strong>'+esc(decision.objetivo)+'</strong>, la alternativa recomendada es <strong>'+esc(r.seleccionado)+'</strong>, con un puntaje global de '+pct(top.score)+'';
+    if(seg){ s+=', por delante de '+esc(seg.nombre)+' ('+pct(seg.score)+')'; }
+    s+='. El criterio de mayor peso en esta decisión fue <strong>'+esc(w.nombres[iTop])+'</strong> ('+pct(w.pesos[iTop])+'). ';
+    if(m>=8){ s+='El margen sobre la segunda opción ('+m.toFixed(1)+' puntos) es amplio, por lo que la recomendación es clara y robusta. '; }
+    else if(m>=3){ s+='El margen sobre la segunda opción ('+m.toFixed(1)+' puntos) es moderado: la recomendación es sólida, aunque conviene revisar los criterios más disputados. '; }
+    else { s+='El margen sobre la segunda opción es estrecho ('+m.toFixed(1)+' puntos): las dos mejores alternativas están muy parejas y pequeños cambios en los juicios podrían alterar el orden. '; }
+    if(w.consistente){ s+='La consistencia de los criterios (CR = '+w.CR.toFixed(3)+') es aceptable, así que los pesos son confiables.'; }
+    else { s+='Atención: la consistencia de los criterios (CR = '+w.CR.toFixed(3)+') supera 0,10; conviene revisar las comparaciones por pares antes de tomar la decisión.'; }
     return s;
   }
 
   function pintar(r){
-    document.getElementById('resultado').hidden = false;
-    document.getElementById('crBadge').innerHTML = r.consistente
-      ? '<span class="cr-badge cr-ok">Consistente · CR = '+r.CR.toFixed(4)+'</span>'
-      : '<span class="cr-badge cr-bad">Inconsistente · CR = '+r.CR.toFixed(4)+' (revisa los juicios)</span>';
-    document.getElementById('stats').innerHTML =
-      stat(r.lambda_max.toFixed(4),'λ máx') + stat(r.CI.toFixed(4),'CI') +
-      stat(r.RI.toFixed(2),'RI (n='+r.n+')') + stat(r.CR.toFixed(4),'CR');
-    document.getElementById('interpTexto').innerHTML = interpretar(r);
-    document.getElementById('interpretacion').hidden = false;
-    var t = '<tr><th>#</th><th>Criterio</th><th>Peso</th><th style="width:40%">Prioridad</th></tr>';
-    r.ranking.forEach(function (row,k){
-      t += '<tr><td class="num">'+(k+1)+'</td><td>'+esc(row.nombre)+'</td>'
-        + '<td class="num">'+pct(row.peso)+'</td>'
-        + '<td><span class="bar" style="width:'+(row.peso*100)+'%"></span></td></tr>';
+    document.getElementById('resultado').hidden=false;
+    document.getElementById('winner').innerHTML =
+      '<div class="winner"><div class="cap">La decisión recomienda</div>'
+      + '<div class="name">'+esc(r.seleccionado)+'</div>'
+      + '<div class="score">Puntaje global '+pct(r.ranking[0].score)+'</div>'
+      + '<div class="obj">'+esc(decision.objetivo)+'</div></div>';
+    document.getElementById('interpretacion').hidden=false;
+    document.getElementById('interpTexto').innerHTML=interpretar(r);
+
+    var t='<tr><th>#</th><th>Alternativa</th><th>Puntaje</th><th style="width:42%">&nbsp;</th></tr>';
+    r.ranking.forEach(function(row,k){
+      t+='<tr class="'+(k===0?'win':'')+'"><td class="num">'+(k+1)+'</td><td>'+esc(row.nombre)+(k===0?' ✔':'')+'</td>'
+        +'<td class="num">'+pct(row.score)+'</td>'
+        +'<td><span class="bar" style="width:'+(row.score / r.ranking[0].score * 100).toFixed(1)+'%;max-width:100%"></span></td></tr>';
     });
-    document.getElementById('tablaPesos').innerHTML = t;
-    var labels = r.ranking.map(function (x){ return x.nombre; });
-    var data = r.ranking.map(function (x){ return +(x.peso*100).toFixed(2); });
-    if (chart) chart.destroy();
-    var css = getComputedStyle(document.body);
-    chart = new Chart(document.getElementById('grafico').getContext('2d'), {
-      type:'bar',
-      data:{ labels:labels, datasets:[{ label:'Peso (%)', data:data,
-        backgroundColor: css.getPropertyValue('--accent').trim() || '#2c5c86' }] },
-      options:{ responsive:true, plugins:{ legend:{ display:false } },
-        scales:{ y:{ beginAtZero:true, ticks:{ callback:function (v){ return v+'%'; } } } } }
+    document.getElementById('tablaRank').innerHTML=t;
+
+    // pesos de criterios
+    var w=r.criterios;
+    document.getElementById('crBadge').innerHTML = w.consistente
+      ? '<span class="cr-badge cr-ok">Criterios consistentes · CR = '+w.CR.toFixed(4)+'</span>'
+      : '<span class="cr-badge cr-bad">Criterios inconsistentes · CR = '+w.CR.toFixed(4)+'</span>';
+    document.getElementById('stats').innerHTML =
+      stat(w.lambda_max.toFixed(3),'λ máx')+stat(w.CI.toFixed(3),'CI')+stat(w.RI.toFixed(2),'RI (n='+w.n+')')+stat(w.CR.toFixed(3),'CR');
+    var wr=w.nombres.map(function(nm,i){ return {nombre:nm,peso:w.pesos[i]}; }).sort(function(a,b){ return b.peso-a.peso; });
+    var tp='<tr><th>Criterio</th><th>Peso</th><th style="width:42%">&nbsp;</th></tr>';
+    wr.forEach(function(row){ tp+='<tr><td>'+esc(row.nombre)+'</td><td class="num">'+pct(row.peso)+'</td>'
+      +'<td><span class="bar" style="width:'+(row.peso*100)+'%;max-width:100%;background:var(--star)"></span></td></tr>'; });
+    document.getElementById('tablaPesos').innerHTML=tp;
+
+    var labels=r.ranking.map(function(x){ return x.nombre; });
+    var data=r.ranking.map(function(x){ return +(x.score*100).toFixed(2); });
+    var cols=r.ranking.map(function(x,i){ return i===0 ? (getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#2c5c86') : '#b7c2cf'; });
+    if(chart) chart.destroy();
+    chart=new Chart(document.getElementById('grafico').getContext('2d'),{
+      type:'bar', data:{labels:labels,datasets:[{label:'Puntaje (%)',data:data,backgroundColor:cols}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v+'%';}}}}}
     });
   }
   function stat(v,l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
 
-  // ---------- Ventanas (modales) ----------
-  var vmRoot = document.getElementById('vm-root');
-  function vmClose(){ vmRoot.innerHTML=''; document.removeEventListener('keydown', onEsc); }
+  // ---------- Ventanas ----------
+  var vmRoot=document.getElementById('vm-root');
+  function vmClose(){ vmRoot.innerHTML=''; document.removeEventListener('keydown',onEsc); }
   function onEsc(e){ if(e.key==='Escape') vmClose(); }
-  function vmOpen(inner){
-    vmRoot.innerHTML = '<div class="vm-overlay"><div class="vm">'+inner+'</div></div>';
-    var ov = vmRoot.querySelector('.vm-overlay');
-    ov.addEventListener('mousedown', function(e){ if(e.target===ov) vmClose(); });
-    vmRoot.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', vmClose); });
-    document.addEventListener('keydown', onEsc);
-    return vmRoot.querySelector('.vm');
-  }
+  function vmOpen(inner){ vmRoot.innerHTML='<div class="vm-overlay"><div class="vm">'+inner+'</div></div>';
+    var ov=vmRoot.querySelector('.vm-overlay'); ov.addEventListener('mousedown',function(e){ if(e.target===ov) vmClose(); });
+    vmRoot.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click',vmClose); });
+    document.addEventListener('keydown',onEsc); return vmRoot.querySelector('.vm'); }
 
-  // Ventana: librería de ejemplos
   function openEjemplos(){
-    var cards = EJEMPLOS.map(function(e,i){
-      return '<div class="ej-card"><h4>'+esc(e.titulo)+'</h4><p>'+esc(e.desc)+'</p>'
-        + '<div class="crs">'+e.criterios.map(function(c){return '<span class="cr">'+esc(c)+'</span>';}).join('')+'</div>'
-        + '<button class="chip-btn" data-ej="'+i+'">Usar este ejemplo</button>'
-        + '<div class="ej-ref">'+e.ref+'</div></div>';
+    var cards=EJEMPLOS.map(function(e,i){
+      return '<div class="ej-card"><h4>'+esc(e.objetivo)+'</h4><p>'+esc(e.desc)+'</p>'
+        +'<div class="crs">'+e.criterios.map(function(c){return '<span class="cr">'+esc(c)+'</span>';}).join('')+'</div>'
+        +'<div class="crs">'+e.alternativas.map(function(a){return '<span class="al">'+esc(a)+'</span>';}).join('')+'</div>'
+        +'<button class="chip-btn" data-ej="'+i+'" style="margin-top:8px">Usar este ejemplo</button>'
+        +'<div class="ej-ref">'+e.ref+'</div></div>';
     }).join('');
-    var vm = vmOpen(
-      '<div class="vm-head"><h3>📚 Ejemplos de decisión</h3><button class="vm-x" data-close aria-label="Cerrar">×</button></div>'
-      + '<div class="vm-body">'+cards+'</div>'
-      + '<div class="vm-foot"><span class="guia-prog">Elige un caso para cargarlo y calcularlo</span><button class="btn btn-secondary" data-close>Cerrar</button></div>');
-    vm.querySelectorAll('[data-ej]').forEach(function(b){
-      b.addEventListener('click', function(){
-        var e = EJEMPLOS[+b.dataset.ej];
-        setNombres(e.criterios); JUICIOS_PRECARGA = e.juicios;
-        construir(); calcular(); vmClose();
-        document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'});
-      });
-    });
+    var vm=vmOpen('<div class="vm-head"><h3>📚 Ejemplos de decisión</h3><button class="vm-x" data-close>×</button></div>'
+      +'<div class="vm-body">'+cards+'</div>'
+      +'<div class="vm-foot"><span class="guia-prog">Elige un caso: se carga y se calcula automáticamente</span><button class="btn btn-secondary" data-close>Cerrar</button></div>');
+    vm.querySelectorAll('[data-ej]').forEach(function(b){ b.addEventListener('click',function(){
+      decision=clon(EJEMPLOS[+b.dataset.ej]); renderResumen(); construirCriterios(); construirEval(); decidir(); vmClose();
+      document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'}); }); });
   }
 
-  // Ventana: definir criterios
   function openDefinir(){
-    var actuales = nombres(); if(!actuales.length) actuales = ['',''];
-    function filas(arr){
-      return arr.map(function(c,i){
-        return '<div class="crit-row"><span class="num">'+(i+1)+'</span>'
-          + '<input type="text" value="'+escA(c)+'" placeholder="Nombre del criterio">'
-          + '<button class="del vm-del" title="Quitar" style="flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:32px;height:32px;cursor:pointer">✕</button></div>';
-      }).join('');
-    }
-    var vm = vmOpen(
-      '<div class="vm-head"><h3>✎ Definir criterios</h3><button class="vm-x" data-close aria-label="Cerrar">×</button></div>'
-      + '<div class="vm-body"><p style="font-size:.85rem;color:var(--ink-soft);margin:0 0 12px">Escribe entre 2 y 9 criterios, uno por línea. Luego pulsa Aplicar para construir la matriz de comparación.</p>'
-      + '<div id="vm-crits">'+filas(actuales)+'</div>'
-      + '<button class="add" id="vm-addcrit" style="border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;font-size:.82rem;cursor:pointer;margin-top:4px">+ Agregar criterio</button></div>'
-      + '<div class="vm-foot"><span class="guia-prog" id="vm-crit-msg"></span><span><button class="btn btn-secondary" data-close>Cancelar</button> <button class="btn btn-primary" id="vm-crit-ok">Aplicar</button></span></div>');
-    function wireDel(){ vm.querySelectorAll('.vm-del').forEach(function(b){ b.onclick=function(){ if(vm.querySelectorAll('.crit-row').length<=2){ return; } b.closest('.crit-row').remove(); renum(); }; }); }
-    function renum(){ vm.querySelectorAll('#vm-crits .crit-row .num').forEach(function(n,i){ n.textContent=i+1; }); }
-    wireDel();
-    vm.querySelector('#vm-addcrit').addEventListener('click', function(){
-      if(vm.querySelectorAll('.crit-row').length>=9){ vm.querySelector('#vm-crit-msg').textContent='Máximo 9 criterios.'; return; }
+    function filas(arr,ph){ return arr.map(function(c,i){
+      return '<div class="crit-row"><span class="num">'+(i+1)+'</span><input type="text" value="'+escA(c)+'" placeholder="'+ph+'"><button class="vmdel" title="Quitar">✕</button></div>'; }).join(''); }
+    var vm=vmOpen('<div class="vm-head"><h3>✎ Definir la decisión</h3><button class="vm-x" data-close>×</button></div>'
+      +'<div class="vm-body">'
+      +'<label>Objetivo de la decisión</label><input type="text" id="d-obj" value="'+escA(decision.objetivo)+'" placeholder="Ej.: Elegir un proveedor" style="margin-bottom:14px">'
+      +'<div class="mini-lbl">Criterios (2 a 9)</div><div id="d-crit">'+filas(decision.criterios,'Nombre del criterio')+'</div><button class="vmadd" data-add="crit">+ Agregar criterio</button>'
+      +'<div class="mini-lbl" style="margin-top:14px">Alternativas (2 o más)</div><div id="d-alt">'+filas(decision.alternativas,'Nombre de la alternativa')+'</div><button class="vmadd" data-add="alt">+ Agregar alternativa</button>'
+      +'</div>'
+      +'<div class="vm-foot"><span class="guia-prog" id="d-msg"></span><span><button class="btn btn-secondary" data-close>Cancelar</button> <button class="btn btn-primary" id="d-ok">Aplicar</button></span></div>');
+    function renum(id){ vm.querySelectorAll('#'+id+' .crit-row .num').forEach(function(n,i){ n.textContent=i+1; }); }
+    function wire(){ vm.querySelectorAll('.vmdel').forEach(function(b){ b.onclick=function(){ var box=b.closest('#d-crit,#d-alt'); if(box.querySelectorAll('.crit-row').length<=2) return; b.closest('.crit-row').remove(); renum(box.id); }; }); }
+    wire();
+    vm.querySelectorAll('[data-add]').forEach(function(btn){ btn.addEventListener('click',function(){
+      var id=btn.dataset.add==='crit'?'d-crit':'d-alt';
+      if(id==='d-crit'&&vm.querySelectorAll('#d-crit .crit-row').length>=9){ vm.querySelector('#d-msg').textContent='Máximo 9 criterios.'; return; }
       var d=document.createElement('div'); d.className='crit-row';
-      d.innerHTML='<span class="num"></span><input type="text" placeholder="Nombre del criterio"><button class="del vm-del" style="flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:32px;height:32px;cursor:pointer">✕</button>';
-      vm.querySelector('#vm-crits').appendChild(d); renum(); wireDel(); d.querySelector('input').focus();
-    });
-    vm.querySelector('#vm-crit-ok').addEventListener('click', function(){
-      var vals=[]; vm.querySelectorAll('#vm-crits input').forEach(function(inp){ var v=inp.value.trim(); if(v) vals.push(v); });
-      if(vals.length<2){ vm.querySelector('#vm-crit-msg').textContent='Ingresa al menos 2 criterios.'; return; }
-      if(vals.length>9){ vm.querySelector('#vm-crit-msg').textContent='Máximo 9 criterios.'; return; }
-      setNombres(vals); JUICIOS_PRECARGA=null; construir(); vmClose();
+      d.innerHTML='<span class="num"></span><input type="text" placeholder="Nombre"><button class="vmdel">✕</button>';
+      vm.querySelector('#'+id).appendChild(d); renum(id); wire(); d.querySelector('input').focus(); }); });
+    vm.querySelector('#d-ok').addEventListener('click',function(){
+      var cr=[],al=[];
+      vm.querySelectorAll('#d-crit input').forEach(function(x){ var v=x.value.trim(); if(v) cr.push(v); });
+      vm.querySelectorAll('#d-alt input').forEach(function(x){ var v=x.value.trim(); if(v) al.push(v); });
+      if(cr.length<2){ vm.querySelector('#d-msg').textContent='Ingresa al menos 2 criterios.'; return; }
+      if(cr.length>9){ vm.querySelector('#d-msg').textContent='Máximo 9 criterios.'; return; }
+      if(al.length<2){ vm.querySelector('#d-msg').textContent='Ingresa al menos 2 alternativas.'; return; }
+      decision.objetivo=vm.querySelector('#d-obj').value.trim()||'la decisión';
+      decision.criterios=cr; decision.alternativas=al;
+      decision.juicios={};                                  // criterios nuevos: empezar en igualdad
+      decision.desempeno=al.map(function(){ return cr.map(function(){ return 5; }); });
+      renderResumen(); construirCriterios(); construirEval(); vmClose();
       document.getElementById('matriz').scrollIntoView({behavior:'smooth',block:'center'});
     });
   }
 
-  // Ventana: comparación guiada por pares
-  var ESCALA = [
-    {v:9,l:'extremadamente más importante que'},
-    {v:7,l:'muy fuertemente más importante que'},
-    {v:5,l:'fuertemente más importante que'},
-    {v:3,l:'moderadamente más importante que'},
-    {v:1,l:'igual de importante que'},
-    {v:1/3,l:'moderadamente menos importante que'},
-    {v:1/5,l:'fuertemente menos importante que'},
-    {v:1/7,l:'muy fuertemente menos importante que'},
-    {v:1/9,l:'extremadamente menos importante que'}
-  ];
+  var ESCALA=[{v:9,l:'extremadamente más importante que'},{v:7,l:'muy fuertemente más importante que'},
+    {v:5,l:'fuertemente más importante que'},{v:3,l:'moderadamente más importante que'},
+    {v:1,l:'igual de importante que'},{v:1/3,l:'moderadamente menos importante que'},
+    {v:1/5,l:'fuertemente menos importante que'},{v:1/7,l:'muy fuertemente menos importante que'},
+    {v:1/9,l:'extremadamente menos importante que'}];
   function openGuiada(){
-    var nm = nombres();
-    if(nm.length<2){ alert('Primero define al menos 2 criterios.'); return; }
-    // pares (i<j) leyendo el valor actual de la matriz si existe
+    var nm=decision.criterios; if(nm.length<2){ alert('Primero define al menos 2 criterios.'); return; }
     var pares=[]; for(var i=0;i<nm.length;i++){ for(var j=i+1;j<nm.length;j++){ pares.push({i:i,j:j}); } }
-    var vals={};
-    document.querySelectorAll('#matriz select').forEach(function(s){ vals[s.dataset.i+'-'+s.dataset.j]=parseFloat(s.value); });
+    var vals={}; document.querySelectorAll('#matriz select').forEach(function(s){ vals[s.dataset.i+'-'+s.dataset.j]=parseFloat(s.value); });
     var pos=0;
-    var vm = vmOpen(
-      '<div class="vm-head"><h3>🪟 Comparación guiada</h3><button class="vm-x" data-close aria-label="Cerrar">×</button></div>'
-      + '<div class="vm-body" id="guia-body"></div>'
-      + '<div class="vm-foot"><span class="guia-prog" id="guia-prog"></span><span><button class="btn btn-secondary" id="guia-prev">Anterior</button> <button class="btn btn-primary" id="guia-next">Siguiente</button></span></div>');
-    function render(){
-      var p=pares[pos], a=nm[p.i], b=nm[p.j], cur=vals[p.i+'-'+p.j]; if(cur==null) cur=1;
-      var opts = ESCALA.map(function(o){
-        var seld = Math.abs(o.v-cur)<1e-9?' sel':'';
-        return '<button class="'+('guia-opt'+seld).trim()+'" data-v="'+o.v+'"><b class="a">'+esc(a)+'</b> es '+o.l+' <b class="b">'+esc(b)+'</b></button>';
-      }).join('');
-      document.getElementById('guia-body').innerHTML =
-        '<div class="guia-vs">Par '+(pos+1)+' de '+pares.length+'</div>'
-        + '<div class="guia-pair"><span class="a">'+esc(a)+'</span> &nbsp;vs&nbsp; <span class="b">'+esc(b)+'</span></div>'
-        + '<div class="guia-opts">'+opts+'</div>';
-      document.getElementById('guia-prog').textContent = 'Par '+(pos+1)+'/'+pares.length;
-      document.getElementById('guia-prev').disabled = (pos===0);
-      document.getElementById('guia-next').textContent = (pos===pares.length-1)?'Finalizar y calcular':'Siguiente';
-      document.getElementById('guia-body').querySelectorAll('.guia-opt').forEach(function(btn){
-        btn.addEventListener('click', function(){
-          vals[p.i+'-'+p.j]=parseFloat(btn.dataset.v);
-          document.getElementById('guia-body').querySelectorAll('.guia-opt').forEach(function(x){x.classList.remove('sel');});
-          btn.classList.add('sel');
-        });
-      });
+    var vm=vmOpen('<div class="vm-head"><h3>🪟 Comparación guiada de criterios</h3><button class="vm-x" data-close>×</button></div>'
+      +'<div class="vm-body" id="guia-body"></div>'
+      +'<div class="vm-foot"><span class="guia-prog" id="guia-prog"></span><span><button class="btn btn-secondary" id="guia-prev">Anterior</button> <button class="btn btn-primary" id="guia-next">Siguiente</button></span></div>');
+    function render(){ var p=pares[pos],a=nm[p.i],b=nm[p.j],cur=vals[p.i+'-'+p.j]; if(cur==null) cur=1;
+      var opts=ESCALA.map(function(o){ var sd=Math.abs(o.v-cur)<1e-9?' sel':'';
+        return '<button class="guia-opt'+sd+'" data-v="'+o.v+'"><b class="a">'+esc(a)+'</b> es '+o.l+' <b class="b">'+esc(b)+'</b></button>'; }).join('');
+      document.getElementById('guia-body').innerHTML='<div class="guia-vs">Par '+(pos+1)+' de '+pares.length+'</div>'
+        +'<div class="guia-pair"><span class="a">'+esc(a)+'</span> &nbsp;vs&nbsp; <span class="b">'+esc(b)+'</span></div>'
+        +'<div class="guia-opts">'+opts+'</div>';
+      document.getElementById('guia-prog').textContent='Par '+(pos+1)+'/'+pares.length;
+      document.getElementById('guia-prev').disabled=(pos===0);
+      document.getElementById('guia-next').textContent=(pos===pares.length-1)?'Finalizar y calcular':'Siguiente';
+      document.getElementById('guia-body').querySelectorAll('.guia-opt').forEach(function(btn){ btn.addEventListener('click',function(){
+        vals[p.i+'-'+p.j]=parseFloat(btn.dataset.v);
+        document.getElementById('guia-body').querySelectorAll('.guia-opt').forEach(function(x){ x.classList.remove('sel'); }); btn.classList.add('sel'); }); });
     }
-    document.getElementById('guia-prev').addEventListener('click', function(){ if(pos>0){ pos--; render(); } });
-    document.getElementById('guia-next').addEventListener('click', function(){
+    document.getElementById('guia-prev').addEventListener('click',function(){ if(pos>0){ pos--; render(); } });
+    document.getElementById('guia-next').addEventListener('click',function(){
       if(pos<pares.length-1){ pos++; render(); }
-      else { JUICIOS_PRECARGA=vals; construir(); calcular(); vmClose();
-        document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'}); }
-    });
+      else { decision.juicios=vals; construirCriterios(); decidir(); vmClose();
+        document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'}); } });
     render();
   }
 
-  document.getElementById('btnConstruir').addEventListener('click', function(){ JUICIOS_PRECARGA=null; construir(); });
-  document.getElementById('btnCalcular').addEventListener('click', calcular);
+  document.getElementById('btnDecidir').addEventListener('click', decidir);
   document.getElementById('btnEjemplos').addEventListener('click', openEjemplos);
   document.getElementById('btnDefinir').addEventListener('click', openDefinir);
   document.getElementById('btnGuiada').addEventListener('click', openGuiada);
 
-  construir();
+  // Carga inicial: ejemplo 1 completo, ya calculado
+  renderResumen(); construirCriterios(); construirEval(); decidir();
 })();
 </script>
 {% endblock %}
