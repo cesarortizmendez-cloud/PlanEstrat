@@ -16,6 +16,7 @@
   details.teoria>summary::before{content:'\25B8';font-size:.9rem;color:var(--star);transition:transform .15s}
   details.teoria[open]>summary::before{transform:rotate(90deg)}
   details.teoria .cont{padding:2px 20px 18px;color:var(--ink-soft);line-height:1.6}
+  details.teoria .cont b{color:var(--ink)}
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0}
   .panel h2{font-family:var(--font-head);font-size:1.2rem;margin:0 0 6px}
   .panel .sub{color:var(--muted);font-size:.82rem;margin:0 0 12px}
@@ -29,42 +30,37 @@
   .inline-form .g{display:flex;flex-direction:column}
   .sb-link{margin:8px 0;padding:10px 12px;border:1px dashed var(--star);border-radius:8px;background:var(--star-soft);font-size:.84rem;color:var(--star-ink);word-break:break-all}
 
-  details.sec{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
-  details.sec>summary{cursor:pointer;list-style:none;padding:12px 16px;background:var(--surface-2);font-family:var(--font-head);font-weight:600;font-size:1rem;display:flex;align-items:center;gap:10px;user-select:none}
-  details.sec>summary::-webkit-details-marker{display:none}
-  details.sec>summary::before{content:'\25B8';font-size:.85rem;color:var(--muted);transition:transform .15s}
-  details.sec[open]>summary::before{transform:rotate(90deg)}
-  details.sec>summary .count{margin-left:auto;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);font-weight:400}
-  .sec-body{padding:12px 16px}
+  /* Lengüetas jerárquicas */
+  .tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin:6px 0 16px}
+  .tab{font:inherit;font-weight:600;font-size:.9rem;border:none;background:none;padding:10px 15px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;border-radius:8px 8px 0 0;display:flex;align-items:center;gap:7px}
+  .tab:hover{color:var(--ink-soft)}
+  .tab.active{color:var(--accent-ink);border-bottom-color:var(--accent);background:var(--accent-soft)}
+  .tab .step{font-family:var(--font-mono);font-size:.7rem;background:var(--surface-2);color:var(--muted);border-radius:5px;padding:1px 6px}
+  .tab.active .step{background:var(--accent);color:#fff}
+  .tab .n{font-family:var(--font-mono);font-size:.72rem;opacity:.75}
+  .tabpanel{animation:fade .15s ease}
+  @keyframes fade{from{opacity:.4}to{opacity:1}}
+  .flow-note{font-size:.82rem;color:var(--muted);margin:0 0 12px;padding:8px 12px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)}
+  .hint{color:var(--muted);font-size:.88rem;padding:14px 16px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:8px;text-align:center}
+
   label{font-size:.76rem;color:var(--muted);display:block;margin:0 0 3px}
-  input[type=text],input[type=password]{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink);width:100%}
-  select{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink)}
-  .fila{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px}
-  .fila .g{display:flex;flex-direction:column;flex:1;min-width:0}
-  .fila .g.sm{flex:0 0 110px}
+  input[type=text]{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink);width:100%}
+  select{font:inherit;font-size:.86rem;padding:7px 9px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink);max-width:100%}
+  .fila{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap}
+  .fila .g{display:flex;flex-direction:column;flex:1;min-width:130px}
+  .fila .g.sm{flex:0 0 120px;min-width:0}
+  .fila .g.xs{flex:0 0 96px;min-width:0}
   .del{flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:34px;height:34px;cursor:pointer;font-size:1rem;line-height:1}
   .del:hover{background:color-mix(in srgb,var(--crit) 12%,transparent)}
-  .add{border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:7px 13px;font:inherit;font-weight:600;font-size:.8rem;cursor:pointer;margin-top:2px}
+  .add{border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;font-size:.82rem;cursor:pointer;margin-top:4px}
   .add:hover{background:var(--accent-soft)}
-  details.obj{border:1px solid var(--line);border-radius:9px;margin-bottom:8px;overflow:hidden}
-  details.obj>summary{cursor:pointer;list-style:none;padding:9px 12px;display:flex;align-items:center;gap:8px;user-select:none;font-size:.9rem}
-  details.obj>summary::-webkit-details-marker{display:none}
-  details.obj>summary::before{content:'\25B8';font-size:.8rem;color:var(--muted);transition:transform .15s}
-  details.obj[open]>summary::before{transform:rotate(90deg)}
-  details.obj>summary .tag{font-family:var(--font-mono);font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:5px}
-  details.obj .obj-body{padding:10px 12px;border-top:1px solid var(--line)}
+  .card{border:1px solid var(--line);border-radius:9px;padding:11px 12px;margin-bottom:9px;background:var(--surface-2)}
+  .card .tag{font-family:var(--font-mono);font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:5px;margin-right:6px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   @media(max-width:560px){.grid2{grid-template-columns:1fr}}
-  .subttl{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
-  .plan-block{border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;background:var(--surface-2)}
-  .plan-head{display:flex;gap:6px;align-items:center}
-  .plan-head input{flex:1;font-weight:500}
-  .kpis{margin-top:7px;padding-left:10px;border-left:2px solid var(--accent)}
-  .kpi-lbl{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
-  .sub-row{display:flex;gap:6px;margin-bottom:5px}
-  .sub-row input{flex:1}
-  .sub-row .del{width:30px;height:30px;font-size:.9rem}
-  .delobj{margin-top:12px;border:1px solid var(--crit);background:transparent;color:var(--crit);border-radius:7px;padding:6px 12px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
+  .rel-box{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line-strong)}
+  .rel-box h3{font-family:var(--font-head);font-size:1rem;margin:0 0 3px}
+  .arrow{color:var(--muted);align-self:center;padding:0 2px 8px}
 
   .msg{font-size:.84rem;margin-top:8px;font-weight:600}
   .msg.err{color:var(--crit)} .msg.ok{color:var(--good)}
@@ -79,14 +75,15 @@
   .rm-head .cell{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);text-align:center;padding:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px}
   .rm-head .cell.lab{text-align:left;background:transparent;border:none}
   .rm-row{display:grid;gap:6px;align-items:center;margin-bottom:4px}
-  .rm-lab{font-size:.82rem;color:var(--ink-soft);padding:4px 6px}
-  .rm-lab b{font-family:var(--font-mono);font-size:.72rem;margin-right:4px}
+  .rm-lab{font-size:.8rem;color:var(--ink-soft);padding:3px 6px}
+  .rm-lab b{font-family:var(--font-mono);font-size:.72rem;margin-right:4px;color:var(--muted)}
   .rm-bar{height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.68rem;color:#1e2a38;font-weight:600}
   .rm-persp{font-family:var(--font-head);font-weight:700;font-size:.92rem;margin:14px 0 6px;padding-left:4px}
   table.det{border-collapse:collapse;width:100%;font-size:.86rem;margin-top:6px}
   table.det th,table.det td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
   table.det th{background:var(--surface-2);font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted)}
   table.det td.obj{white-space:normal;font-weight:600}
+  table.det td.plan b{font-family:var(--font-mono);font-size:.7rem;color:var(--accent-ink);font-weight:700}
   table.det ul{margin:0;padding-left:16px}
   :root{--crit:#b0483c;--good:#3f7a52}
   @media (prefers-color-scheme: dark){:root{--crit:#d97b70;--good:#6fae86}}
@@ -95,20 +92,24 @@
 
 {% block content %}
 <h1 class="h1">Mapa estratégico y hoja de ruta (BSC)</h1>
-<p class="intro">Construye tu estrategia con formularios: fases con horizonte temporal, objetivos por perspectiva —cada uno con sus planes de acción y, dentro de cada plan, sus KPIs— y relaciones causa–efecto. El mapa se guarda en la base de datos para que la construcción sea un proceso colaborativo y retomable.</p>
+<p class="intro">Construye la estrategia por niveles, de mayor a menor: primero las <b>fases</b> (horizonte temporal), luego los <b>objetivos</b> por perspectiva, después los <b>planes de acción</b> de cada objetivo —que pueden iniciar en una fase y terminar en otra— y por último los <b>KPIs</b> de cada plan. Todo se guarda en la base de datos para que la construcción sea colaborativa y retomable.</p>
 <p class="ref"><b>Ejemplo cargado:</b> Proyecto FIC 23-12 · “Bioenergía circular Los Ríos”. <b>Método:</b> Quezada, L.E. et al. (2018), <em>Identifying causal relationships in strategy maps using ANP and DEMATEL.</em> Computers &amp; Industrial Engineering 118, 170–179. DOI: 10.1016/j.cie.2018.02.020</p>
 
 <details class="teoria">
   <summary>Cómo funciona</summary>
   <div class="cont">
-    <p>Perspectivas de abajo hacia arriba: <strong>Aprendizaje → Tecnología → Procesos → Clientes → Financiera</strong>. Cada nivel habilita al siguiente.</p>
-    <p>En <b>Objetivos</b>, cada uno tiene sus <b>planes de acción</b>, y dentro de cada plan se listan sus <b>KPIs</b> (así el indicador queda ligado a la acción que lo genera). En <b>Relaciones</b> conectas un objetivo con otro superior (causa → efecto).</p>
-    <p><b>Guardar</b> almacena el mapa en la base de datos con un nombre y una clave; con el enlace de edición o el nombre+clave puedes retomarlo después o compartirlo con tu equipo.</p>
+    <p>Un <b>mapa estratégico</b> ordena los objetivos en cinco perspectivas conectadas por relaciones causa–efecto que fluyen de abajo hacia arriba: <b>Aprendizaje → Tecnología → Procesos → Clientes → Financiera</b>. Cada nivel habilita al siguiente.</p>
+    <p>La construcción es jerárquica, de mayor a menor, y cada nivel se apoya en el anterior:</p>
+    <p><b>1 · Fases</b> — el horizonte de tiempo del plan (por ejemplo, 2024–2027, 2028–2029…).<br>
+    <b>2 · Objetivos</b> — qué se quiere lograr en cada perspectiva. Aquí también se trazan las relaciones causa–efecto entre objetivos.<br>
+    <b>3 · Planes de acción</b> — cómo se logra cada objetivo. Cada plan pertenece a un objetivo y define en qué fase inicia y en cuál termina (puede abarcar varias).<br>
+    <b>4 · KPIs</b> — cómo se mide cada plan. Cada indicador pertenece a un plan, de modo que el indicador queda ligado a la acción que lo genera.</p>
+    <p><b>Guardar</b> almacena el mapa con un nombre y una clave; con el enlace de edición o el nombre+clave puedes retomarlo o compartirlo con tu equipo.</p>
   </div>
 </details>
 
 <div class="panel">
-  <h2>1 · Modelo estratégico</h2>
+  <h2>1 · Construcción del mapa</h2>
 
   <div class="save-bar">
     <div class="sb-status" id="sb-status">Mapa nuevo (sin guardar)</div>
@@ -131,22 +132,46 @@
   <div class="sb-link" id="sb-link" hidden></div>
   <div class="msg" id="msg-save"></div>
 
-  <p class="sub">Edita con los formularios desplegables. Puedes agregar o quitar fases, objetivos, planes, KPIs y relaciones.</p>
-  <div id="editor">
-    <details class="sec" open>
-      <summary>Fases <span class="count" id="cnt-fases"></span></summary>
-      <div class="sec-body"><div id="ed-fases"></div><button class="add" data-act="addfase">+ Agregar fase</button></div>
-    </details>
-    <details class="sec" open>
-      <summary>Objetivos <span class="count" id="cnt-objs"></span></summary>
-      <div class="sec-body"><div id="ed-objs"></div><button class="add" data-act="addobj">+ Agregar objetivo</button></div>
-    </details>
-    <details class="sec">
-      <summary>Relaciones causa–efecto <span class="count" id="cnt-rels"></span></summary>
-      <div class="sec-body"><div id="ed-rels"></div><button class="add" data-act="addrel">+ Agregar relación</button></div>
-    </details>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="fases"><span class="step">1</span>Fases <span class="n" id="cnt-fases"></span></button>
+    <button class="tab" data-tab="objs"><span class="step">2</span>Objetivos <span class="n" id="cnt-objs"></span></button>
+    <button class="tab" data-tab="planes"><span class="step">3</span>Planes de acción <span class="n" id="cnt-planes"></span></button>
+    <button class="tab" data-tab="kpis"><span class="step">4</span>KPI <span class="n" id="cnt-kpis"></span></button>
   </div>
-  <div style="margin-top:14px"><button class="btn btn-primary" id="btnBuild">Construir</button></div>
+
+  <div id="editor">
+    <div class="tabpanel" data-panel="fases">
+      <p class="flow-note">Define el horizonte temporal del plan. Cada fase es un tramo de tiempo; los planes de acción se ubicarán sobre estas fases.</p>
+      <div id="ed-fases"></div>
+      <button class="add" data-act="addfase">+ Agregar fase</button>
+    </div>
+
+    <div class="tabpanel" data-panel="objs" hidden>
+      <p class="flow-note">Define los objetivos de cada perspectiva. Son el nivel superior: los planes de acción se colgarán de estos objetivos.</p>
+      <div id="ed-objs"></div>
+      <button class="add" data-act="addobj">+ Agregar objetivo</button>
+      <div class="rel-box">
+        <h3>Relaciones causa–efecto</h3>
+        <p class="sub">Conecta un objetivo (causa) con otro superior (efecto). El flujo va de Aprendizaje hacia Financiera.</p>
+        <div id="ed-rels"></div>
+        <button class="add" data-act="addrel">+ Agregar relación</button>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-panel="planes" hidden>
+      <p class="flow-note">Cada plan de acción pertenece a un objetivo (lo eliges del nivel anterior) e indica en qué fase inicia y en cuál termina. Un plan puede abarcar varias fases.</p>
+      <div id="ed-planes"></div>
+      <button class="add" data-act="addplan" id="btn-addplan">+ Agregar plan de acción</button>
+    </div>
+
+    <div class="tabpanel" data-panel="kpis" hidden>
+      <p class="flow-note">Cada KPI pertenece a un plan de acción (lo eliges del nivel anterior). Así cada indicador queda ligado a la acción que lo genera.</p>
+      <div id="ed-kpis"></div>
+      <button class="add" data-act="addkpi" id="btn-addkpi">+ Agregar KPI</button>
+    </div>
+  </div>
+
+  <div style="margin-top:16px"><button class="btn btn-primary" id="btnBuild">Construir mapa y hoja de ruta</button></div>
   <div class="msg" id="msg"></div>
 </div>
 
@@ -156,11 +181,11 @@
   <div class="leyenda" id="leyenda"></div>
 </div>
 <div class="panel" id="s-roadmap" hidden>
-  <h2>3 · Hoja de ruta por fases</h2>
+  <h2>3 · Hoja de ruta · planes de acción por fase</h2>
   <div class="rm-wrap"><div class="roadmap" id="roadmap"></div></div>
 </div>
 <div class="panel" id="s-detalle" hidden>
-  <h2>4 · Planes de acción y KPIs por objetivo</h2>
+  <h2>4 · Objetivos, planes de acción y KPIs</h2>
   <div style="overflow-x:auto"><div id="detalle"></div></div>
 </div>
 {% endblock %}
@@ -179,11 +204,12 @@
     A:{n:'Aprendizaje y Desarrollo',fill:'#d9ecd6',stroke:'#3f7a52'}
   };
   var TXT='#1e2a38';
-  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var _uid=0; function uid(p){ _uid++; return p+_uid; }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escA(s){ return esc(s).replace(/"/g,'&quot;'); }
-  function corta(s,n){ s=String(s); return s.length>n?s.slice(0,n-1)+'…':s; }
+  function corta(s,n){ s=String(s==null?'':s); return s.length>n?s.slice(0,n-1)+'…':s; }
 
-  // ---------- Datos iniciales (Los Ríos): planes con sus KPIs anidados ----------
+  // ---------- Datos iniciales (Los Ríos) ----------
   var SEED=[
     {persp:'F',id:'F1',nombre:'Incorporar biomasa alternativa',ini:1,fin:2,planes:['Evaluar factibilidad financiera','Caracterizar oferta y demanda','Definir costos'],kpis:['Costos definidos','Oferta y demanda caracterizadas']},
     {persp:'F',id:'F2',nombre:'Generar valor económico territorial',ini:2,fin:4,planes:['Valorizar el incremento de utilidad en la cadena','Promover inversión pública y privada'],kpis:['Aumento de utilidad ($)','Inversión movilizada ($)']},
@@ -199,132 +225,196 @@
     {persp:'T',id:'T3',nombre:'Mejorar la transformación energética',ini:2,fin:3,planes:['Transformar biomasa en astillas secas y calibradas','Evaluar fuente de calor móvil','Medir eficiencia térmica y costos'],kpis:['% de astilla conforme','Costos operacionales respaldados','Eficiencia térmica medida']},
     {persp:'T',id:'T4',nombre:'Escalar soluciones tecnológicas replicables',ini:3,fin:4,planes:['Especificar segundo secador y equipos anexos','Diseñar paquete tecnológico replicable','Transferir tecnología al territorio'],kpis:['Nº de soluciones replicadas','CAPEX validado','Nº de capacitaciones con PYMES']},
     {persp:'A',id:'A1',nombre:'Fortalecer capacidades técnicas',ini:1,fin:4,planes:['Transferir protocolos de secado y astillas calibradas','Generar manuales y rutinas de mejora','Realizar capacitaciones'],kpis:['Nº de informes técnicos','Nº de capacitaciones']},
-    {persp:'A',id:'A2',nombre:'Consolidar coordinación institucional estatal-industria-academia',ini:1,fin:4,planes:['Crear comité directivo y mesas técnicas','Definir roles, actas y responsables','Gestionar convenios y acuerdos de continuidad'],kpis:['Sesiones realizadas','Acuerdos cumplidos','Actores activos','Convenios vigentes']}
+    {persp:'A',id:'A2',nombre:'Consolidar coordinación institucional estatal-industria-academia',ini:1,fin:4,planes:['Crear comité directivo y mesas técnicas','Definir roles, actas y responsables','Gestionar convenios y acuerdos de continuidad'],kpis:['Sesiones realizadas','Acuerdos cumplidos','Actores activos']}
   ];
-  function nest(o){
-    var planes=o.planes.map(function(t){ return {t:t,kpis:[]}; });
-    var np=planes.length||1;
-    (o.kpis||[]).forEach(function(k,idx){ planes[idx%np].kpis.push(k); });
-    return {persp:o.persp,id:o.id,nombre:o.nombre,ini:o.ini,fin:o.fin,planes:planes};
+  var SEED_REL=[
+    ['A1','T1'],['A1','T2'],['A1','T3'],['A2','P3'],
+    ['T1','P1'],['T2','P1'],['T3','P2'],['T4','C3'],
+    ['P1','C2'],['P2','C3'],['P3','C1'],
+    ['C1','F1'],['C2','F2'],['C3','F2'],['C1','F3'],
+    ['F1','F2'],['F2','F3']
+  ];
+  function seedToModel(){
+    var objetivos=[], planes=[], kpis=[];
+    SEED.forEach(function(o){
+      var ok=uid('o'); objetivos.push({_k:ok,persp:o.persp,id:o.id,nombre:o.nombre});
+      var pl=o.planes.map(function(t){ var pk=uid('p'); planes.push({_k:pk,obj:ok,t:t,ini:o.ini,fin:o.fin}); return pk; });
+      var np=pl.length||1;
+      (o.kpis||[]).forEach(function(k,idx){ kpis.push({_k:uid('k'),plan:pl[idx%np],t:k}); });
+    });
+    return {fases:[{nombre:'Diseño validado',rango:'2024–2027'},{nombre:'Operación piloto',rango:'2028–2029'},{nombre:'Escalamiento',rango:'2030–2032'},{nombre:'Régimen y réplica',rango:'2033–2036'}],
+      objetivos:objetivos, planes:planes, kpis:kpis, relaciones:SEED_REL.slice()};
   }
-  var modelo={
-    fases:[{nombre:'Diseño validado',rango:'2024–2027'},{nombre:'Operación piloto',rango:'2028–2029'},{nombre:'Escalamiento',rango:'2030–2032'},{nombre:'Régimen y réplica',rango:'2033–2036'}],
-    objetivos:SEED.map(nest),
-    relaciones:[
-      ['A1','T1'],['A1','T2'],['A1','T3'],
-      ['A2','P3'],
-      ['T1','P1'],['T2','P1'],['T3','P2'],['T4','C3'],
-      ['P1','C2'],['P2','C3'],['P3','C1'],
-      ['C1','F1'],['C2','F2'],['C3','F2'],['C1','F3'],
-      ['F1','F2'],['F2','F3']
-    ]
-  };
+  var modelo=seedToModel();
   var estado={token:'', nombre:''};
 
+  // Normaliza datos guardados (formato nuevo plano o antiguo anidado)
   function normaliza(d){
-    d=d||{}; d.fases=d.fases||[]; d.relaciones=d.relaciones||[]; d.objetivos=(d.objetivos||[]).map(function(o){
-      var planes=(o.planes||[]).map(function(p){ return (typeof p==='string')?{t:p,kpis:[]}:{t:p.t||'',kpis:p.kpis||[]}; });
-      return {persp:o.persp||'A',id:o.id||'',nombre:o.nombre||'',ini:o.ini||1,fin:o.fin||1,planes:planes};
+    d=d||{};
+    var fases=(d.fases||[]).map(function(f){ return {nombre:f.nombre||'',rango:f.rango||''}; });
+    var relaciones=(d.relaciones||[]).filter(function(r){ return Array.isArray(r)&&r.length===2; }).map(function(r){ return [r[0],r[1]]; });
+    // Formato nuevo (planes con referencia a objetivo)
+    if(Array.isArray(d.planes) && d.planes.length && d.planes[0] && ('obj' in d.planes[0])){
+      var oMap={};
+      var O=(d.objetivos||[]).map(function(o){ var k=o._k||uid('o'); oMap[o.id]=k; return {_k:k,persp:o.persp||'A',id:o.id||'',nombre:o.nombre||''}; });
+      var pMap={};
+      var P=d.planes.map(function(p){ var k=p._k||uid('p'); pMap[p._k||k]=k; var obj=p.obj; if(!O.some(function(x){return x._k===obj;})) obj=oMap[p.obj]||obj; return {_k:k,obj:obj,t:p.t||'',ini:+p.ini||1,fin:+p.fin||(+p.ini||1)}; });
+      var K=(d.kpis||[]).map(function(kp){ var pk=kp.plan; if(!P.some(function(x){return x._k===pk;})) pk=pMap[kp.plan]||pk; return {_k:kp._k||uid('k'),plan:pk,t:kp.t||''}; });
+      return {fases:fases,objetivos:O,planes:P,kpis:K,relaciones:relaciones};
+    }
+    // Formato antiguo anidado (objetivos con ini/fin y planes:[{t,kpis}])
+    var O2=[],P2=[],K2=[];
+    (d.objetivos||[]).forEach(function(o){
+      var ok=uid('o'); O2.push({_k:ok,persp:o.persp||'A',id:o.id||'',nombre:o.nombre||''});
+      var ini=+o.ini||1, fin=+o.fin||ini;
+      (o.planes||[]).forEach(function(pl){
+        var t=(typeof pl==='string')?pl:(pl&&pl.t)||'';
+        var pk=uid('p'); P2.push({_k:pk,obj:ok,t:t,ini:ini,fin:fin});
+        var kk=(pl&&pl.kpis)?pl.kpis:[];
+        kk.forEach(function(kt){ K2.push({_k:uid('k'),plan:pk,t:kt}); });
+      });
     });
-    return d;
+    return {fases:fases,objetivos:O2,planes:P2,kpis:K2,relaciones:relaciones};
   }
 
-  // ---------- Editor ----------
-  function perspOpts(sel){ return PORDER.map(function(p){ return '<option value="'+p+'"'+(p===sel?' selected':'')+'>'+p+' · '+PMETA[p].n+'</option>'; }).join(''); }
-  function faseOpts(sel){ var o=''; for(var k=1;k<=modelo.fases.length;k++){ o+='<option value="'+k+'"'+(k===sel?' selected':'')+'>Fase '+k+'</option>'; } return o; }
-  function objOpts(sel){ return modelo.objetivos.map(function(o){ return '<option value="'+escA(o.id)+'"'+(o.id===sel?' selected':'')+'>'+esc(o.id+' · '+corta(o.nombre,30))+'</option>'; }).join(''); }
+  // ---------- Helpers de relación ----------
+  function planesDe(objK){ return modelo.planes.filter(function(p){ return p.obj===objK; }); }
+  function kpisDe(planK){ return modelo.kpis.filter(function(k){ return k.plan===planK; }); }
+  function objDe(objK){ for(var i=0;i<modelo.objetivos.length;i++){ if(modelo.objetivos[i]._k===objK) return modelo.objetivos[i]; } return null; }
+  function planDe(planK){ for(var i=0;i<modelo.planes.length;i++){ if(modelo.planes[i]._k===planK) return modelo.planes[i]; } return null; }
 
+  // ---------- Opciones de selects ----------
+  function perspOpts(sel){ return PORDER.map(function(p){ return '<option value="'+p+'"'+(p===sel?' selected':'')+'>'+p+' · '+PMETA[p].n+'</option>'; }).join(''); }
+  function faseOpts(sel){ var o=''; for(var k=1;k<=modelo.fases.length;k++){ o+='<option value="'+k+'"'+(k===sel?' selected':'')+'>Fase '+k+(modelo.fases[k-1]&&modelo.fases[k-1].nombre?' · '+corta(modelo.fases[k-1].nombre,16):'')+'</option>'; } return o; }
+  function objOptsById(sel){ return modelo.objetivos.map(function(o){ return '<option value="'+escA(o.id)+'"'+(o.id===sel?' selected':'')+'>'+esc(o.id+' · '+corta(o.nombre,28))+'</option>'; }).join(''); }
+  function objOptsByKey(sel){ return modelo.objetivos.map(function(o){ return '<option value="'+escA(o._k)+'"'+(o._k===sel?' selected':'')+'>'+esc((o.id||'—')+' · '+corta(o.nombre,30))+'</option>'; }).join(''); }
+  function planOptsByKey(sel){
+    return modelo.objetivos.map(function(o){
+      var pls=planesDe(o._k); if(!pls.length) return '';
+      return '<optgroup label="'+escA((o.id||'—')+' · '+corta(o.nombre,26))+'">'+pls.map(function(p){
+        return '<option value="'+escA(p._k)+'"'+(p._k===sel?' selected':'')+'>'+esc(corta(p.t||'(plan sin nombre)',38))+'</option>';
+      }).join('')+'</optgroup>';
+    }).join('');
+  }
+
+  // ---------- Render de cada lengüeta ----------
   function renderFases(){
     document.getElementById('ed-fases').innerHTML=modelo.fases.map(function(f,i){
-      return '<div class="fila"><div class="g"><label>Nombre de la fase</label><input type="text" data-k="fnombre" data-i="'+i+'" value="'+escA(f.nombre)+'"></div>'
-        +'<div class="g sm"><label>Rango</label><input type="text" data-k="frango" data-i="'+i+'" value="'+escA(f.rango||'')+'"></div>'
-        +'<button class="del" data-act="delfase" data-i="'+i+'" title="Quitar">✕</button></div>';
+      return '<div class="fila"><div class="g xs" style="flex:0 0 60px"><label>Fase</label><div style="padding:7px 4px;font-family:var(--font-mono);color:var(--muted)">'+(i+1)+'</div></div>'
+        +'<div class="g"><label>Nombre de la fase</label><input type="text" data-k="fnombre" data-i="'+i+'" value="'+escA(f.nombre)+'"></div>'
+        +'<div class="g sm"><label>Rango (años)</label><input type="text" data-k="frango" data-i="'+i+'" value="'+escA(f.rango||'')+'" placeholder="2024–2027"></div>'
+        +'<button class="del" data-act="delfase" data-i="'+i+'" title="Quitar fase">✕</button></div>';
     }).join('');
-    document.getElementById('cnt-fases').textContent=modelo.fases.length+' fase'+(modelo.fases.length===1?'':'s');
+    setCount('cnt-fases', modelo.fases.length, 'fase','fases');
   }
-
-  function kpiRows(i,j){
-    return modelo.objetivos[i].planes[j].kpis.map(function(v,k){
-      return '<div class="sub-row"><input type="text" data-k="kpi" data-i="'+i+'" data-j="'+j+'" data-kk="'+k+'" value="'+escA(v)+'"><button class="del" data-act="delkpi" data-i="'+i+'" data-j="'+j+'" data-kk="'+k+'" title="Quitar">✕</button></div>';
+  function renderObjs(){
+    document.getElementById('ed-objs').innerHTML=modelo.objetivos.map(function(o,i){
+      var m=PMETA[o.persp]||PMETA.A;
+      return '<div class="card"><div class="fila" style="margin-bottom:0">'
+        +'<div class="g sm"><label>Perspectiva</label><select data-k="persp" data-i="'+i+'">'+perspOpts(o.persp)+'</select></div>'
+        +'<div class="g xs"><label>Código</label><input type="text" data-k="oid" data-i="'+i+'" value="'+escA(o.id)+'" placeholder="F1"></div>'
+        +'<div class="g"><label>Nombre del objetivo</label><input type="text" data-k="onombre" data-i="'+i+'" value="'+escA(o.nombre)+'"></div>'
+        +'<button class="del" data-act="delobj" data-i="'+i+'" title="Eliminar objetivo (y sus planes)">✕</button></div></div>';
     }).join('');
-  }
-  function planBlocks(i){
-    return modelo.objetivos[i].planes.map(function(p,j){
-      return '<div class="plan-block">'
-        +'<div class="plan-head"><input type="text" data-k="plan" data-i="'+i+'" data-j="'+j+'" value="'+escA(p.t)+'" placeholder="Plan de acción"><button class="del" data-act="delplan" data-i="'+i+'" data-j="'+j+'" title="Quitar plan">✕</button></div>'
-        +'<div class="kpis"><div class="kpi-lbl">KPIs de este plan</div><div id="kp-'+i+'-'+j+'">'+kpiRows(i,j)+'</div><button class="add" data-act="addkpi" data-i="'+i+'" data-j="'+j+'">+ KPI</button></div>'
-        +'</div>';
-    }).join('');
-  }
-  function renderPlanes(i){ document.getElementById('pl-'+i).innerHTML=planBlocks(i); }
-  function renderKpis(i,j){ document.getElementById('kp-'+i+'-'+j).innerHTML=kpiRows(i,j); }
-
-  function objCard(o,i,open){
-    var m=PMETA[o.persp]||PMETA.A;
-    return '<details class="obj" data-oi="'+i+'"'+(open?' open':'')+'>'
-      +'<summary><span class="tag" style="background:'+m.fill+';color:'+m.stroke+'">'+esc(o.id||'—')+'</span><span id="sum-'+i+'">'+esc(corta(o.nombre,44))+'</span></summary>'
-      +'<div class="obj-body">'
-        +'<div class="grid2"><div class="g"><label>Perspectiva</label><select data-k="persp" data-i="'+i+'">'+perspOpts(o.persp)+'</select></div>'
-          +'<div class="g"><label>Código</label><input type="text" data-k="id" data-i="'+i+'" value="'+escA(o.id)+'"></div></div>'
-        +'<div class="g" style="margin-top:8px"><label>Nombre del objetivo</label><input type="text" data-k="nombre" data-i="'+i+'" value="'+escA(o.nombre)+'"></div>'
-        +'<div class="grid2" style="margin-top:8px"><div class="g"><label>Fase inicio</label><select data-k="ini" data-i="'+i+'">'+faseOpts(o.ini)+'</select></div>'
-          +'<div class="g"><label>Fase fin</label><select data-k="fin" data-i="'+i+'">'+faseOpts(o.fin)+'</select></div></div>'
-        +'<div class="subttl">Planes de acción (cada uno con sus KPIs)</div><div id="pl-'+i+'">'+planBlocks(i)+'</div><button class="add" data-act="addplan" data-i="'+i+'">+ plan de acción</button>'
-        +'<div><button class="delobj" data-act="delobj" data-i="'+i+'">Eliminar objetivo</button></div>'
-      +'</div></details>';
-  }
-  function renderObjs(openIdx){
-    var abiertos={};
-    document.querySelectorAll('#ed-objs details.obj[open]').forEach(function(d){ abiertos[d.dataset.oi]=true; });
-    if(openIdx!=null) abiertos[openIdx]=true;
-    document.getElementById('ed-objs').innerHTML=modelo.objetivos.map(function(o,i){ return objCard(o,i,!!abiertos[i]); }).join('');
-    document.getElementById('cnt-objs').textContent=modelo.objetivos.length+' objetivo'+(modelo.objetivos.length===1?'':'s');
+    setCount('cnt-objs', modelo.objetivos.length, 'objetivo','objetivos');
+    renderRels();
   }
   function renderRels(){
     var h;
-    if(!modelo.objetivos.length){ h='<p class="sub">Agrega objetivos primero.</p>'; }
+    if(!modelo.objetivos.length){ h='<p class="hint">Agrega objetivos primero.</p>'; }
     else h=modelo.relaciones.map(function(r,i){
-      return '<div class="fila"><div class="g"><label>Origen (causa)</label><select data-k="rde" data-i="'+i+'">'+objOpts(r[0])+'</select></div>'
-        +'<div class="g" style="flex:0 0 26px;align-items:center"><label>&nbsp;</label><div style="color:var(--muted)">→</div></div>'
-        +'<div class="g"><label>Destino (efecto)</label><select data-k="ra" data-i="'+i+'">'+objOpts(r[1])+'</select></div>'
-        +'<button class="del" data-act="delrel" data-i="'+i+'" title="Quitar">✕</button></div>';
+      return '<div class="fila"><div class="g"><label>Origen (causa)</label><select data-k="rde" data-i="'+i+'">'+objOptsById(r[0])+'</select></div>'
+        +'<div class="arrow">→</div>'
+        +'<div class="g"><label>Destino (efecto)</label><select data-k="ra" data-i="'+i+'">'+objOptsById(r[1])+'</select></div>'
+        +'<button class="del" data-act="delrel" data-i="'+i+'" title="Quitar relación">✕</button></div>';
     }).join('');
     document.getElementById('ed-rels').innerHTML=h;
-    document.getElementById('cnt-rels').textContent=modelo.relaciones.length+' relación'+(modelo.relaciones.length===1?'':'es');
   }
-  function renderEditor(){ renderFases(); renderObjs(); renderRels(); }
+  function renderPlanes(){
+    var cont=document.getElementById('ed-planes');
+    if(!modelo.objetivos.length){ cont.innerHTML='<p class="hint">Primero define objetivos en la lengüeta anterior. Cada plan de acción pertenece a un objetivo.</p>'; document.getElementById('btn-addplan').style.display='none'; setCount('cnt-planes',0,'plan','planes'); return; }
+    document.getElementById('btn-addplan').style.display='';
+    cont.innerHTML=modelo.planes.map(function(p,i){
+      return '<div class="card"><div class="fila" style="margin-bottom:0">'
+        +'<div class="g"><label>Objetivo (nivel anterior)</label><select data-k="pobj" data-i="'+i+'">'+objOptsByKey(p.obj)+'</select></div>'
+        +'<button class="del" data-act="delplan" data-i="'+i+'" title="Eliminar plan (y sus KPIs)">✕</button></div>'
+        +'<div class="fila" style="margin:8px 0 0"><div class="g"><label>Plan de acción</label><input type="text" data-k="pt" data-i="'+i+'" value="'+escA(p.t)+'" placeholder="Describe la acción"></div>'
+        +'<div class="g sm"><label>Fase inicio</label><select data-k="pini" data-i="'+i+'">'+faseOpts(p.ini)+'</select></div>'
+        +'<div class="g sm"><label>Fase fin</label><select data-k="pfin" data-i="'+i+'">'+faseOpts(p.fin)+'</select></div></div></div>';
+    }).join('');
+    setCount('cnt-planes', modelo.planes.length, 'plan','planes');
+  }
+  function renderKpis(){
+    var cont=document.getElementById('ed-kpis');
+    if(!modelo.planes.length){ cont.innerHTML='<p class="hint">Primero define planes de acción en la lengüeta anterior. Cada KPI pertenece a un plan.</p>'; document.getElementById('btn-addkpi').style.display='none'; setCount('cnt-kpis',0,'KPI','KPIs'); return; }
+    document.getElementById('btn-addkpi').style.display='';
+    cont.innerHTML=modelo.kpis.map(function(k,i){
+      return '<div class="fila"><div class="g"><label>Plan de acción (nivel anterior)</label><select data-k="kplan" data-i="'+i+'">'+planOptsByKey(k.plan)+'</select></div>'
+        +'<div class="g"><label>Indicador (KPI)</label><input type="text" data-k="kt" data-i="'+i+'" value="'+escA(k.t)+'" placeholder="Ej.: % de avance"></div>'
+        +'<button class="del" data-act="delkpi" data-i="'+i+'" title="Quitar KPI">✕</button></div>';
+    }).join('');
+    setCount('cnt-kpis', modelo.kpis.length, 'KPI','KPIs');
+  }
+  function setCount(id,n,sing,plur){ var el=document.getElementById(id); if(el) el.textContent='('+n+' '+(n===1?sing:plur)+')'; }
+  function renderEditor(){ renderFases(); renderObjs(); renderPlanes(); renderKpis(); }
 
+  // ---------- Eventos del editor ----------
   var ed=document.getElementById('editor');
   function upd(e){
     var el=e.target, k=el.dataset?el.dataset.k:null; if(!k) return;
     var i=+el.dataset.i;
     if(k==='fnombre') modelo.fases[i].nombre=el.value;
     else if(k==='frango') modelo.fases[i].rango=el.value;
-    else if(k==='persp'){ modelo.objetivos[i].persp=el.value; var s=document.querySelector('#ed-objs details.obj[data-oi="'+i+'"] .tag'); if(s){ var m=PMETA[el.value]; s.style.background=m.fill; s.style.color=m.stroke; } }
-    else if(k==='id'){ modelo.objetivos[i].id=el.value; var tg=document.querySelector('#ed-objs details.obj[data-oi="'+i+'"] .tag'); if(tg) tg.textContent=el.value||'—'; }
-    else if(k==='nombre'){ modelo.objetivos[i].nombre=el.value; var sm=document.getElementById('sum-'+i); if(sm) sm.textContent=corta(el.value,44); }
-    else if(k==='ini') modelo.objetivos[i].ini=+el.value;
-    else if(k==='fin') modelo.objetivos[i].fin=+el.value;
-    else if(k==='plan') modelo.objetivos[i].planes[+el.dataset.j].t=el.value;
-    else if(k==='kpi') modelo.objetivos[i].planes[+el.dataset.j].kpis[+el.dataset.kk]=el.value;
+    else if(k==='persp') modelo.objetivos[i].persp=el.value;
+    else if(k==='oid') modelo.objetivos[i].id=el.value;
+    else if(k==='onombre') modelo.objetivos[i].nombre=el.value;
     else if(k==='rde') modelo.relaciones[i][0]=el.value;
     else if(k==='ra') modelo.relaciones[i][1]=el.value;
+    else if(k==='pobj') modelo.planes[i].obj=el.value;
+    else if(k==='pt') modelo.planes[i].t=el.value;
+    else if(k==='pini') modelo.planes[i].ini=+el.value;
+    else if(k==='pfin') modelo.planes[i].fin=+el.value;
+    else if(k==='kplan') modelo.kpis[i].plan=el.value;
+    else if(k==='kt') modelo.kpis[i].t=el.value;
   }
   ed.addEventListener('input', upd);
-  ed.addEventListener('change', function(e){ upd(e); if(e.target.dataset && e.target.dataset.k==='id') renderRels(); });
+  ed.addEventListener('change', function(e){
+    upd(e);
+    var k=e.target.dataset?e.target.dataset.k:null;
+    if(k==='oid'){ renderRels(); }                 // el código cambió: refresca opciones de relaciones
+    else if(k==='persp'){ /* color se refresca al construir */ }
+  });
   ed.addEventListener('click', function(e){
     var b=e.target.closest('button'); if(!b||!b.dataset.act) return;
-    var act=b.dataset.act, i=b.dataset.i!=null?+b.dataset.i:null, j=b.dataset.j!=null?+b.dataset.j:null, kk=b.dataset.kk!=null?+b.dataset.kk:null;
-    if(act==='addfase'){ modelo.fases.push({nombre:'Nueva fase',rango:''}); renderFases(); renderObjs(); }
-    else if(act==='delfase'){ if(modelo.fases.length<=1) return; modelo.fases.splice(i,1); modelo.objetivos.forEach(function(o){ o.ini=Math.min(o.ini,modelo.fases.length); o.fin=Math.min(o.fin,modelo.fases.length); }); renderFases(); renderObjs(); }
-    else if(act==='addobj'){ modelo.objetivos.push({persp:'A',id:'N'+(modelo.objetivos.length+1),nombre:'Nuevo objetivo',ini:1,fin:modelo.fases.length,planes:[{t:'',kpis:['']}]}); renderObjs(modelo.objetivos.length-1); renderRels(); }
-    else if(act==='delobj'){ modelo.objetivos.splice(i,1); renderObjs(); renderRels(); }
-    else if(act==='addplan'){ modelo.objetivos[i].planes.push({t:'',kpis:['']}); renderPlanes(i); }
-    else if(act==='delplan'){ modelo.objetivos[i].planes.splice(j,1); renderPlanes(i); }
-    else if(act==='addkpi'){ modelo.objetivos[i].planes[j].kpis.push(''); renderKpis(i,j); }
-    else if(act==='delkpi'){ modelo.objetivos[i].planes[j].kpis.splice(kk,1); renderKpis(i,j); }
+    var act=b.dataset.act, i=b.dataset.i!=null?+b.dataset.i:null;
+    if(act==='addfase'){ modelo.fases.push({nombre:'Nueva fase',rango:''}); renderFases(); renderPlanes(); }
+    else if(act==='delfase'){ if(modelo.fases.length<=1) return; modelo.fases.splice(i,1);
+      modelo.planes.forEach(function(p){ p.ini=Math.min(p.ini,modelo.fases.length); p.fin=Math.min(p.fin,modelo.fases.length); });
+      renderFases(); renderPlanes(); }
+    else if(act==='addobj'){ modelo.objetivos.push({_k:uid('o'),persp:'A',id:'N'+(modelo.objetivos.length+1),nombre:'Nuevo objetivo'}); renderObjs(); renderPlanes(); }
+    else if(act==='delobj'){ var ok=modelo.objetivos[i]._k; var pks=planesDe(ok).map(function(p){return p._k;});
+      modelo.kpis=modelo.kpis.filter(function(k){ return pks.indexOf(k.plan)<0; });
+      modelo.planes=modelo.planes.filter(function(p){ return p.obj!==ok; });
+      modelo.objetivos.splice(i,1); renderObjs(); renderPlanes(); renderKpis(); }
     else if(act==='addrel'){ if(!modelo.objetivos.length) return; modelo.relaciones.push([modelo.objetivos[0].id, modelo.objetivos[Math.min(1,modelo.objetivos.length-1)].id]); renderRels(); }
     else if(act==='delrel'){ modelo.relaciones.splice(i,1); renderRels(); }
+    else if(act==='addplan'){ if(!modelo.objetivos.length) return; modelo.planes.push({_k:uid('p'),obj:modelo.objetivos[0]._k,t:'',ini:1,fin:modelo.fases.length}); renderPlanes(); }
+    else if(act==='delplan'){ var pk=modelo.planes[i]._k; modelo.kpis=modelo.kpis.filter(function(k){ return k.plan!==pk; }); modelo.planes.splice(i,1); renderPlanes(); renderKpis(); }
+    else if(act==='addkpi'){ if(!modelo.planes.length) return; modelo.kpis.push({_k:uid('k'),plan:modelo.planes[0]._k,t:''}); renderKpis(); }
+    else if(act==='delkpi'){ modelo.kpis.splice(i,1); renderKpis(); }
+  });
+
+  // ---------- Lengüetas ----------
+  var tabs=document.getElementById('tabs');
+  tabs.addEventListener('click', function(e){
+    var t=e.target.closest('.tab'); if(!t) return;
+    tabs.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('active'); });
+    t.classList.add('active');
+    var name=t.dataset.tab;
+    document.querySelectorAll('#editor .tabpanel').forEach(function(p){ p.hidden = (p.dataset.panel!==name); });
+    if(name==='planes') renderPlanes();
+    if(name==='kpis') renderKpis();
+    if(name==='objs') renderRels();
   });
 
   // ---------- Guardar / Abrir ----------
@@ -339,9 +429,7 @@
         if(!res.ok){ setStatus(res.j.error||'Error', 'err'); return; }
         setStatus('Cambios guardados ✓','ok');
       });
-    } else {
-      var f=document.getElementById('form-guardar'); f.hidden=!f.hidden;
-    }
+    } else { var f=document.getElementById('form-guardar'); f.hidden=!f.hidden; }
   });
   document.getElementById('g-ok').addEventListener('click', function(){
     var nombre=document.getElementById('g-nombre').value.trim(), clave=document.getElementById('g-clave').value.trim();
@@ -367,7 +455,7 @@
   });
   document.getElementById('btn-nuevo').addEventListener('click', function(){
     if(!confirm('¿Empezar un mapa nuevo en blanco? Se perderá lo no guardado.')) return;
-    modelo={fases:[{nombre:'Fase 1',rango:''}],objetivos:[],relaciones:[]};
+    modelo={fases:[{nombre:'Fase 1',rango:''}],objetivos:[],planes:[],kpis:[],relaciones:[]};
     estado={token:'',nombre:''};
     document.getElementById('sb-link').hidden=true; renderEditor();
     document.getElementById('s-mapa').hidden=true; document.getElementById('s-roadmap').hidden=true; document.getElementById('s-detalle').hidden=true;
@@ -392,16 +480,11 @@
     bands.forEach(function(b){ s+='<line x1="8" y1="'+b.y1+'" x2="'+(W-10)+'" y2="'+b.y1+'" stroke="#e2e5ea"/>';
       s+='<text x="14" y="'+(b.yc-6)+'" fill="'+PMETA[b.p].stroke+'" font-size="12.5" font-weight="700">'+esc(PMETA[b.p].n)+'</text>';
       s+='<text x="14" y="'+(b.yc+11)+'" fill="#8b94a1" font-size="10.5">Perspectiva '+b.p+'</text>'; });
-    // Relaciones: curvas Bézier con tangente vertical, coloreadas según la perspectiva de origen (causa)
     relaciones.forEach(function(r){ var a=pos[r[0]],b=pos[r[1]]; if(!a||!b) return;
       var c=PMETA[a.p].stroke, x1,y1,x2,y2,c1y,c2y,path;
-      if(a.cy>b.cy){ // causa debajo → efecto arriba (flujo ascendente normal)
-        x1=a.cx;y1=a.top;x2=b.cx;y2=b.bottom+3; var d=(y1-y2)*0.45; c1y=y1-d; c2y=y2+d;
-      } else if(a.cy<b.cy){ // causa arriba → efecto abajo
-        x1=a.cx;y1=a.bottom;x2=b.cx;y2=b.top-3; var d2=(y2-y1)*0.45; c1y=y1+d2; c2y=y2-d2;
-      } else { // misma perspectiva: arco por encima
-        x1=a.cx;y1=a.top;x2=b.cx;y2=b.top; c1y=y1-32; c2y=y2-32;
-      }
+      if(a.cy>b.cy){ x1=a.cx;y1=a.top;x2=b.cx;y2=b.bottom+3; var d=(y1-y2)*0.45; c1y=y1-d; c2y=y2+d; }
+      else if(a.cy<b.cy){ x1=a.cx;y1=a.bottom;x2=b.cx;y2=b.top-3; var d2=(y2-y1)*0.45; c1y=y1+d2; c2y=y2-d2; }
+      else { x1=a.cx;y1=a.top;x2=b.cx;y2=b.top; c1y=y1-32; c2y=y2-32; }
       path='M'+x1.toFixed(1)+','+y1.toFixed(1)+' C'+x1.toFixed(1)+','+c1y.toFixed(1)+' '+x2.toFixed(1)+','+c2y.toFixed(1)+' '+x2.toFixed(1)+','+y2.toFixed(1);
       s+='<path d="'+path+'" fill="none" stroke="'+c+'" stroke-width="1.7" stroke-opacity="0.72" marker-end="url(#arh-'+a.p+')"/>'; });
     Object.keys(pos).forEach(function(id){ var q=pos[id],m=PMETA[q.p],x=q.cx-boxW/2,y=q.top;
@@ -416,29 +499,45 @@
     leq+='<span style="margin-left:auto;color:var(--muted)">Las flechas se colorean según la perspectiva de origen (causa) y fluyen hacia arriba (efecto).</span>';
     document.getElementById('leyenda').innerHTML=leq;
   }
-  function renderRoadmap(fases, objetivos){
-    var nF=fases.length, cols='220px repeat('+nF+', 1fr)', h='';
+
+  // Hoja de ruta: cada PLAN de acción es una barra que abarca de su fase inicio a su fase fin
+  function renderRoadmap(){
+    var nF=modelo.fases.length||1, cols='260px repeat('+nF+', 1fr)', h='';
     h+='<div class="rm-head" style="grid-template-columns:'+cols+'"><div class="cell lab"></div>';
-    fases.forEach(function(f){ h+='<div class="cell"><b>'+esc(f.nombre)+'</b><br>'+esc(f.rango||'')+'</div>'; });
+    modelo.fases.forEach(function(f){ h+='<div class="cell"><b>'+esc(f.nombre||'')+'</b><br>'+esc(f.rango||'')+'</div>'; });
     h+='</div>';
-    var by=grupos(objetivos);
-    PORDER.forEach(function(p){ if(!by[p].length) return; h+='<div class="rm-persp" style="color:'+PMETA[p].stroke+'">'+esc(PMETA[p].n)+'</div>';
-      by[p].forEach(function(o){ var ini=Math.max(1,o.ini||1),fin=Math.min(nF,o.fin||o.ini||nF); if(fin<ini) fin=ini;
-        h+='<div class="rm-row" style="grid-template-columns:'+cols+'"><div class="rm-lab"><b>'+esc(o.id)+'</b>'+esc(corta(o.nombre,42))+'</div>';
-        h+='<div style="grid-column:'+(1+ini)+' / '+(1+fin+1)+';"><div class="rm-bar" style="background:'+PMETA[p].fill+';border:1px solid '+PMETA[p].stroke+'">F'+ini+(fin>ini?('–F'+fin):'')+'</div></div></div>'; }); });
+    var by=grupos(modelo.objetivos);
+    var vacio=true;
+    PORDER.forEach(function(p){ if(!by[p].length) return;
+      var rows='';
+      by[p].forEach(function(o){
+        planesDe(o._k).forEach(function(pl){
+          if(!pl.t || !pl.t.trim()) return;
+          var ini=Math.max(1,Math.min(pl.ini||1,nF)), fin=Math.max(ini,Math.min(pl.fin||pl.ini||nF,nF));
+          rows+='<div class="rm-row" style="grid-template-columns:'+cols+'"><div class="rm-lab"><b>'+esc(o.id)+'</b>'+esc(corta(pl.t,44))+'</div>';
+          rows+='<div style="grid-column:'+(1+ini)+' / '+(1+fin+1)+';"><div class="rm-bar" style="background:'+PMETA[p].fill+';border:1px solid '+PMETA[p].stroke+'">F'+ini+(fin>ini?('–F'+fin):'')+'</div></div></div>';
+        });
+      });
+      if(rows){ vacio=false; h+='<div class="rm-persp" style="color:'+PMETA[p].stroke+'">'+esc(PMETA[p].n)+'</div>'+rows; }
+    });
+    if(vacio) h+='<p class="hint">Aún no hay planes de acción con nombre. Agrégalos en la lengüeta 3.</p>';
     document.getElementById('roadmap').innerHTML=h;
   }
-  function renderDetalle(objetivos){
-    var by=grupos(objetivos),h='<table class="det"><tr><th style="width:190px">Objetivo</th><th>Plan de acción</th><th style="width:34%">KPIs del plan</th></tr>';
+
+  function renderDetalle(){
+    var by=grupos(modelo.objetivos),h='<table class="det"><tr><th style="width:24%">Objetivo</th><th>Plan de acción</th><th style="width:70px">Fases</th><th style="width:34%">KPIs del plan</th></tr>';
     PORDER.forEach(function(p){ if(!by[p].length) return;
-      h+='<tr><td colspan="3" style="background:'+PMETA[p].fill+';color:'+PMETA[p].stroke+';font-weight:700">'+esc(PMETA[p].n)+'</td></tr>';
+      h+='<tr><td colspan="4" style="background:'+PMETA[p].fill+';color:'+PMETA[p].stroke+';font-weight:700">'+esc(PMETA[p].n)+'</td></tr>';
       by[p].forEach(function(o){
-        var planes=(o.planes||[]).filter(function(pl){return pl.t && pl.t.trim();});
-        if(!planes.length){ h+='<tr><td class="obj"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td><td colspan="2" style="color:var(--muted)">Sin planes</td></tr>'; return; }
-        planes.forEach(function(pl,idx){
+        var pls=planesDe(o._k).filter(function(pl){ return pl.t && pl.t.trim(); });
+        if(!pls.length){ h+='<tr><td class="obj"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td><td colspan="3" style="color:var(--muted)">Sin planes de acción</td></tr>'; return; }
+        pls.forEach(function(pl,idx){
           h+='<tr>';
-          if(idx===0) h+='<td class="obj" rowspan="'+planes.length+'"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td>';
-          h+='<td>'+esc(pl.t)+'</td><td><ul>'+(pl.kpis||[]).filter(Boolean).map(function(k){return '<li>'+esc(k)+'</li>';}).join('')+'</ul></td></tr>';
+          if(idx===0) h+='<td class="obj" rowspan="'+pls.length+'"><b>'+esc(o.id)+'</b> '+esc(o.nombre)+'</td>';
+          var ini=pl.ini||1, fin=pl.fin||ini;
+          h+='<td class="plan">'+esc(pl.t)+'</td><td class="plan"><b>F'+ini+(fin>ini?('–F'+fin):'')+'</b></td>';
+          var ks=kpisDe(pl._k).filter(function(k){ return k.t && k.t.trim(); });
+          h+='<td>'+(ks.length?('<ul>'+ks.map(function(k){return '<li>'+esc(k.t)+'</li>';}).join('')+'</ul>'):'<span style="color:var(--muted)">Sin KPIs</span>')+'</td></tr>';
         });
       });
     });
@@ -448,13 +547,13 @@
   function construir(){
     var msg=document.getElementById('msg'); msg.className='msg'; msg.textContent='';
     var obj=modelo.objetivos.filter(function(o){ return o.id && o.id.trim(); });
-    if(!obj.length){ msg.className='msg err'; msg.textContent='Agrega al menos un objetivo con código.'; return; }
-    var objR=obj.map(function(o){ return {persp:o.persp,id:o.id.trim(),nombre:o.nombre,ini:o.ini,fin:o.fin,fases:[o.ini,o.fin],planes:o.planes}; });
+    if(!obj.length){ msg.className='msg err'; msg.textContent='Agrega al menos un objetivo con código en la lengüeta 2.'; return; }
+    var objR=obj.map(function(o){ return {persp:o.persp,id:o.id.trim(),nombre:o.nombre}; });
     var ids={}; objR.forEach(function(o){ ids[o.id]=true; });
     var rel=modelo.relaciones.filter(function(r){ return ids[r[0]]&&ids[r[1]]&&r[0]!==r[1]; });
     renderMapa(objR, rel);
-    renderRoadmap(modelo.fases.length?modelo.fases:[{nombre:'Fase 1'}], objR);
-    renderDetalle(objR);
+    renderRoadmap();
+    renderDetalle();
     document.getElementById('s-mapa').hidden=false; document.getElementById('s-roadmap').hidden=false; document.getElementById('s-detalle').hidden=false;
   }
   document.getElementById('btnBuild').addEventListener('click', construir);

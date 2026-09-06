@@ -9,6 +9,8 @@
 <style>
   .ahp-h1{font-family:var(--font-head);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 6px}
   .ahp-intro{color:var(--ink-soft);max-width:72ch}
+  .ref{font-size:.78rem;color:var(--muted);margin:8px 0 0}
+  .ref b{color:var(--ink-soft);font-weight:600}
 
   /* Lengüeta desplegable "Cómo funciona" */
   details.teoria{background:var(--star-soft);border:1px solid var(--line);border-left:3px solid var(--star);
@@ -33,6 +35,17 @@
   label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:4px}
   input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;
     background:var(--surface);color:var(--ink);min-width:min(520px,100%)}
+  .tool-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .chip-btn{font:inherit;font-size:.84rem;font-weight:600;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    border-radius:9px;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .chip-btn.sec{background:var(--surface);color:var(--accent-ink)}
+  .chip-btn.sec:hover{background:var(--accent-soft)}
+  .campo-avanzado{margin-top:6px}
+  .campo-avanzado>summary{cursor:pointer;list-style:none;font-size:.8rem;color:var(--muted);user-select:none}
+  .campo-avanzado>summary::-webkit-details-marker{display:none}
+  .campo-avanzado>summary::before{content:'\25B8 ';color:var(--muted)}
+  .campo-avanzado[open]>summary::before{content:'\25BE '}
+
   .mtx-wrap{overflow-x:auto}
   table.mtx{border-collapse:collapse;margin-top:6px}
   table.mtx th,table.mtx td{border:1px solid var(--line);padding:4px;text-align:center;min-width:74px}
@@ -60,6 +73,35 @@
   .bar{height:8px;border-radius:4px;background:var(--accent);display:inline-block;vertical-align:middle}
   .chart-box{margin-top:16px;max-width:640px}
   .err{color:var(--crit);font-weight:600}
+
+  /* Ventanas (modales) reutilizables */
+  .vm-overlay{position:fixed;inset:0;background:rgba(20,26,36,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:200}
+  .vm{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:660px;width:100%;max-height:88vh;
+    display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.32)}
+  .vm-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line)}
+  .vm-head h3{margin:0;font-family:var(--font-head);font-size:1.15rem}
+  .vm-x{border:none;background:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--muted)}
+  .vm-body{padding:18px 20px;overflow:auto}
+  .vm-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .ej-card{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px}
+  .ej-card h4{margin:0 0 4px;font-family:var(--font-head);font-size:1.02rem}
+  .ej-card p{margin:0 0 8px;font-size:.85rem;color:var(--ink-soft)}
+  .ej-card .crs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .ej-card .cr{font-size:.74rem;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink-soft)}
+  .ej-ref{font-size:.72rem;color:var(--muted);margin-top:8px}
+  .crit-row{display:flex;gap:8px;margin-bottom:7px;align-items:center}
+  .crit-row input{flex:1;min-width:0}
+  .crit-row .num{font-family:var(--font-mono);color:var(--muted);width:22px}
+  .guia-vs{text-align:center;font-size:.82rem;color:var(--muted);margin:2px 0 12px}
+  .guia-pair{text-align:center;font-family:var(--font-head);font-size:1.15rem;margin:0 0 14px}
+  .guia-pair .a{color:var(--accent-ink);font-weight:700}
+  .guia-pair .b{color:var(--star-ink);font-weight:700}
+  .guia-opts{display:flex;flex-direction:column;gap:6px;max-width:460px;margin:0 auto}
+  .guia-opts button{font:inherit;font-size:.86rem;text-align:left;padding:9px 12px;border:1px solid var(--line-strong);
+    border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}
+  .guia-opts button:hover{border-color:var(--accent)}
+  .guia-opts button.sel{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+  .guia-prog{font-family:var(--font-mono);font-size:.75rem;color:var(--muted)}
   :root{--crit:#b0483c}
   @media (prefers-color-scheme: dark){:root{--crit:#d97b70}}
 </style>
@@ -102,7 +144,7 @@
     <p>donde <code>RI</code> es el índice aleatorio de Saaty (depende de <em>n</em>). Se aceptan los juicios cuando <code>CR ≤ 0,10</code>; si es mayor, hay contradicciones y conviene revisar las comparaciones.</p>
 
     <h4>5 · Grupo de expertos</h4>
-    <p>Cuando varias personas evalúan, sus matrices se combinan por media geométrica elemento a elemento antes de calcular las prioridades. Esta es la base de la decisión colaborativa que PlanEstrat incorporará como módulo aparte.</p>
+    <p>Cuando varias personas evalúan, sus matrices se combinan por media geométrica elemento a elemento antes de calcular las prioridades. Esta es la base de la decisión colaborativa que PlanEstrat incorpora como módulo aparte.</p>
 
     <h4>Cómo leer el resultado</h4>
     <p>Los pesos indican la importancia relativa de cada criterio: a mayor peso, mayor influencia en la decisión. El CR dice si esos pesos son confiables. El gráfico y la tabla ordenan los criterios de mayor a menor prioridad, y el párrafo de interpretación resume qué significan.</p>
@@ -111,17 +153,28 @@
 
 <div class="panel">
   <h2>1 · Define los criterios</h2>
-  <div class="row">
-    <div style="flex:1">
-      <label for="nombres">Criterios (separados por coma, entre 2 y 9)</label>
-      <input type="text" id="nombres" value="Financiera, Clientes, Procesos, Tecnología, Aprendizaje">
-    </div>
-    <button class="btn btn-secondary" id="btnConstruir">Construir matriz</button>
+  <p class="sub" style="color:var(--muted);font-size:.85rem;margin:-6px 0 12px">Carga un ejemplo completo o define tus propios criterios en una ventana. Luego ingresa las comparaciones.</p>
+  <div class="tool-row">
+    <button class="chip-btn" id="btnEjemplos">📚 Cargar un ejemplo</button>
+    <button class="chip-btn sec" id="btnDefinir">✎ Definir criterios (ventana)</button>
   </div>
+  <details class="campo-avanzado">
+    <summary>Entrada rápida por texto (avanzado)</summary>
+    <div class="row" style="margin-top:8px">
+      <div style="flex:1">
+        <label for="nombres">Criterios (separados por coma, entre 2 y 9)</label>
+        <input type="text" id="nombres" value="Financiera, Clientes, Procesos, Tecnología, Aprendizaje">
+      </div>
+      <button class="btn btn-secondary" id="btnConstruir">Construir matriz</button>
+    </div>
+  </details>
 </div>
 
 <div class="panel">
   <h2>2 · Compara por pares</h2>
+  <div class="tool-row">
+    <button class="chip-btn sec" id="btnGuiada">🪟 Comparación guiada (ventana)</button>
+  </div>
   <div class="mtx-wrap"><div id="matriz"></div></div>
   <div style="margin-top:14px"><button class="btn btn-primary" id="btnCalcular">Calcular prioridades</button></div>
 </div>
@@ -134,6 +187,8 @@
   <table class="res" id="tablaPesos"></table>
   <div class="chart-box"><canvas id="grafico" height="220"></canvas></div>
 </div>
+
+<div id="vm-root"></div>
 {% endblock %}
 
 {% block extra_js %}
@@ -142,6 +197,43 @@
   'use strict';
   var API = "{% url 'ahp:solve_api' %}";
   var chart = null;
+
+  // ---------- Librería de ejemplos completos de toma de decisiones ----------
+  var EJEMPLOS = [
+    {
+      titulo: 'Perspectivas del Balanced Scorecard',
+      desc: 'Ponderar las cinco perspectivas del BSC para diseñar un mapa estratégico. Caso base del método.',
+      ref: 'Quezada &amp; López-Ospina (2014), IJPE 158.',
+      criterios: ['Financiera','Clientes','Procesos','Tecnología','Aprendizaje'],
+      juicios: {'0-1':2,'0-2':3,'0-3':3,'0-4':4,'1-2':2,'1-3':2,'1-4':3,'2-3':1,'2-4':2,'3-4':2}
+    },
+    {
+      titulo: 'Selección de proveedor',
+      desc: 'Elegir un proveedor comparando precio, calidad, plazo de entrega y servicio postventa. Caso gerencial de compras.',
+      ref: 'Caso didáctico de gestión de abastecimiento.',
+      criterios: ['Precio','Calidad','Entrega','Servicio postventa'],
+      juicios: {'0-1':2,'0-2':3,'0-3':4,'1-2':2,'1-3':3,'2-3':2}
+    },
+    {
+      titulo: 'Tecnología de secado de biomasa',
+      desc: 'Priorizar criterios para elegir una tecnología de secado: inversión, eficiencia energética, mantenimiento y escalabilidad.',
+      ref: 'Caso Bioenergía circular Los Ríos (FIC 23-12).',
+      criterios: ['Inversión','Eficiencia energética','Mantenimiento','Escalabilidad'],
+      juicios: {'0-1':0.5,'0-2':2,'0-3':1,'1-2':3,'1-3':2,'2-3':0.5}
+    },
+    {
+      titulo: 'Priorización de proyectos I+D',
+      desc: 'Ponderar criterios para seleccionar proyectos de innovación: impacto, costo, riesgo y tiempo.',
+      ref: 'Caso didáctico de cartera de proyectos.',
+      criterios: ['Impacto','Costo','Riesgo','Tiempo'],
+      juicios: {'0-1':2,'0-2':3,'0-3':4,'1-2':2,'1-3':3,'2-3':2}
+    }
+  ];
+  // Juicios precargados que usa construir() para prellenar el triángulo superior (o null = todo 1)
+  var JUICIOS_PRECARGA = EJEMPLOS[0].juicios;
+
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escA(s){ return esc(s).replace(/"/g,'&quot;'); }
 
   function opciones(sel) {
     var out = '', vals = [9,8,7,6,5,4,3,2];
@@ -153,26 +245,25 @@
   function opt(v, label, sel){ var s = Math.abs(v-sel)<1e-9?' selected':''; return '<option value="'+v+'"'+s+'>'+label+'</option>'; }
   function fmtRecip(v){ if (Math.abs(v-1)<1e-9) return '1'; if (v>=1) return (Math.round(v*100)/100).toString(); return '1/'+Math.round(1/v); }
 
-  var EJEMPLO = { '0-1':2,'0-2':3,'0-3':3,'0-4':4,'1-2':2,'1-3':2,'1-4':3,'2-3':1,'2-4':2,'3-4':2 };
-
   function nombres(){
     return document.getElementById('nombres').value.split(',').map(function (s){return s.trim();}).filter(Boolean);
   }
+  function setNombres(arr){ document.getElementById('nombres').value = arr.join(', '); }
 
   function construir(){
     var nm = nombres();
     if (nm.length < 2 || nm.length > 9){ alert('Ingresa entre 2 y 9 criterios.'); return; }
     var n = nm.length;
-    var usarEjemplo = (n === 5 && nm.join(',').toLowerCase() === 'financiera,clientes,procesos,tecnología,aprendizaje');
+    var J = JUICIOS_PRECARGA;
     var h = '<table class="mtx"><tr><th></th>';
-    nm.forEach(function (c){ h += '<th title="'+c+'">'+c+'</th>'; });
+    nm.forEach(function (c){ h += '<th title="'+escA(c)+'">'+esc(c)+'</th>'; });
     h += '</tr>';
     for (var i=0;i<n;i++){
-      h += '<tr><th title="'+nm[i]+'">'+nm[i]+'</th>';
+      h += '<tr><th title="'+escA(nm[i])+'">'+esc(nm[i])+'</th>';
       for (var j=0;j<n;j++){
         if (i===j){ h += '<td class="diag">1</td>'; }
         else if (i<j){
-          var pre = usarEjemplo ? (EJEMPLO[i+'-'+j]||1) : 1;
+          var pre = (J && J[i+'-'+j]!=null) ? J[i+'-'+j] : 1;
           h += '<td><select data-i="'+i+'" data-j="'+j+'" onchange="__ahpSync('+i+','+j+')">'+opciones(pre)+'</select></td>';
         } else { h += '<td class="low" id="low-'+i+'-'+j+'">—</td>'; }
       }
@@ -217,26 +308,17 @@
 
   var pct = function (x){ return (x*100).toFixed(1)+'%'; };
 
-  // Genera un párrafo interpretando los resultados
   function interpretar(r){
     var rk = r.ranking, top = rk[0], last = rk[rk.length-1], s = '';
     s += 'El criterio de mayor prioridad es <strong>'+top.nombre+'</strong>, con un peso de '+pct(top.peso)+'';
-    if (rk.length > 2){
-      s += ', seguido de '+rk[1].nombre+' ('+pct(rk[1].peso)+') y '+rk[2].nombre+' ('+pct(rk[2].peso)+'). ';
-    } else if (rk.length === 2){
-      s += ', frente a '+rk[1].nombre+' ('+pct(rk[1].peso)+'). ';
-    } else { s += '. '; }
+    if (rk.length > 2){ s += ', seguido de '+rk[1].nombre+' ('+pct(rk[1].peso)+') y '+rk[2].nombre+' ('+pct(rk[2].peso)+'). '; }
+    else if (rk.length === 2){ s += ', frente a '+rk[1].nombre+' ('+pct(rk[1].peso)+'). '; }
+    else { s += '. '; }
     if (rk.length > 1){ s += 'El criterio menos determinante es '+last.nombre+' ('+pct(last.peso)+'). '; }
-    if (top.peso >= 0.5){
-      s += 'Dado que '+top.nombre+' concentra más de la mitad del peso total, domina claramente la decisión. ';
-    } else if (rk.length > 1 && (top.peso - rk[1].peso) < 0.05){
-      s += 'Los criterios de cabeza tienen pesos muy parecidos, así que la decisión no depende de uno solo, sino de su equilibrio. ';
-    }
-    if (r.consistente){
-      s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') es menor o igual que 0,10: los juicios son coherentes y estas prioridades pueden usarse con confianza.';
-    } else {
-      s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') supera el umbral de 0,10, lo que revela contradicciones entre los juicios; conviene revisar las comparaciones por pares antes de usar estos pesos.';
-    }
+    if (top.peso >= 0.5){ s += 'Dado que '+top.nombre+' concentra más de la mitad del peso total, domina claramente la decisión. '; }
+    else if (rk.length > 1 && (top.peso - rk[1].peso) < 0.05){ s += 'Los criterios de cabeza tienen pesos muy parecidos, así que la decisión no depende de uno solo, sino de su equilibrio. '; }
+    if (r.consistente){ s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') es menor o igual que 0,10: los juicios son coherentes y estas prioridades pueden usarse con confianza.'; }
+    else { s += 'La razón de consistencia (CR = '+r.CR.toFixed(3)+') supera el umbral de 0,10, lo que revela contradicciones entre los juicios; conviene revisar las comparaciones por pares antes de usar estos pesos.'; }
     return s;
   }
 
@@ -245,23 +327,18 @@
     document.getElementById('crBadge').innerHTML = r.consistente
       ? '<span class="cr-badge cr-ok">Consistente · CR = '+r.CR.toFixed(4)+'</span>'
       : '<span class="cr-badge cr-bad">Inconsistente · CR = '+r.CR.toFixed(4)+' (revisa los juicios)</span>';
-
     document.getElementById('stats').innerHTML =
       stat(r.lambda_max.toFixed(4),'λ máx') + stat(r.CI.toFixed(4),'CI') +
       stat(r.RI.toFixed(2),'RI (n='+r.n+')') + stat(r.CR.toFixed(4),'CR');
-
-    // Párrafo de interpretación
     document.getElementById('interpTexto').innerHTML = interpretar(r);
     document.getElementById('interpretacion').hidden = false;
-
     var t = '<tr><th>#</th><th>Criterio</th><th>Peso</th><th style="width:40%">Prioridad</th></tr>';
     r.ranking.forEach(function (row,k){
-      t += '<tr><td class="num">'+(k+1)+'</td><td>'+row.nombre+'</td>'
+      t += '<tr><td class="num">'+(k+1)+'</td><td>'+esc(row.nombre)+'</td>'
         + '<td class="num">'+pct(row.peso)+'</td>'
         + '<td><span class="bar" style="width:'+(row.peso*100)+'%"></span></td></tr>';
     });
     document.getElementById('tablaPesos').innerHTML = t;
-
     var labels = r.ranking.map(function (x){ return x.nombre; });
     var data = r.ranking.map(function (x){ return +(x.peso*100).toFixed(2); });
     if (chart) chart.destroy();
@@ -276,8 +353,135 @@
   }
   function stat(v,l){ return '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
 
-  document.getElementById('btnConstruir').addEventListener('click', construir);
+  // ---------- Ventanas (modales) ----------
+  var vmRoot = document.getElementById('vm-root');
+  function vmClose(){ vmRoot.innerHTML=''; document.removeEventListener('keydown', onEsc); }
+  function onEsc(e){ if(e.key==='Escape') vmClose(); }
+  function vmOpen(inner){
+    vmRoot.innerHTML = '<div class="vm-overlay"><div class="vm">'+inner+'</div></div>';
+    var ov = vmRoot.querySelector('.vm-overlay');
+    ov.addEventListener('mousedown', function(e){ if(e.target===ov) vmClose(); });
+    vmRoot.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', vmClose); });
+    document.addEventListener('keydown', onEsc);
+    return vmRoot.querySelector('.vm');
+  }
+
+  // Ventana: librería de ejemplos
+  function openEjemplos(){
+    var cards = EJEMPLOS.map(function(e,i){
+      return '<div class="ej-card"><h4>'+esc(e.titulo)+'</h4><p>'+esc(e.desc)+'</p>'
+        + '<div class="crs">'+e.criterios.map(function(c){return '<span class="cr">'+esc(c)+'</span>';}).join('')+'</div>'
+        + '<button class="chip-btn" data-ej="'+i+'">Usar este ejemplo</button>'
+        + '<div class="ej-ref">'+e.ref+'</div></div>';
+    }).join('');
+    var vm = vmOpen(
+      '<div class="vm-head"><h3>📚 Ejemplos de decisión</h3><button class="vm-x" data-close aria-label="Cerrar">×</button></div>'
+      + '<div class="vm-body">'+cards+'</div>'
+      + '<div class="vm-foot"><span class="guia-prog">Elige un caso para cargarlo y calcularlo</span><button class="btn btn-secondary" data-close>Cerrar</button></div>');
+    vm.querySelectorAll('[data-ej]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var e = EJEMPLOS[+b.dataset.ej];
+        setNombres(e.criterios); JUICIOS_PRECARGA = e.juicios;
+        construir(); calcular(); vmClose();
+        document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+  }
+
+  // Ventana: definir criterios
+  function openDefinir(){
+    var actuales = nombres(); if(!actuales.length) actuales = ['',''];
+    function filas(arr){
+      return arr.map(function(c,i){
+        return '<div class="crit-row"><span class="num">'+(i+1)+'</span>'
+          + '<input type="text" value="'+escA(c)+'" placeholder="Nombre del criterio">'
+          + '<button class="del vm-del" title="Quitar" style="flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:32px;height:32px;cursor:pointer">✕</button></div>';
+      }).join('');
+    }
+    var vm = vmOpen(
+      '<div class="vm-head"><h3>✎ Definir criterios</h3><button class="vm-x" data-close aria-label="Cerrar">×</button></div>'
+      + '<div class="vm-body"><p style="font-size:.85rem;color:var(--ink-soft);margin:0 0 12px">Escribe entre 2 y 9 criterios, uno por línea. Luego pulsa Aplicar para construir la matriz de comparación.</p>'
+      + '<div id="vm-crits">'+filas(actuales)+'</div>'
+      + '<button class="add" id="vm-addcrit" style="border:1px dashed var(--line-strong);background:var(--surface);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;font-size:.82rem;cursor:pointer;margin-top:4px">+ Agregar criterio</button></div>'
+      + '<div class="vm-foot"><span class="guia-prog" id="vm-crit-msg"></span><span><button class="btn btn-secondary" data-close>Cancelar</button> <button class="btn btn-primary" id="vm-crit-ok">Aplicar</button></span></div>');
+    function wireDel(){ vm.querySelectorAll('.vm-del').forEach(function(b){ b.onclick=function(){ if(vm.querySelectorAll('.crit-row').length<=2){ return; } b.closest('.crit-row').remove(); renum(); }; }); }
+    function renum(){ vm.querySelectorAll('#vm-crits .crit-row .num').forEach(function(n,i){ n.textContent=i+1; }); }
+    wireDel();
+    vm.querySelector('#vm-addcrit').addEventListener('click', function(){
+      if(vm.querySelectorAll('.crit-row').length>=9){ vm.querySelector('#vm-crit-msg').textContent='Máximo 9 criterios.'; return; }
+      var d=document.createElement('div'); d.className='crit-row';
+      d.innerHTML='<span class="num"></span><input type="text" placeholder="Nombre del criterio"><button class="del vm-del" style="flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--crit);border-radius:7px;width:32px;height:32px;cursor:pointer">✕</button>';
+      vm.querySelector('#vm-crits').appendChild(d); renum(); wireDel(); d.querySelector('input').focus();
+    });
+    vm.querySelector('#vm-crit-ok').addEventListener('click', function(){
+      var vals=[]; vm.querySelectorAll('#vm-crits input').forEach(function(inp){ var v=inp.value.trim(); if(v) vals.push(v); });
+      if(vals.length<2){ vm.querySelector('#vm-crit-msg').textContent='Ingresa al menos 2 criterios.'; return; }
+      if(vals.length>9){ vm.querySelector('#vm-crit-msg').textContent='Máximo 9 criterios.'; return; }
+      setNombres(vals); JUICIOS_PRECARGA=null; construir(); vmClose();
+      document.getElementById('matriz').scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  }
+
+  // Ventana: comparación guiada por pares
+  var ESCALA = [
+    {v:9,l:'extremadamente más importante que'},
+    {v:7,l:'muy fuertemente más importante que'},
+    {v:5,l:'fuertemente más importante que'},
+    {v:3,l:'moderadamente más importante que'},
+    {v:1,l:'igual de importante que'},
+    {v:1/3,l:'moderadamente menos importante que'},
+    {v:1/5,l:'fuertemente menos importante que'},
+    {v:1/7,l:'muy fuertemente menos importante que'},
+    {v:1/9,l:'extremadamente menos importante que'}
+  ];
+  function openGuiada(){
+    var nm = nombres();
+    if(nm.length<2){ alert('Primero define al menos 2 criterios.'); return; }
+    // pares (i<j) leyendo el valor actual de la matriz si existe
+    var pares=[]; for(var i=0;i<nm.length;i++){ for(var j=i+1;j<nm.length;j++){ pares.push({i:i,j:j}); } }
+    var vals={};
+    document.querySelectorAll('#matriz select').forEach(function(s){ vals[s.dataset.i+'-'+s.dataset.j]=parseFloat(s.value); });
+    var pos=0;
+    var vm = vmOpen(
+      '<div class="vm-head"><h3>🪟 Comparación guiada</h3><button class="vm-x" data-close aria-label="Cerrar">×</button></div>'
+      + '<div class="vm-body" id="guia-body"></div>'
+      + '<div class="vm-foot"><span class="guia-prog" id="guia-prog"></span><span><button class="btn btn-secondary" id="guia-prev">Anterior</button> <button class="btn btn-primary" id="guia-next">Siguiente</button></span></div>');
+    function render(){
+      var p=pares[pos], a=nm[p.i], b=nm[p.j], cur=vals[p.i+'-'+p.j]; if(cur==null) cur=1;
+      var opts = ESCALA.map(function(o){
+        var seld = Math.abs(o.v-cur)<1e-9?' sel':'';
+        return '<button class="'+('guia-opt'+seld).trim()+'" data-v="'+o.v+'"><b class="a">'+esc(a)+'</b> es '+o.l+' <b class="b">'+esc(b)+'</b></button>';
+      }).join('');
+      document.getElementById('guia-body').innerHTML =
+        '<div class="guia-vs">Par '+(pos+1)+' de '+pares.length+'</div>'
+        + '<div class="guia-pair"><span class="a">'+esc(a)+'</span> &nbsp;vs&nbsp; <span class="b">'+esc(b)+'</span></div>'
+        + '<div class="guia-opts">'+opts+'</div>';
+      document.getElementById('guia-prog').textContent = 'Par '+(pos+1)+'/'+pares.length;
+      document.getElementById('guia-prev').disabled = (pos===0);
+      document.getElementById('guia-next').textContent = (pos===pares.length-1)?'Finalizar y calcular':'Siguiente';
+      document.getElementById('guia-body').querySelectorAll('.guia-opt').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          vals[p.i+'-'+p.j]=parseFloat(btn.dataset.v);
+          document.getElementById('guia-body').querySelectorAll('.guia-opt').forEach(function(x){x.classList.remove('sel');});
+          btn.classList.add('sel');
+        });
+      });
+    }
+    document.getElementById('guia-prev').addEventListener('click', function(){ if(pos>0){ pos--; render(); } });
+    document.getElementById('guia-next').addEventListener('click', function(){
+      if(pos<pares.length-1){ pos++; render(); }
+      else { JUICIOS_PRECARGA=vals; construir(); calcular(); vmClose();
+        document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'}); }
+    });
+    render();
+  }
+
+  document.getElementById('btnConstruir').addEventListener('click', function(){ JUICIOS_PRECARGA=null; construir(); });
   document.getElementById('btnCalcular').addEventListener('click', calcular);
+  document.getElementById('btnEjemplos').addEventListener('click', openEjemplos);
+  document.getElementById('btnDefinir').addEventListener('click', openDefinir);
+  document.getElementById('btnGuiada').addEventListener('click', openGuiada);
+
   construir();
 })();
 </script>
