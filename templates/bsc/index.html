@@ -210,7 +210,14 @@
   var modelo={
     fases:[{nombre:'Diseño validado',rango:'2024–2027'},{nombre:'Operación piloto',rango:'2028–2029'},{nombre:'Escalamiento',rango:'2030–2032'},{nombre:'Régimen y réplica',rango:'2033–2036'}],
     objetivos:SEED.map(nest),
-    relaciones:[['A1','T1'],['A1','T2'],['A1','T3'],['A2','P3'],['A2','C1'],['T1','P1'],['T2','P1'],['T3','P2'],['T4','C3'],['P1','C1'],['P2','C3'],['P3','C1'],['C1','F1'],['C2','F2'],['C3','F2'],['C1','F3']]
+    relaciones:[
+      ['A1','T1'],['A1','T2'],['A1','T3'],
+      ['A2','P3'],
+      ['T1','P1'],['T2','P1'],['T3','P2'],['T4','C3'],
+      ['P1','C2'],['P2','C3'],['P3','C1'],
+      ['C1','F1'],['C2','F2'],['C3','F2'],['C1','F3'],
+      ['F1','F2'],['F2','F3']
+    ]
   };
   var estado={token:'', nombre:''};
 
@@ -372,28 +379,41 @@
 
   function renderMapa(objetivos, relaciones){
     var by=grupos(objetivos);
-    var W=1040,plotL=178,plotR=1022,plotW=plotR-plotL,top=18,bandH=124,boxW=150,boxH=58;
+    var W=1060,plotL=184,plotR=1044,plotW=plotR-plotL,top=20,bandH=134,boxW=152,boxH=56;
     var pos={},bands=[],bi=0;
-    PORDER.forEach(function(p){ if(!by[p].length) return; var yc=top+bi*bandH+bandH/2; bands.push({p:p,yc:yc,y1:top+(bi+1)*bandH});
+    PORDER.forEach(function(p){ if(!by[p].length) return; var yc=top+bi*bandH+bandH/2;
+      bands.push({p:p,yc:yc,y0:top+bi*bandH,y1:top+(bi+1)*bandH});
       var m=by[p].length; by[p].forEach(function(o,k){ var cx=plotL+(k+0.5)*(plotW/m); pos[o.id]={cx:cx,cy:yc,top:yc-boxH/2,bottom:yc+boxH/2,o:o,p:p}; }); bi++; });
     var H=top+bi*bandH+top;
     var s='<svg class="mapa" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" font-family="\'IBM Plex Sans\',sans-serif">';
-    s+='<defs><marker id="arh" markerWidth="9" markerHeight="9" refX="7.5" refY="3" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,3 L0,6 Z" fill="#8b94a1"/></marker></defs>';
+    s+='<defs>';
+    PORDER.forEach(function(p){ s+='<marker id="arh-'+p+'" markerWidth="10" markerHeight="10" refX="6.4" refY="3.2" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,3.2 L0,6.4 Z" fill="'+PMETA[p].stroke+'"/></marker>'; });
+    s+='</defs>';
     bands.forEach(function(b){ s+='<line x1="8" y1="'+b.y1+'" x2="'+(W-10)+'" y2="'+b.y1+'" stroke="#e2e5ea"/>';
       s+='<text x="14" y="'+(b.yc-6)+'" fill="'+PMETA[b.p].stroke+'" font-size="12.5" font-weight="700">'+esc(PMETA[b.p].n)+'</text>';
       s+='<text x="14" y="'+(b.yc+11)+'" fill="#8b94a1" font-size="10.5">Perspectiva '+b.p+'</text>'; });
-    relaciones.forEach(function(r){ var a=pos[r[0]],b=pos[r[1]]; if(!a||!b) return; var y1,y2;
-      if(a.cy>b.cy){y1=a.top;y2=b.bottom+2;} else if(a.cy<b.cy){y1=a.bottom;y2=b.top-2;} else {y1=a.cy;y2=b.cy;}
-      s+='<line x1="'+a.cx.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+b.cx.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#b7bec9" stroke-width="1.5" marker-end="url(#arh)"/>'; });
+    // Relaciones: curvas Bézier con tangente vertical, coloreadas según la perspectiva de origen (causa)
+    relaciones.forEach(function(r){ var a=pos[r[0]],b=pos[r[1]]; if(!a||!b) return;
+      var c=PMETA[a.p].stroke, x1,y1,x2,y2,c1y,c2y,path;
+      if(a.cy>b.cy){ // causa debajo → efecto arriba (flujo ascendente normal)
+        x1=a.cx;y1=a.top;x2=b.cx;y2=b.bottom+3; var d=(y1-y2)*0.45; c1y=y1-d; c2y=y2+d;
+      } else if(a.cy<b.cy){ // causa arriba → efecto abajo
+        x1=a.cx;y1=a.bottom;x2=b.cx;y2=b.top-3; var d2=(y2-y1)*0.45; c1y=y1+d2; c2y=y2-d2;
+      } else { // misma perspectiva: arco por encima
+        x1=a.cx;y1=a.top;x2=b.cx;y2=b.top; c1y=y1-32; c2y=y2-32;
+      }
+      path='M'+x1.toFixed(1)+','+y1.toFixed(1)+' C'+x1.toFixed(1)+','+c1y.toFixed(1)+' '+x2.toFixed(1)+','+c2y.toFixed(1)+' '+x2.toFixed(1)+','+y2.toFixed(1);
+      s+='<path d="'+path+'" fill="none" stroke="'+c+'" stroke-width="1.7" stroke-opacity="0.72" marker-end="url(#arh-'+a.p+')"/>'; });
     Object.keys(pos).forEach(function(id){ var q=pos[id],m=PMETA[q.p],x=q.cx-boxW/2,y=q.top;
       s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+boxW+'" height="'+boxH+'" rx="9" fill="'+m.fill+'" stroke="'+m.stroke+'" stroke-width="1.4"/>';
-      s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+18)+'" text-anchor="middle" fill="'+m.stroke+'" font-size="12.5" font-weight="700">'+esc(id)+'</text>';
+      s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+17)+'" text-anchor="middle" fill="'+m.stroke+'" font-size="12" font-weight="700">'+esc(id)+'</text>';
       var nm=q.o.nombre,l1=corta(nm,26),l2=nm.length>26?corta(nm.slice(25),24):'';
-      s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+34)+'" text-anchor="middle" fill="'+TXT+'" font-size="10.5">'+esc(l1)+'</text>';
-      if(l2) s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+47)+'" text-anchor="middle" fill="'+TXT+'" font-size="10.5">'+esc(l2)+'</text>'; });
+      s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+33)+'" text-anchor="middle" fill="'+TXT+'" font-size="10" font-weight="500">'+esc(l1)+'</text>';
+      if(l2) s+='<text x="'+q.cx.toFixed(1)+'" y="'+(y+45)+'" text-anchor="middle" fill="'+TXT+'" font-size="10" font-weight="500">'+esc(l2)+'</text>'; });
     s+='</svg>';
     document.getElementById('mapa').innerHTML=s;
     var leq=''; bands.forEach(function(b){ leq+='<span><i style="background:'+PMETA[b.p].fill+';border:1px solid '+PMETA[b.p].stroke+'"></i>'+esc(PMETA[b.p].n)+'</span>'; });
+    leq+='<span style="margin-left:auto;color:var(--muted)">Las flechas se colorean según la perspectiva de origen (causa) y fluyen hacia arriba (efecto).</span>';
     document.getElementById('leyenda').innerHTML=leq;
   }
   function renderRoadmap(fases, objetivos){
@@ -429,7 +449,7 @@
     var msg=document.getElementById('msg'); msg.className='msg'; msg.textContent='';
     var obj=modelo.objetivos.filter(function(o){ return o.id && o.id.trim(); });
     if(!obj.length){ msg.className='msg err'; msg.textContent='Agrega al menos un objetivo con código.'; return; }
-    var objR=obj.map(function(o){ return {persp:o.persp,id:o.id.trim(),nombre:o.nombre,fases:[o.ini,o.fin],planes:o.planes}; });
+    var objR=obj.map(function(o){ return {persp:o.persp,id:o.id.trim(),nombre:o.nombre,ini:o.ini,fin:o.fin,fases:[o.ini,o.fin],planes:o.planes}; });
     var ids={}; objR.forEach(function(o){ ids[o.id]=true; });
     var rel=modelo.relaciones.filter(function(r){ return ids[r[0]]&&ids[r[1]]&&r[0]!==r[1]; });
     renderMapa(objR, rel);
