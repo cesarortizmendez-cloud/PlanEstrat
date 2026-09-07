@@ -24,6 +24,14 @@ def solve_api(request):
     try:
         data = json.loads(request.body or '{}')
 
+        # --- Modo evaluación estratégica (objetivos del mapa: dos lecturas) ---
+        if data.get('modo') == 'estrategica':
+            objetivos = data.get('objetivos') or []
+            relaciones = data.get('relaciones') or []
+            meta = (data.get('meta') or 'F').strip().upper()[:1] or 'F'
+            res = solver.evaluacion_estrategica(objetivos, relaciones, meta=meta)
+            return JsonResponse(res)
+
         # --- Modo priorización de proyectos ---
         if data.get('proyectos') and data.get('impacto') is not None:
             objetivos = data.get('objetivos') or []

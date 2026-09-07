@@ -154,3 +154,51 @@ def priorizar_proyectos(objetivos, relaciones, proyectos, impacto, meta='F', int
         "objetivos": objetivos_dematel,
         "nP": nP, "nO": nO,
     }
+
+
+def evaluacion_estrategica(objetivos, relaciones, meta='F', inten_oo=3.0):
+    """Evalúa los objetivos del mapa con DEMATEL (dos lecturas):
+
+    - importancia: influencia total de cada objetivo sobre los objetivos de la
+      perspectiva `meta` (Financiera) — cercanía al resultado (motor del método del paper).
+    - secuencia: rol causal de cada objetivo (relación r-c) para el orden de ejecución
+      (las causas/motores primero).
+    """
+    ids = [o['id'] for o in objetivos]
+    persp = {o['id']: o.get('persp', '') for o in objetivos}
+    nombre = {o['id']: o.get('nombre', o['id']) for o in objetivos}
+    idx = {o: i for i, o in enumerate(ids)}
+    n = len(ids)
+    if n < 2:
+        raise ValueError("Se necesitan al menos 2 objetivos.")
+
+    A = np.zeros((n, n))
+    for par in relaciones:
+        if len(par) == 2 and par[0] in idx and par[1] in idx and par[0] != par[1]:
+            A[idx[par[0]], idx[par[1]]] = inten_oo
+
+    T, D, s = _total_influence(A)
+    r = T.sum(axis=1)
+    c = T.sum(axis=0)
+    prominencia = r + c
+    relacion = r - c
+
+    metas = [idx[o] for o in ids if persp.get(o) == meta]
+    if not metas:
+        metas = list(range(n))
+
+    objs = []
+    for i, oid in enumerate(ids):
+        objs.append({
+            "id": oid, "persp": persp.get(oid, ''), "nombre": nombre[oid],
+            "r": float(r[i]), "c": float(c[i]),
+            "prominencia": float(prominencia[i]), "relacion": float(relacion[i]),
+            "tipo": "causa" if relacion[i] > 0 else "efecto",
+            "influencia_meta": float(T[i, metas].sum()),
+        })
+
+    total_imp = sum(o["influencia_meta"] for o in objs) or 1.0
+    for o in objs:
+        o["imp_pct"] = round(o["influencia_meta"] / total_imp * 100, 1)
+
+    return {"meta": meta, "objetivos_meta": [ids[m] for m in metas], "objetivos": objs, "n": n}
